@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+<head> 
+  <script>
+  (function() {
+    var clave = prompt("Acceso Restringido - Interfaz de Docente\n\nPor favor, introduzca la contraseña de acceso:");
+    if (clave !== "estoico") {
+      alert("Contraseña incorrecta. Redirigiendo a la interfaz de estudiantes.");
+      window.location.href = "index.html"; 
+    }
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Docente | Administración de Fonética</title>
