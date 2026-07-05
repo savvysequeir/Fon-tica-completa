@@ -1,0 +1,10 @@
+INSTRUCCIONES PARA ABRIR EN GOOGLE CHROME
+
+1. Descomprime el paquete ZIP.
+2. Abre la carpeta llamada fonetica.
+3. Para estudiantes, haz doble clic en:
+   ABRIR_ESTUDIANTES_EN_CHROME.bat
+4. Para docente, haz doble clic en:
+   ABRIR_DOCENTE_EN_CHROME.bat
+
+Si Windows muestra una advertencia, presiona "Más información" y luego "Ejecutar de todas formas".
