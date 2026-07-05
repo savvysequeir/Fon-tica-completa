@@ -1001,13 +1001,54 @@ els.exportHtmlBtn.onclick=async()=>{const all=await dbGetAll();const html=docume
   function saveGlobalResult(base){
     var rec=currentRecord(base); var arr=loadJSON(GLOBAL_KEY,[]); if(!Array.isArray(arr))arr=[]; var key=rec.activityId+'||'+rec.name; var idx=arr.findIndex(function(r){return (r.activityId+'||'+r.name)===key;});
     if(idx>=0){var old=arr[idx]; if((Number(rec.score)||0)>=(Number(old.score)||0) || (Number(rec.score)===Number(old.score)&&Number(rec.timeSeconds||999999)<Number(old.timeSeconds||999999))) arr[idx]=Object.assign({},old,rec,{attempts:rec.attempts}); else arr[idx]=Object.assign({},old,{attempts:rec.attempts,dateISO:rec.dateISO,date:rec.date,hour:rec.hour,timeSeconds:rec.timeSeconds,timeLabel:rec.timeLabel,frequentErrors:rec.frequentErrors,status:old.status||rec.status});}
-    else arr.push(rec); saveJSON(GLOBAL_KEY,arr.slice(-500)); return rec;
+    else arr.push(rec); saveJSON(GLOBAL_KEY,arr.slice(-500)); if(typeof window.enviarDatosAFirebase==='function'){window.enviarDatosAFirebase(rec);}return rec;
   }
   function wrapSave(){if(window.foneticaGuardarResultado&&!window.foneticaGuardarResultado.__docenteWrapped){oldSave=window.foneticaGuardarResultado;window.foneticaGuardarResultado=function(){if(wrapping)return oldSave.apply(this,arguments);wrapping=true;var r;try{r=oldSave.apply(this,arguments);}catch(e){}wrapping=false;return saveGlobalResult(r);};window.foneticaGuardarResultado.__docenteWrapped=true;}}
   ready(function(){if(!checkAccess())return; incrementAttempts(); installTimer(); installErrorCatcher(); setInterval(wrapSave,500); setInterval(function(){saveGlobalResult();},5000); window.addEventListener('beforeunload',function(){saveGlobalResult();}); document.addEventListener('click',function(e){var t=e.target;if(t&&t.id==='understandNo'){incrementAttempts();saveGlobalResult();}},true);});
 })();
 </script>
 <!-- DOCENTE_CONTROL_END -->
+<!-- ========================================== -->
+<!-- CONEXIÓN GENERAL A FIREBASE REALTIME DATABASE -->
+<!-- ========================================== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
+  // Credenciales oficiales de tu consola Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0DDVk0cyVwwcM2eVijyCl79GQmrLhx4U",
+    authDomain: "fonetica-completa.firebaseapp.com",
+    databaseURL: "https://fonetica-completa-default-rtdb.firebaseio.com",
+    projectId: "fonetica-completa",
+    storageBucket: "fonetica-completa.firebasestorage.app",
+    messagingSenderId: "299781730803",
+    appId: "1:299781730803:web:9e71c2aeb60b5063e82286"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Función que intercepta los datos nativos de tu juego y los manda a Firebase
+  window.enviarDatosAFirebase = function(datosJuego) {
+    const registrosRef = ref(db, 'resultados_laberintos');
+
+    const nuevoRegistro = {
+      estudiante: datosJuego.name || "Estudiante Anónimo",
+      puntajeObtenido: datosJuego.score || 0,
+      maximoPuntajePosible: datosJuego.max || 0,
+      tiempoSegundos: datosJuego.elapsed || 0,
+      actividadID: datosJuego.activityId || "Desconocida",
+      tituloActividad: datosJuego.activityTitle || "Blends Laberinto",
+      fechaRegistro: new Date().toLocaleDateString(),
+      horaRegistro: new Date().toLocaleTimeString(),
+      timestamp: new Date().toISOString()
+    };
+
+    push(registrosRef, nuevoRegistro)
+      .then(() => console.log("¡Datos enviados con éxito a Firebase!"))
+      .catch((error) => console.error("Error al guardar en Firebase:", error));
+  };
+</script>
 </body>
 </html>
