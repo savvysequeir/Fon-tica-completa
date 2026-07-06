@@ -6,25 +6,20 @@
   <style>
     body{font-family:system-ui,sans-serif;background:#eff6ff;color:#0f172a;margin:0;padding:20px}
     .wrap{max-width:1000px;margin:auto;background:white;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.1)}
-    
-    /* Panel de Registro */
     .register-panel{background:#f8fafc;border:2px solid #e2e8f0;padding:25px;border-radius:15px;margin-bottom:30px}
     .input-group{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:15px}
     input, select{padding:12px;border-radius:8px;border:1px solid #cbd5e1}
     #saveBtn{background:#16a34a;color:white;border:0;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer}
-    
-    /* Grid de Actividades */
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:20px}
     .btn-act{display:block;background:#1d4ed8;color:white;padding:15px;text-decoration:none;border-radius:10px;text-align:center;font-weight:bold}
-    .docente-btn{margin-top:30px;display:inline-block;background:#0f172a;color:white;padding:15px;text-decoration:none;border-radius:10px}
+    .btn-con{background:#7c2d12}
+    .docente-btn{margin-top:40px;display:inline-block;background:#0f172a;color:white;padding:15px;text-decoration:none;border-radius:10px}
   </style>
 </head>
 <body>
 
 <div class="wrap">
   <h1>Fonética Inglesa</h1>
-
-  <!-- 1. Panel de Registro -->
   <div class="register-panel">
     <h3>📝 Registrar datos del estudiante</h3>
     <div id="welcomeMsg" style="color:#166534; font-weight:bold; margin-bottom:10px;"></div>
@@ -55,9 +50,9 @@
     </div>
   </div>
 
-  <!-- 2. Grid de Actividades -->
   <h2>Actividades Disponibles</h2>
-  <div class="grid" id="activitiesGrid">
+  <div class="grid">
+    <!-- Vocales (12) -->
     <a class="btn-act" href="VOWELS/vocal_a_laberinto.html">Vocal 1 /ɑː/</a>
     <a class="btn-act" href="VOWELS/vocal_o_laberinto.html">Vocal 2 /ɒ/</a>
     <a class="btn-act" href="VOWELS/vocal_e_laberinto.html">Vocal 3 /e/</a>
@@ -70,6 +65,24 @@
     <a class="btn-act" href="VOWELS/vocal_u_laberinto.html">Vocal 10 /u:/</a>
     <a class="btn-act" href="VOWELS/vocal_oo_short_laberinto.html">Vocal 11 /ʊ/</a>
     <a class="btn-act" href="VOWELS/vocal_schwa_laberinto.html">Vocal 12 /ə/</a>
+    <!-- Diptongos (10) -->
+    <a class="btn-act" href="VOWELS/vocal_ai_laberinto.html">Diptongo /aɪ/</a>
+    <a class="btn-act" href="VOWELS/vocal_ei_laberinto.html">Diptongo /eɪ/</a>
+    <a class="btn-act" href="VOWELS/vocal_ia_laberinto.html">Diptongo /ɪə/</a>
+    <a class="btn-act" href="VOWELS/vocal_oi_laberinto.html">Diptongo /ɔɪ/</a>
+    <a class="btn-act" href="VOWELS/vocal_ua_laberinto.html">Diptongo /ʊə/</a>
+    <a class="btn-act" href="VOWELS/vocal_au_laberinto.html">Diptongo /aʊ/</a>
+    <a class="btn-act" href="VOWELS/vocal_ea_laberinto.html">Diptongo /eə/</a>
+    <a class="btn-act" href="VOWELS/vocal_ou_laberinto.html">Diptongo /oʊ/</a>
+    <a class="btn-act" href="VOWELS/vocal_ju_laberinto.html">Diptongo /ju/</a>
+    <a class="btn-act" href="VOWELS/vocal_rcolored_laberinto.html">Vocal /ɚ/</a>
+    <!-- Triptongos (2) -->
+    <a class="btn-act" href="VOWELS/vocal_aia_aua_laberinto.html">Triptongo /aɪə/ & /aʊə/</a>
+    <a class="btn-act" href="VOWELS/vocal_eia_oia_oua_laberinto.html">Triptongo /eɪə/, /ɔɪə/ & /əʊə/</a>
+    <!-- Consonantes (3) -->
+    <a class="btn-act btn-con" href="CONSONANTS/consonantes_sh_ch_th_laberinto.html">Consonantes 1</a>
+    <a class="btn-act btn-con" href="CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html">Consonantes 2</a>
+    <a class="btn-act btn-con" href="CONSONANTS/blends_laberinto.html">Consonantes 3 (Blends)</a>
   </div>
 
   <a class="docente-btn" href="docente.html">👩‍🏫 Portal del Docente</a>
@@ -78,26 +91,14 @@
 <script>
   function updateUI() {
     var saved = localStorage.getItem('fonetica_student_full_name');
-    if(saved) {
-      document.getElementById('welcomeMsg').textContent = "✅ Estudiante registrado: " + saved.split('||')[0];
-    }
+    if(saved) document.getElementById('welcomeMsg').textContent = "✅ Estudiante registrado: " + saved.split('||')[0];
   }
-
   document.getElementById('saveBtn').onclick = function() {
-    var n = document.getElementById('nameInput').value;
-    var c = document.getElementById('careerInput').value;
-    var y = document.getElementById('yearInput').value;
-    if(n && c && y) {
-      localStorage.setItem('fonetica_student_full_name', n + '||' + c + '||' + y);
-      updateUI();
-      alert("Datos guardados. Ya puedes entrar a los laberintos.");
-    } else {
-      alert("Completa todos los campos");
-    }
+    var n = document.getElementById('nameInput').value, c = document.getElementById('careerInput').value, y = document.getElementById('yearInput').value;
+    if(n && c && y) { localStorage.setItem('fonetica_student_full_name', n + '||' + c + '||' + y); updateUI(); alert("Datos guardados."); }
+    else alert("Completa todos los campos.");
   };
-  
   updateUI();
 </script>
-
 </body>
 </html>
