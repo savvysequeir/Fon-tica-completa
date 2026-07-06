@@ -137,9 +137,48 @@
   <section class="card" id="studentPanel">
 
     <h2>1. Identificación del estudiante</h2>
+<p class="muted">Inserta tus datos académicos antes de iniciar la actividad.</p>
 
-  
 
+
+    <div class="row">
+
+      <input id="studentName" type="text" placeholder="Nombre completo del estudiante" autocomplete="name" />
+
+      <select id="studentCareer" aria-label="Seleccionar carrera">
+
+        <option value="">-- Seleccionar Carrera --</option>
+
+        <option value="Veterinaria">Medicina Veterinaria</option>
+
+        <option value="Agronomia">Agronomía</option>
+
+        <option value="Forestal">Ingeniería Forestal</option>
+
+        <option value="Ambientales">Gestión Ambiental / Recursos Naturales</option>
+
+        <option value="Otra">Otra Carrera / Curso General</option>
+
+      </select>
+
+      <select id="studentYear" aria-label="Seleccionar año">
+
+        <option value="">-- Año en Curso --</option>
+
+        <option value="1">1er Año</option>
+
+        <option value="2">2do Año</option>
+
+        <option value="3">3er Año</option>
+
+        <option value="4">4to Año</option>
+
+        <option value="5">5to Año</option>
+
+      </select>
+
+      <button id="insertNameBtn" class="btn-blue">Insertar Nombre</button> 
+ 
       <button id="startBtn" class="btn-green">comenzar</button>
 
     </div>
