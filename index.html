@@ -5,30 +5,163 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fonética | VOWELS & CONSONANTS</title>
   <style>
-    body{font-family:system-ui,sans-serif;background:#eff6ff;padding:22px;color:#0f172a;}
-    .wrap{max-width:1040px;margin:auto;background:white;border-radius:24px;padding:24px;box-shadow:0 16px 40px rgba(0,0,0,.1);}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-top:20px;}
-    a{display:block;background:#1d4ed8;color:white;text-decoration:none;padding:20px;border-radius:15px;font-weight:900;text-align:center;}
+    body{font-family:system-ui,-apple-system,sans-serif;background:#eff6ff;color:#0f172a;margin:0;padding:22px}
+    .wrap{max-width:1040px;margin:auto;background:white;border:1px solid #dbe4ef;border-radius:24px;padding:24px;box-shadow:0 16px 40px rgba(15,23,42,.12)}
+    h1{margin-top:0} h2{margin-top:26px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px;margin-top:18px}
+    a.btn-activity{display:block;text-decoration:none;background:#1d4ed8;color:white;border-radius:18px;padding:18px;font-weight:900;box-shadow:0 10px 24px rgba(29,78,216,.25); transition:transform 0.1s;}
+    a.btn-activity:hover{transform:translateY(-2px); filter:brightness(1.1);}
+    a.btn-activity.con{background:#7c2d12}
+    a.btn-activity small{display:block;color:#dbeafe;margin-top:6px;font-weight:700}
+    .note{background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;border-radius:16px;padding:14px;margin-top:18px;font-weight:700}
+    
+    /* Estilos del Portal de Estudiantes */
+    #studentNameGate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,64,175,.94));color:#0f172a}
+    #studentNameGate.gate-closed{display:none!important}
+    .gate-card{width:min(720px,100%);background:#fff;border-radius:30px;padding:38px;box-shadow:0 35px 90px rgba(0,0,0,.38);text-align:left}
+    .gate-row{display:flex;gap:12px;flex-direction:column;margin-top:20px}
+    .gate-row input, .gate-row select{width:100%;border:2px solid #cbd5e1;border-radius:16px;padding:15px;font-size:1.05rem;outline:none}
+    .gate-row button{border:0;border-radius:16px;background:#16a34a;color:#fff;font-weight:950;padding:15px;cursor:pointer;font-size:1.1rem;}
+    .gate-error{color:#991b1b;font-weight:900;margin-top:10px;min-height:24px;}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Fonética Inglesa</h1>
-    <div class="grid">
-      <a href="VOWELS/vocal_a_laberinto.html">Vocal 1 /ɑː/</a>
+
+<!-- PORTAL DE REGISTRO DE ESTUDIANTE -->
+<div id="studentNameGate">
+  <div class="gate-card">
+    <h1>🧾 Identificación Académica</h1>
+    <p>Por favor ingresa tus datos antes de iniciar. Tu progreso se guardará automáticamente con esta información.</p>
+    <div class="gate-row">
+      <input id="gateName" type="text" placeholder="Nombre y Apellidos Completos" />
+      
+      <select id="gateCareer">
+        <option value="">-- Seleccionar tu Carrera --</option>
+        <option value="Odontologia">Odontología</option>
+        <option value="Medicina">Medicina</option>
+        <option value="Quimica Farmaceutica">Química Farmacéutica</option>
+        <option value="Enfermeria">Enfermería</option>
+        <option value="Mecanica Dental">Mecánica Dental</option>
+        <option value="Veterinaria">Veterinaria</option>
+        <option value="Agricola">Agrícola</option>
+        <option value="Agronomia">Agronomía</option>
+        <option value="Ingenieria Forestal">Ingeniería Forestal</option>
+        <option value="Agronegocios">Agronegocios</option>
+        <option value="Zootecnia">Zootecnia</option>
+        <option value="Agroindustria">Agroindustria de los Alimentos</option>
+        <option value="Ingles">Inglés</option>
+        <option value="Otra">Otra Carrera / Curso General</option>
+      </select>
+
+      <select id="gateYear">
+        <option value="">-- Año Académico --</option>
+        <option value="1">1er Año</option>
+        <option value="2">2do Año</option>
+        <option value="3">3er Año</option>
+        <option value="4">4to Año</option>
+        <option value="5">5to Año</option>
+      </select>
+
+      <button id="gateBtn" type="button">Guardar y Entrar al Menú</button>
+      <div id="gateError" class="gate-error"></div>
     </div>
-    <div id="studentStatus" style="margin-top:20px; font-weight:bold; color:#0f766e;"></div>
+  </div>
+</div>
+
+<!-- MENÚ PRINCIPAL DE ACTIVIDADES -->
+<div class="wrap">
+  <h1>Fonética · VOWELS & CONSONANTS</h1>
+  <div id="activeStudentBanner" style="background:#dcfce7; border:1px solid #22c55e; color:#166534; padding:12px; border-radius:12px; font-weight:bold; margin-bottom: 20px; display:none;"></div>
+  <p>Selecciona una actividad. Tu nombre y carrera se enviarán automáticamente al laberinto que elijas.</p>
+  
+  <h2>Vowels / Diphthongs / Triphthongs</h2>
+  <div class="grid">
+    <a class="btn-activity" href="VOWELS/vocal_a_laberinto.html">Vocal 1 /ɑː/<small>Laberinto exacto: SARCASM</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_o_laberinto.html">Vocal 2 /ɒ/<small>Laberinto exacto: GOD → ON</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_e_laberinto.html">Vocal 3 /e/<small>Laberinto exacto: END → MEASURE</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ae_laberinto.html">Vocal 4 /æ/<small>Laberinto exacto: CAP → LACK</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_er_laberinto.html">Vocal 5 /ɜ:/<small>Laberinto exacto: URN → TURKEY</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_i_laberinto.html">Vocal 6 /i:/<small>Laberinto exacto: EAT → GRIEF</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ih_laberinto.html">Vocal 7 /ɪ/<small>Laberinto exacto: IS → KID</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_aw_laberinto.html">Vocal 8 /ɔ:/<small>Laberinto exacto: OR → TALK</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_uh_laberinto.html">Vocal 9 /ʌ/<small>Laberinto exacto: US → FUCK</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_u_laberinto.html">Vocal 10 /u:/<small>Laberinto exacto: FOOD → AVENUE</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_oo_short_laberinto.html">Vocal 11 /ʊ/<small>Laberinto exacto: COOK → WOULD</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_schwa_laberinto.html">Vocal 12 /ə/<small>Laberinto exacto: AGO → BEHIND</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ai_laberinto.html">Diptongo /aɪ/<small>Laberinto exacto: EYE → HI</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ei_laberinto.html">Diptongo /eɪ/<small>Laberinto exacto: ATE → SAY</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ia_laberinto.html">Diptongo /ɪə/<small>Laberinto exacto: EAR → STEER</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_oi_laberinto.html">Diptongo /ɔɪ/<small>Laberinto exacto: OIL → SOIL</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ua_laberinto.html">Diptongo /ʊə/<small>Laberinto exacto: SURE → OBSCURE</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_au_laberinto.html">Diptongo /aʊ/<small>Laberinto exacto: OUT → COW</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ea_laberinto.html">Diptongo /eə/<small>Laberinto exacto: AIR → WEAR</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ou_laberinto.html">Diptongo /oʊ/<small>Laberinto exacto: AGO → YELLOW</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_ju_laberinto.html">Diptongo /ju/<small>Laberinto exacto: ACCUSE → UNIVERSITY</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_rcolored_laberinto.html">Vocal /ɚ/<small>Laberinto exacto: WINTER → ACTOR</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_aia_aua_laberinto.html">Diptongos /aɪə/ y /aʊə/<small>Laberinto exacto: VOWEL → ADMIRE</small></a>
+    <a class="btn-activity" href="VOWELS/vocal_eia_oia_oua_laberinto.html">Triptongos /eɪə/, /ɔɪə/ y /əʊə/<small>Laberinto exacto: BETRAYER → WIDOWER</small></a>
   </div>
 
-  <script>
-    // Recuperar nombre y mostrarlo
-    window.addEventListener('load', function() {
-      var data = localStorage.getItem('fonetica_student_full_name');
-      if(data) {
-        var nombre = data.split('||')[0].trim();
-        document.getElementById('studentStatus').textContent = "Estudiante activo: " + nombre;
-      }
+  <h2>Consonants</h2>
+  <div class="grid">
+    <a class="btn-activity con" href="CONSONANTS/consonantes_sh_ch_th_laberinto.html">Consonantes /ʃ/, /tʃ/ y /θ/<small>3 rutas de 50 palabras</small></a>
+    <a class="btn-activity con" href="CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html">Consonantes /ŋ/, /ʒ/, /dʒ/ y /ð/<small>4 rutas de 50 palabras</small></a>
+    <a class="btn-activity con" href="CONSONANTS/blends_laberinto.html">Blends consonánticos<small>Encuentra 3 palabras por cada blend</small></a>
+  </div>
+
+  <div class="note">Para abrir en Google Chrome: descomprime el ZIP, entra a la carpeta <strong>fonetica</strong> y abre <strong>index.html</strong>. La página funciona sin internet.</div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var gate = document.getElementById('studentNameGate');
+    var inputName = document.getElementById('gateName');
+    var inputCareer = document.getElementById('gateCareer');
+    var inputYear = document.getElementById('gateYear');
+    var btn = document.getElementById('gateBtn');
+    var error = document.getElementById('gateError');
+    var banner = document.getElementById('activeStudentBanner');
+
+    // Revisar si ya hay datos guardados
+    var saved = localStorage.getItem('fonetica_student_full_name');
+    if (saved && saved.includes('||')) {
+      gate.classList.add('gate-closed');
+      var partes = saved.split('||');
+      banner.style.display = 'block';
+      banner.textContent = '✅ Estudiante activo: ' + partes[0].trim() + ' (' + partes[1].trim() + ' - Año ' + partes[2].trim() + ')';
+    }
+
+    // Funcionalidad del botón de guardado
+    btn.addEventListener('click', function() {
+      var n = inputName.value.trim();
+      var c = inputCareer.value;
+      var y = inputYear.value;
+
+      if(n.split(' ').length < 2) { error.textContent = 'Escribe al menos un nombre y un apellido.'; return; }
+      if(!c) { error.textContent = 'Selecciona tu carrera.'; return; }
+      if(!y) { error.textContent = 'Selecciona el año académico.'; return; }
+
+      var tokenUnificado = n + "||" + c + "||" + y;
+      localStorage.setItem('fonetica_student_full_name', tokenUnificado);
+      
+      gate.classList.add('gate-closed');
+      banner.style.display = 'block';
+      banner.textContent = '✅ Estudiante activo: ' + n + ' (' + c + ' - Año ' + y + ')';
     });
-  </script>
+
+    // Inyectar los datos en los enlaces del menú al hacer clic
+    document.querySelectorAll('a.btn-activity').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        var currentData = localStorage.getItem('fonetica_student_full_name');
+        if(currentData) {
+          var url = new URL(this.href);
+          url.searchParams.set('student', currentData);
+          this.href = url.href;
+        }
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
