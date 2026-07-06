@@ -12,7 +12,7 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Docente | Administración de Fonética</title>
+<title>Docente | Administration de Fonética</title>
 <style>
   :root{--blue:#1d4ed8;--green:#16a34a;--red:#dc2626;--orange:#ea580c;--dark:#0f172a;--muted:#64748b;--border:#dbe4ef;--bg:#eff6ff;}
   *{box-sizing:border-box}
@@ -108,7 +108,7 @@
       <button class="btn-red" id="clearResults">Borrar resultados guardados</button>
     </div>
     <div class="table-wrap"><table id="resultsTable"><thead><tr><th>Actividad</th><th>Nombre</th><th>Puntaje</th><th>Puntaje máximo</th><th>Porcentaje</th><th>Hora</th><th>Fecha</th><th>Intentos</th><th>Tiempo</th><th>Errores frecuentes</th><th>Estado</th></tr></thead><tbody id="resultRows"></tbody></table></div>
-    <div class="warning">Importante: Conectado dinámicamente a Firebase Realtime Database. Los resultados de los laberintos completados por los alumnos se sincronizan automáticamente en la nube.</div>
+    <div class="warning">Importante: Conectado dinámicamente a Firebase Realtime Database. Los resultados de los laberintos completados por los alumnos se sincronizan automáticamente en la nube de forma global.</div>
   </section>
 </div>
 
@@ -121,7 +121,6 @@ const ACTIVITIES=[{"id": "vocal_a_laberinto", "title": "Vocal 1 /ɑː/", "desc":
 const CONFIG_KEY='fonetica_docente_config';
 const GLOBAL_RESULTS_KEY='fonetica_docente_resultados_global';
 
-// Exportación al objeto global window para que sigan funcionando nativamente en el HTML
 window.esc = function(s){return String(s==null?'':s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 window.idFromHref = function(href){return (href.split('/').pop()||href).replace(/\.html$/,'');}
 window.loadConfig = function(){try{let c=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}'); if(!c.activities)c.activities={}; return c;}catch(e){return {activities:{}};}}
@@ -198,9 +197,7 @@ onValue(registrosRef, (snapshot) => {
       });
     });
   }
-  if (typeof window.renderResults === 'function') {
-    window.renderResults();
-  }
+  window.renderResults();
 });
 
 window.loadGlobalResults = function() {
@@ -223,7 +220,9 @@ window.normalizeErrors = function(e){
 }
 
 window.renderResultFilters = function(){
-  const sel=document.getElementById('resultActivityFilter'); const current=sel.value||'all';
+  const sel=document.getElementById('resultActivityFilter'); 
+  if(!sel) return;
+  const current=sel.value||'all';
   sel.innerHTML='<option value="all">Todas las actividades</option>'+ACTIVITIES.map(a=>`<option value="${window.esc(a.id)}">${window.esc(a.title)}</option>`).join('');
   sel.value=current;
 }
@@ -271,20 +270,81 @@ window.copyTable = function(){
 
 window.clearResults = function(){if(confirm('¿Quieres borrar todos los resultados locales de este navegador?')){localStorage.removeItem(GLOBAL_RESULTS_KEY); window.renderResults();}}
 
-document.addEventListener('DOMContentLoaded',()=>{
-  window.renderActivities(); window.renderResults();
-  document.getElementById('activityFilter').onchange=window.renderActivities;
-  document.getElementById('selectAll').onclick=()=>{document.querySelectorAll('#activityRows .act-enabled').forEach(x=>x.checked=true);};
-  document.getElementById('clearAll').onclick=()=>{document.querySelectorAll('#activityRows .act-enabled').forEach(x=>x.checked=false);};
-  document.getElementById('applyBulk').onclick=()=>{document.querySelectorAll('#activityRows tr').forEach(tr=>{if(tr.querySelector('.act-enabled').checked){let o=document.getElementById('bulkOpen').value,c=document.getElementById('bulkClose').value,t=document.getElementById('bulkTimer').value;if(o)tr.querySelector('.act-open').value=o;if(c)tr.querySelector('.act-close').value=c;if(t!=='')tr.querySelector('.act-timer').value=t;}});};
-  document.getElementById('saveConfig').onclick=window.saveConfig; document.getElementById('saveAllTop').onclick=window.saveConfig;
-  document.getElementById('resetConfig').onclick=()=>{if(confirm('¿Borrar la configuración docente? Las actividades quedarán abiertas como antes.')){localStorage.removeItem(CONFIG_KEY);window.renderActivities();}};
-  ['sortResults','resultActivityFilter','studentSearch'].forEach(id=>document.getElementById(id).addEventListener('input',window.renderResults));
-  document.getElementById('refreshResults').onclick=window.renderResults; document.getElementById('refreshTop').onclick=window.renderResults;
-  document.getElementById('exportExcel').onclick=window.exportExcel; document.getElementById('exportTop').onclick=window.exportExcel;
-  document.getElementById('copyTable').onclick=window.copyTable; document.getElementById('clearResults').onclick=window.clearResults;
-  setInterval(window.renderResults,4000);
-});
+// ==========================================
+// CONFIGURACIÓN DIRECTA DE BOTONES (SOLUCIÓN DE VÍNCULO)
+// ==========================================
+function inicializarAsignaciones() {
+  window.renderActivities(); 
+  window.renderResults();
+  
+  document.getElementById('activityFilter').onchange = window.renderActivities;
+  
+  // 4. Seleccionar visibles
+  document.getElementById('selectAll').onclick = () => {
+    document.querySelectorAll('#activityRows .act-enabled').forEach(x => x.checked = true);
+  };
+  
+  // 5. Quitar visibles
+  document.getElementById('clearAll').onclick = () => {
+    document.querySelectorAll('#activityRows .act-enabled').forEach(x => x.checked = false);
+  };
+  
+  // 6. Aplicar fecha hora y cronometro
+  document.getElementById('applyBulk').onclick = () => {
+    document.querySelectorAll('#activityRows tr').forEach(tr => {
+      if(tr.querySelector('.act-enabled').checked){
+        let o = document.getElementById('bulkOpen').value,
+            c = document.getElementById('bulkClose').value,
+            t = document.getElementById('bulkTimer').value;
+        if(o) tr.querySelector('.act-open').value = o;
+        if(c) tr.querySelector('.act-close').value = c;
+        if(t !== '') tr.querySelector('.act-timer').value = t;
+      }
+    });
+  };
+  
+  // 1 y 7. Guardar configuración
+  document.getElementById('saveConfig').onclick = window.saveConfig; 
+  document.getElementById('saveAllTop').onclick = window.saveConfig;
+  
+  // 8. Borrar configuración docente
+  document.getElementById('resetConfig').onclick = () => {
+    if(confirm('¿Borrar la configuración docente? Las actividades quedarán abiertas como antes.')){
+      localStorage.removeItem(CONFIG_KEY);
+      window.renderActivities();
+    }
+  };
+  
+  // Filtros dinámicos de resultados
+  ['sortResults','resultActivityFilter','studentSearch'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('input', window.renderResults);
+  });
+  
+  // 2 y 9. Actualizar tabla y resultados
+  document.getElementById('refreshResults').onclick = window.renderResults; 
+  document.getElementById('refreshTop').onclick = window.renderResults;
+  
+  // 3. Exportar Excel
+  document.getElementById('exportExcel').onclick = window.exportExcel; 
+  document.getElementById('exportTop').onclick = window.exportExcel;
+  
+  // 10. Copiar tabla
+  document.getElementById('copyTable').onclick = window.copyTable; 
+  
+  // 11. Borrar resultados guardados
+  document.getElementById('clearResults').onclick = window.clearResults;
+}
+
+// Bucle forzado de seguridad para enganchar los botones sí o sí en cuanto aparezcan
+let chequeoBotones = setInterval(() => {
+  if (document.getElementById('saveConfig') && document.getElementById('selectAll')) {
+    inicializarAsignaciones();
+    clearInterval(chequeoBotones);
+  }
+}, 100);
+
+setInterval(window.renderResults, 4000);
 </script>
 </body>
 </html>
