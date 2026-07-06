@@ -93,6 +93,7 @@
 <!-- STUDENT_GATE_SCRIPT_START -->
 <script id="student-gate-script">
 (function(){
+  function escapeHtml(s){return String(s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
   ready(function(){
     var gate=document.getElementById('studentNameGate');
@@ -134,12 +135,12 @@
       }
       err.textContent='';
       
-      // Estructuramos una sola cadena limpia separada por barras para pasarla completa
-      var fullData = name + "||" + career + "||" + year;
-      try{localStorage.setItem('fonetica_student_full_name', full); localStorage.setItem('fonetica_student_career', career); localStorage.setItem('fonetica_student_year', year);}catch(e){}
+      var tokenUnificado = name + "||" + career + "||" + year;
+      try{localStorage.setItem('fonetica_student_full_name', tokenUnificado);}catch(e){}
       
       gate.classList.add('gate-closed');
       document.body.classList.remove('student-gate-open');
+      updateLinks();
     }
     btn.addEventListener('click',continueActivity);
     input.addEventListener('keydown',function(e){ if(e.key==='Enter') continueActivity(); });
@@ -147,162 +148,34 @@
   });
 })();
 </script>
-<!-- EXERCISE_AUTO_START_SCRIPT_END -->
+<!-- STUDENT_GATE_SCRIPT_END -->
 
-<!-- VOCABULARIO_GLOBAL_START -->
-<script id="vocabulario-global-script">
+<!-- INDEX_LINK_NAME_FORWARDER_START -->
+<script id="index-link-name-forwarder">
 (function(){
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
-  function esc(s){return String(s==null?'':s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
-  function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'').trim();}
-  function pretty(w){return String(w||'').replace(/_/g,' ').trim();}
-  function titleCase(w){var s=String(w||''); return s ? s.charAt(0).toUpperCase()+s.slice(1).toLowerCase() : s;}
-  function fallbackSound(){
-    var h=(document.querySelector('h1')||{}).textContent||'';
-    var t=(document.title||'');
-    var m=(h+' '+t).match(/\/[^\/]{1,18}\//g);
-    return m ? m.join(' ') : '';
+  function getName(){try{return (localStorage.getItem('fonetica_student_full_name')||'').trim();}catch(e){return '';}}
+  window.updateLinks = function(){
+    var rawData=getName();
+    if(!rawData) return;
+    document.querySelectorAll('a[href$=".html"],a[href*=".html?"]').forEach(function(a){
+      try{
+        var u=new URL(a.getAttribute('href'), window.location.href);
+        if(!/index\.html$/i.test(u.pathname)) u.searchParams.set('student', rawData);
+        a.setAttribute('href', u.href);
+      }catch(e){}
+    });
   }
-  function mapLookup(word){
-    var keys=[String(word), String(word).toUpperCase(), String(word).toLowerCase(), titleCase(word), norm(word)];
-    try{ if(typeof PRON!=='undefined' && PRON){ for(var i=0;i<keys.length;i++){ if(PRON[keys[i]]) return PRON[keys[i]]; } } }catch(e){}
-    try{ if(typeof WORD_SOUNDS!=='undefined' && WORD_SOUNDS){ for(var j=0;j<keys.length;j++){ if(WORD_SOUNDS[keys[j]]) return WORD_SOUNDS[keys[j]]; } } }catch(e){}
-    try{ if(typeof IPA!=='undefined' && IPA){ for(var k=0;k<keys.length;k++){ if(IPA[keys[k]]) return IPA[keys[k]]; } } }catch(e){}
-    return '';
-  }
-  function keyForWord(word, id){
-    try{ if(typeof audioKeyWord==='function') return audioKeyWord(word); }catch(e){}
-    if(id) return 'word:'+id;
-    return 'word:'+word;
-  }
-  function keyForSentence(i, s){
-    try{ if(typeof audioKeySentence==='function') return audioKeySentence(i); }catch(e){}
-    if(s && typeof s==='object' && s.id) return s.id;
-    return 'sentence:'+(i+1);
-  }
-  function addUniqueWord(list, seen, word, ipa, key, group){
-    word=pretty(word); if(!word) return;
-    var unique=(key||word).toLowerCase();
-    if(seen.has(unique)) return; seen.add(unique);
-    list.push({word:word, ipa:ipa||mapLookup(word)||'', key:key||keyForWord(word), group:group||''});
-  }
-  function collectWords(){
-    var list=[], seen=new Set();
-    try{ if(typeof PRON!=='undefined' && PRON){ Object.keys(PRON).forEach(function(w){addUniqueWord(list,seen,w,PRON[w],keyForWord(w),'Palabra');}); } }catch(e){}
-    try{ if(typeof WORD_SOUNDS!=='undefined' && WORD_SOUNDS){ Object.keys(WORD_SOUNDS).forEach(function(w){addUniqueWord(list,seen,w,WORD_SOUNDS[w],keyForWord(w),'Palabra');}); } }catch(e){}
-    try{ if(typeof WORD_ENTRIES!=='undefined' && Array.isArray(WORD_ENTRIES)){ WORD_ENTRIES.forEach(function(en){addUniqueWord(list,seen,en.word,en.ipa||mapLookup(en.word),keyForWord(en.word,en.id),en.blendName||en.blend||'Blend');}); } }catch(e){}
-    try{ if(typeof BLENDS!=='undefined' && Array.isArray(BLENDS)){ BLENDS.forEach(function(b){b.words.forEach(function(w){ var word=Array.isArray(w)?w[0]:(w.word||w); var ipa=Array.isArray(w)?w[1]:(w.ipa||mapLookup(word)); addUniqueWord(list,seen,word,ipa,keyForWord(word,(w&&w.id)||null),b.name||'Blend');});}); } }catch(e){}
-    function addArray(arr, group){ try{ if(Array.isArray(arr)){ arr.forEach(function(w){ if(Array.isArray(w)) return; addUniqueWord(list,seen,w,mapLookup(w),keyForWord(w),group); }); } }catch(e){} }
-    try{ if(typeof DISPLAY_WORDS!=='undefined') addArray(DISPLAY_WORDS,'Ruta'); }catch(e){}
-    try{ if(typeof WORDS_IN_PATH!=='undefined') addArray(WORDS_IN_PATH,'Ruta'); }catch(e){}
-    try{ if(typeof PATH_WORDS!=='undefined') addArray(PATH_WORDS,'Ruta'); }catch(e){}
-    try{ if(typeof ALL_WORDS!=='undefined') addArray(ALL_WORDS,'Vocabulario'); }catch(e){}
-    try{ if(typeof PATH_BANKS!=='undefined' && Array.isArray(PATH_BANKS)){ PATH_BANKS.forEach(function(arr){addArray(arr,'Ruta');}); } }catch(e){}
-    try{ if(typeof SENTENCE_TARGETS!=='undefined' && Array.isArray(SENTENCE_TARGETS)){ SENTENCE_TARGETS.forEach(function(arr){ if(Array.isArray(arr)) arr.forEach(function(w){addUniqueWord(list,seen,w,mapLookup(w),keyForWord(String(w).toUpperCase()),'Oración');}); }); } }catch(e){}
-    list.sort(function(a,b){ return a.word.localeCompare(b.word,'en',{sensitivity:'base'}); });
-    return list;
-  }
-  function collectSentences(){
-    var out=[];
-    try{
-      if(typeof SENTENCES==='undefined' || !Array.isArray(SENTENCES)) return out;
-      SENTENCES.forEach(function(s,i){
-        var text = (typeof s==='string') ? s : (s.text || String(s));
-        var targets = [];
-        if(typeof s==='object' && Array.isArray(s.targets)) targets = s.targets;
-        else if(typeof SENTENCE_TARGETS!=='undefined' && Array.isArray(SENTENCE_TARGETS[i])) targets = SENTENCE_TARGETS[i];
-        var chips = [];
-        targets.forEach(function(w){ var ipa=mapLookup(w); chips.push({word:String(w), ipa:ipa}); });
-        out.push({text:text, key:keyForSentence(i,s), targets:chips, label:(typeof s==='object' && (s.blendName||s.name)) || ('Oración '+(i+1))});
-      });
-    }catch(e){}
-    return out;
-  }
-  async function playVocab(key, fallback){
-    try{ if(typeof playKey==='function'){ await playKey(key); return; } }catch(e){}
-    try{ if(typeof playAudio==='function'){ await playAudio(key, fallback); return; } }catch(e){}
-    try{ if(typeof dbGet==='function'){ var data=await dbGet(key); if(data){ var a=new Audio(data.blob?URL.createObjectURL(data.blob):data); await a.play(); return; } } }catch(e){}
-    try{ if(typeof toast==='function') toast('Aún no hay audio cargado para este elemento. Súbelo desde el Panel del docente.','warn'); else alert('Aún no hay audio cargado para este elemento.'); }catch(e){}
-  }
-  async function saveVocabAudio(key,file){
-    if(!file){return false;}
-    try{ if(file.type && !file.type.startsWith('audio/')){ if(typeof toast==='function') toast('El archivo debe ser de audio.','bad'); return false; } }catch(e){}
-    try{ if(typeof saveAudioFile==='function'){ await saveAudioFile(key,file); return true; } }catch(e){}
-    try{ if(typeof fileToDataUrl==='function' && typeof dbPut==='function'){ var data=await fileToDataUrl(file); await dbPut(key,data); if(typeof toast==='function') toast('Audio guardado correctamente.','ok'); return true; } }catch(e){}
-    try{ if(typeof dbPut==='function'){ await dbPut(key,{name:file.name,type:file.type,blob:file}); if(typeof toast==='function') toast('Audio guardado correctamente.','ok'); return true; } }catch(e){}
-    if(typeof toast==='function') toast('No pude guardar el audio en este ejercicio.','warn');
-    return false;
-  }
-  async function hasVocabAudio(key){
-    try{ if(typeof hasAudio==='function') return await hasAudio(key); }catch(e){}
-    try{ if(typeof dbGet==='function') return !!(await dbGet(key)); }catch(e){}
-    try{ if(typeof embeddedAudio!=='undefined' && embeddedAudio && embeddedAudio[key]) return true; }catch(e){}
-    return false;
-  }
-  function ensureStyle(){
-    if(document.getElementById('vocabulario-global-style')) return;
-    var st=document.createElement('style'); st.id='vocabulario-global-style';
-    st.textContent='.vocab-topbar{margin:14px 0 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.vocab-panel{background:#ffffff;border:1px solid #dbe4ef;border-radius:22px;padding:20px;margin-top:18px;box-shadow:0 12px 30px rgba(15,23,42,.08)}.vocab-panel h2{margin:0 0 8px}.vocab-tools{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.vocab-search{border:1px solid #cbd5e1;border-radius:14px;padding:11px 14px;min-height:44px;min-width:min(100%,340px);font-size:1rem}.vocab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:12px}.vocab-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:15px;padding:12px;display:grid;gap:7px}.vocab-word{font-weight:1000;color:#0f172a}.vocab-ipa{font-weight:1000;color:#0f766e}.vocab-group{color:#64748b;font-size:.86rem;font-weight:800}.vocab-status{font-size:.82rem;font-weight:900;color:#92400e}.vocab-status.ok{color:#166534}.vocab-phrase-list{display:grid;gap:10px;margin-top:12px}.vocab-phrase{background:#f8fafc;border:1px solid #e2e8f0;border-radius:15px;padding:12px}.vocab-chip{display:inline-flex;margin:3px 4px 3px 0;padding:4px 8px;border-radius:999px;background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;font-weight:900}.vocab-chip small{color:#0f766e;margin-left:5px}.vocab-hidden{display:none!important}@media(max-width:720px){.vocab-tools button,.vocab-search{width:100%}}';
-    document.head.appendChild(st);
-  }
-  function augmentAudioSelector(){
-    var sel=document.getElementById('audioTargetSelect'); if(!sel) return;
-    var existing=new Set(Array.prototype.map.call(sel.options,function(o){return o.value;}));
-    function addOpt(key,label){ if(!key || existing.has(key)) return; var o=document.createElement('option'); o.value=key; o.textContent=label; sel.appendChild(o); existing.add(key); }
-    collectWords().forEach(function(it){ addOpt(it.key, 'Vocabulario: '+it.word); });
-    collectSentences().forEach(function(it,i){ addOpt(it.key, 'Frase/Oración '+(i+1)+': '+(it.text.length>54?it.text.slice(0,54)+'…':it.text)); });
-  }
-  function ensureUI(){
-    if(document.getElementById('vocabularioPanel')) return;
-    ensureStyle();
-    var anchor=document.getElementById('studentPanel') || document.querySelector('.hero') || document.querySelector('.wrap') || document.body;
-    var top=document.createElement('div'); top.className='vocab-topbar'; top.id='vocabularioTopbar';
-    top.innerHTML='<button id="vocabularioBtn" class="btn-teal">📚 Vocabulario</button><span class="muted">Lista completa de palabras y frases de este ejercicio.</span>';
-    if(anchor && anchor.parentNode){ anchor.parentNode.insertBefore(top, anchor.nextSibling); top.parentNode.insertBefore(panel, top.nextSibling); }
-    else { document.body.insertBefore(top, document.body.firstChild); document.body.insertBefore(panel, top.nextSibling); }
-    document.getElementById('vocabularioBtn').addEventListener('click',function(){ panel.classList.toggle('vocab-hidden'); if(!panel.classList.contains('vocab-hidden')) renderVocabulario(); });
-    document.getElementById('vocabRefreshBtn').addEventListener('click',renderVocabulario);
-    document.getElementById('vocabSearch').addEventListener('input',renderVocabulario);
-    setTimeout(augmentAudioSelector,300);
-  }
-  function renderVocabulario(){
-    augmentAudioSelector();
-    var panel=document.getElementById('vocabularioPanel'); if(!panel) return;
-    var q=norm((document.getElementById('vocabSearch')||{}).value||'');
-    var words=collectWords().filter(function(it){return !q || norm(it.word+' '+it.ipa+' '+it.group).indexOf(q)>=0;});
-    var phrases=collectSentences().filter(function(it){return !q || norm(it.text+' '+it.label+' '+it.targets.map(function(t){return t.word+' '+t.ipa;}).join(' ')).indexOf(q)>=0;});
-    var grid=document.getElementById('vocabWordsGrid'); var pc=document.getElementById('vocabWordsCount');
-    pc.textContent=words.length+' palabra(s) encontradas.';
-    grid.innerHTML=words.map(function(it,idx){return '<div class="vocab-card" data-vocab-card="word"><div class="vocab-word">'+(idx+1)+'. '+esc(it.word)+'</div><div class="vocab-ipa">'+esc(it.ipa||fallbackSound()||'IPA pendiente')+'</div><div class="vocab-group">'+esc(it.group||'Vocabulario')+'</div><div class="row"><button class="btn-soft small" data-vocab-play="'+esc(it.key)+'" data-vocab-text="'+esc(it.word)+'">Escuchar</button><label class="btn-soft small" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-vocab-upload="'+esc(it.key)+'" style="display:none"></label><span class="vocab-status" data-vocab-status="'+esc(it.key)+'">Revisando audio...</span></div></div>';}).join('');
-    var list=document.getElementById('vocabPhrasesList'); var sc=document.getElementById('vocabPhrasesCount');
-    sc.textContent=phrases.length+' frase(s) u oración(es) encontradas.';
-    list.innerHTML=phrases.map(function(it,idx){
-      var chips=it.targets.length ? it.targets.map(function(t){return '<span class="vocab-chip">'+esc(t.word)+'<small>'+esc(t.ipa||fallbackSound()||'IPA')+'</small></span>';}).join('') : '<span class="muted">Sin palabras clave registradas para esta frase.</span>';
-      return '<div class="vocab-phrase"><div class="sentence-title">'+esc(it.label||('Frase '+(idx+1)))+'</div><div style="line-height:1.6">'+esc(it.text)+'</div><div style="margin-top:8px"><strong>Fonética de palabras clave:</strong><br>'+chips+'</div><div class="row" style="margin-top:10px"><button class="btn-soft small" data-vocab-play="'+esc(it.key)+'" data-vocab-text="'+esc(it.text)+'">Escuchar frase</button><label class="btn-soft small" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-vocab-upload="'+esc(it.key)+'" style="display:none"></label><span class="vocab-status" data-vocab-status="'+esc(it.key)+'">Revisando audio...</span></div></div>';
-    }).join('');
-    panel.querySelectorAll('[data-vocab-play]').forEach(function(btn){btn.onclick=function(){playVocab(btn.getAttribute('data-vocab-play'), btn.getAttribute('data-vocab-text')||'');};});
-    panel.querySelectorAll('[data-vocab-upload]').forEach(function(input){input.onchange=async function(){ var file=input.files&&input.files[0]; if(!file) return; await saveVocabAudio(input.getAttribute('data-vocab-upload'), file); input.value=''; renderVocabulario(); };});
-    panel.querySelectorAll('[data-vocab-status]').forEach(async function(el){ var ok=await hasVocabAudio(el.getAttribute('data-vocab-status')); el.textContent=ok?'Audio cargado':'Sin audio cargado'; el.classList.toggle('ok',ok); });
-  }
-  ready(function(){ ensureUI(); });
+  ready(function(){
+    window.updateLinks();
+    document.addEventListener('click', function(e){
+      var a=e.target.closest && e.target.closest('a[href]');
+      if(!a) return;
+      window.updateLinks();
+    }, true);
+    setInterval(window.updateLinks, 600);
+  });
 })();
 </script>
-<!-- VOCABULARIO_GLOBAL_START -->
-
-<script>
-// Forzar el autoarranque seguro enganchando la lógica de inicio
-(function() {
-  function checkAndStart() {
-    var startBtn = document.getElementById('startBtn');
-    var inputName = document.getElementById('studentName');
-    if (startBtn && inputName && inputName.value.trim() !== "" && inputName.value.trim() !== "Estudiante registrado") {
-      // Si el alumno viene de index.html con datos en el localStorage, forzar clics iniciales para liberar las vistas
-      setTimeout(function() { startBtn.click(); }, 150);
-    }
-  }
-  if(document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', checkAndStart); }
-  else { checkAndStart(); }
-})();
-</script>
-</body>
-</html>
+<!-- INDEX_LINK_NAME_FORWARDER_END -->
+</body></html>
