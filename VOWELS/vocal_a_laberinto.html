@@ -1060,6 +1060,30 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 <!-- EXERCISE_AUTO_START_SCRIPT_START -->
 
 <script id="exercise-auto-start-script">
+(function(){
+  function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
+  
+  ready(function(){
+    // 1. Recuperar nombre
+    var name = localStorage.getItem('fonetica_student_full_name') || '';
+    if (name) {
+        var input = document.getElementById('studentName');
+        if(input) input.value = name;
+        
+        var namePill = document.getElementById('namePill');
+        if(namePill) namePill.textContent = 'Estudiante: ' + name;
+        
+        // 2. Habilitar el botón "comenzar" automáticamente
+        var startBtn = document.getElementById('startBtn');
+        if(startBtn) {
+            startBtn.style.display = 'inline-block'; // Aseguramos que sea visible
+            // Si el botón requiere validación interna, forzamos su estado
+            startBtn.disabled = false;
+        }
+    }
+  });
+})();
+</script>
 
 (function(){
 
