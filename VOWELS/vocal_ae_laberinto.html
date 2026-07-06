@@ -46,14 +46,14 @@
 
 <!-- NO_INTERNAL_NAME_STYLE_START -->
 <style id="no-internal-name-style">
-  /* El nombre se registra en la página principal. En los ejercicios ya no se pide nuevamente. */
-  #studentPanel > h2:first-child,
-  #studentPanel > p.muted:first-of-type,
-  #studentPanel > .row:first-of-type,
-  #studentPanel > #welcome,
-  #welcomePanel{display:none!important;}
+  /* Identificación visible: nombre completo, carrera y año. */
   #studentPanel{margin-top:18px;}
   #studentAutoBanner{background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;border-radius:16px;padding:12px 14px;margin:12px 0;font-weight:900;line-height:1.35;}
+  .student-grid{display:grid;grid-template-columns:minmax(260px,1.2fr) minmax(230px,1fr) minmax(160px,.55fr);gap:12px;align-items:end;margin:14px 0 12px;}
+  .student-field{display:grid;gap:7px;}
+  .student-field span{font-weight:1000;color:#0f172a;}
+  .student-field input,.student-field select{width:100%;}
+  @media(max-width:820px){.student-grid{grid-template-columns:1fr;}}
 </style>
 <!-- NO_INTERNAL_NAME_STYLE_END -->
 </head>
@@ -68,13 +68,48 @@
 
   <section class="card" id="studentPanel">
     <h2>1. Identificación del estudiante</h2>
-    <p class="muted">Inserta el nombre completo antes de iniciar la actividad.</p>
+    <p class="muted">Completa los datos académicos antes de iniciar la actividad.</p>
+    <div class="student-grid" aria-label="Datos académicos del estudiante">
+      <label class="student-field" for="studentName">
+        <span>1. Nombre completo</span>
+        <input id="studentName" type="text" placeholder="Escribe el nombre completo" autocomplete="name" />
+      </label>
+      <label class="student-field" for="studentCareer">
+        <span>2. Carrera</span>
+        <select id="studentCareer" aria-label="Seleccionar carrera">
+          <option value="">-- Seleccionar carrera --</option>
+          <option value="Odontología">Odontología</option>
+          <option value="Medicina">Medicina</option>
+          <option value="Química Farmacéutica">Química Farmacéutica</option>
+          <option value="Enfermería">Enfermería</option>
+          <option value="Mecánica Dental">Mecánica Dental</option>
+          <option value="Veterinaria">Veterinaria</option>
+          <option value="Zootecnia">Zootecnia</option>
+          <option value="Agronomía">Agronomía</option>
+          <option value="Agrícola">Agrícola</option>
+          <option value="Ingeniería Forestal">Ingeniería Forestal</option>
+          <option value="Ingeniería en Agroindustria de los Alimentos">Ingeniería en Agroindustria de los Alimentos</option>
+          <option value="Agronegocios">Agronegocios</option>
+          <option value="Inglés">Inglés</option>
+        </select>
+      </label>
+      <label class="student-field" for="studentYear">
+        <span>3. Año</span>
+        <select id="studentYear" aria-label="Seleccionar año">
+          <option value="">-- Seleccionar año --</option>
+          <option value="1">1er Año</option>
+          <option value="2">2do Año</option>
+          <option value="3">3er Año</option>
+          <option value="4">4to Año</option>
+          <option value="5">5to Año</option>
+        </select>
+      </label>
+    </div>
     <div class="row">
-      <input id="studentName" type="text" placeholder="Nombre completo del estudiante" autocomplete="name" />
       <button id="insertNameBtn" class="btn-blue">Insertar nombre completo</button>
       <button id="startBtn" class="btn-green">Guardar y comenzar</button>
     </div>
-    <p id="welcome" class="muted" style="margin-bottom:0">El laberinto se activará después de guardar el nombre.</p>
+    <p id="welcome" class="muted" style="margin-bottom:0">El laberinto se activará después de guardar nombre, carrera y año.</p>
     <div class="chrome-note">Para abrirlo en Google Chrome: descarga este archivo HTML o el ZIP, haz clic derecho sobre el archivo y selecciona <strong>Abrir con → Google Chrome</strong>. La página funciona sin internet.</div>
 
     <details class="audio-manager" id="teacherAudioPanel" open>
@@ -172,7 +207,7 @@ const SENTENCES = ["The cap fell near the cat; the fat man sat.", "Math helped t
 const SENTENCE_TARGETS = [["cap", "cat", "fat", "man", "sat"], ["math", "animal", "travel", "track"], ["can", "dad", "math", "happen"], ["at", "that", "chat", "rap"], ["abdicate", "act", "program"], ["sad", "gas", "rat"], ["cat", "bad", "hat"], ["damn", "lack"]];
 
 const els = {
-  studentName: document.getElementById('studentName'), insertNameBtn: document.getElementById('insertNameBtn'), startBtn: document.getElementById('startBtn'), welcome: document.getElementById('welcome'),
+  studentName: document.getElementById('studentName'), studentCareer: document.getElementById('studentCareer'), studentYear: document.getElementById('studentYear'), insertNameBtn: document.getElementById('insertNameBtn'), startBtn: document.getElementById('startBtn'), welcome: document.getElementById('welcome'),
   instructionsPanel: document.getElementById('instructionsPanel'), mazePanel: document.getElementById('mazePanel'), mazeGrid: document.getElementById('mazeGrid'), mazeMessage: document.getElementById('mazeMessage'),
   namePill: document.getElementById('namePill'), mistakePill: document.getElementById('mistakePill'), progressPill: document.getElementById('progressPill'), resetMazeBtn: document.getElementById('resetMazeBtn'),
   wordPanel: document.getElementById('wordPanel'), wordList: document.getElementById('wordList'), sentencePanel: document.getElementById('sentencePanel'), sentenceList: document.getElementById('sentenceList'),
@@ -450,8 +485,81 @@ async function importAudioPack(file){
   toast(`Paquete importado: ${count} audios.`, 'ok'); refreshAudioStatus();
 }
 
-els.insertNameBtn.addEventListener('click',()=>{const n=prompt('Escribe el nombre completo del estudiante:'); if(n && n.trim()){els.studentName.value=n.trim(); els.studentName.focus();}});
-els.startBtn.addEventListener('click',()=>{ const n=els.studentName.value.trim(); if(!n){toast('Escribe o inserta el nombre completo.', 'warn'); return;} student=n; els.welcome.innerHTML=`Bienvenido/a, <strong>${escapeHtml(student)}</strong>. Puedes comenzar el laberinto.`; els.namePill.textContent=`Estudiante: ${student}`; els.instructionsPanel.classList.remove('hidden'); els.mazePanel.classList.remove('hidden'); renderMaze(); els.mazePanel.scrollIntoView({behavior:'smooth',block:'start'}); });
+function normalizeStudentCareer(value){
+  const raw = String(value || '').trim();
+  if(!raw) return '';
+  const clean = raw.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+  const map = {
+    'odontologia':'Odontología',
+    'medicina':'Medicina',
+    'quimica farmaceutica':'Química Farmacéutica',
+    'enfermeria':'Enfermería',
+    'mecanica dental':'Mecánica Dental',
+    'veterinaria':'Veterinaria',
+    'zootecnia':'Zootecnia',
+    'agronomia':'Agronomía',
+    'agricola':'Agrícola',
+    'ingenieria forestal':'Ingeniería Forestal',
+    'ingenieria en agroindustria de los alimentos':'Ingeniería en Agroindustria de los Alimentos',
+    'agroindustria de los alimentos':'Ingeniería en Agroindustria de los Alimentos',
+    'agronegocios':'Agronegocios',
+    'ingles':'Inglés'
+  };
+  return map[clean] || raw;
+}
+function normalizeStudentYear(value){
+  const raw = String(value || '').trim();
+  const m = raw.match(/[1-5]/);
+  return m ? m[0] : '';
+}
+function selectedYearLabel(){
+  if(!els.studentYear || !els.studentYear.value) return '';
+  const opt = els.studentYear.options[els.studentYear.selectedIndex];
+  return opt ? opt.textContent : `Año ${els.studentYear.value}`;
+}
+function parseStudentPayload(raw){
+  const parts = String(raw || '').split('||').map(x=>x.trim()).filter(Boolean);
+  return {
+    name: parts[0] || String(raw || '').trim(),
+    career: normalizeStudentCareer(parts[1] || ''),
+    year: normalizeStudentYear(parts[2] || '')
+  };
+}
+function fillStudentFields(profile){
+  if(!profile) return;
+  if(profile.name && els.studentName) els.studentName.value = profile.name;
+  if(profile.career && els.studentCareer) els.studentCareer.value = normalizeStudentCareer(profile.career);
+  if(profile.year && els.studentYear) els.studentYear.value = normalizeStudentYear(profile.year);
+}
+function saveStudentProfile(name, career, year){
+  try{
+    localStorage.setItem('fonetica_student_full_name', name);
+    localStorage.setItem('fonetica_student_career', career);
+    localStorage.setItem('fonetica_student_year', year);
+    localStorage.setItem('fonetica_student_payload', `${name}||${career}||${year}`);
+  }catch(e){}
+}
+els.insertNameBtn.addEventListener('click',()=>{
+  const n=prompt('Escribe el nombre completo del estudiante:');
+  if(n && n.trim()){els.studentName.value=n.trim(); els.studentName.focus();}
+});
+els.startBtn.addEventListener('click',()=>{
+  const n = els.studentName.value.trim();
+  const career = els.studentCareer.value.trim();
+  const year = els.studentYear.value.trim();
+  if(!n){toast('Escribe el nombre completo.', 'warn'); return;}
+  if(!career){toast('Selecciona la carrera.', 'warn'); return;}
+  if(!year){toast('Selecciona el año.', 'warn'); return;}
+  student = n;
+  window.student = n;
+  saveStudentProfile(n, career, year);
+  els.welcome.innerHTML = `Bienvenido/a, <strong>${escapeHtml(n)}</strong> <span class="muted">(${escapeHtml(career)} - ${escapeHtml(selectedYearLabel())})</span>. Puedes comenzar el laberinto.`;
+  els.namePill.textContent = `Estudiante: ${n} | ${career} | ${selectedYearLabel()}`;
+  els.instructionsPanel.classList.remove('hidden');
+  els.mazePanel.classList.remove('hidden');
+  renderMaze();
+  els.mazePanel.scrollIntoView({behavior:'smooth',block:'start'});
+});
 els.resetMazeBtn.addEventListener('click',resetMaze); els.resetSentencesBtn.addEventListener('click',()=>resetSentenceSection('Oraciones reiniciadas. Marca otra vez cada palabra correcta.'));
 els.saveSelectedAudioBtn.addEventListener('click', async()=>{ await saveAudioFile(els.audioTargetSelect.value, els.audioFileInput.files[0]); els.audioFileInput.value=''; });
 els.playSelectedAudioBtn.addEventListener('click',()=>playKey(els.audioTargetSelect.value)); els.exportHtmlBtn.addEventListener('click',exportHtmlWithAudios); els.exportPackBtn.addEventListener('click',exportAudioPack); els.importPackInput.addEventListener('change',async()=>{await importAudioPack(els.importPackInput.files[0]); els.importPackInput.value='';});
@@ -464,38 +572,68 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 <script id="exercise-auto-start-script">
 (function(){
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
-  function getStudentName(){
-    var name='';
+  function esc(s){return String(s||'').replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
+  function clean(s){return String(s||'').trim().replace(/\s+/g,' ');}
+  function normalizeText(s){return clean(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+  function careerValue(raw){
+    var key=normalizeText(raw);
+    var map={
+      'odontologia':'Odontología',
+      'medicina':'Medicina',
+      'quimica farmaceutica':'Química Farmacéutica',
+      'enfermeria':'Enfermería',
+      'mecanica dental':'Mecánica Dental',
+      'veterinaria':'Veterinaria',
+      'zootecnia':'Zootecnia',
+      'agronomia':'Agronomía',
+      'agricola':'Agrícola',
+      'ingenieria forestal':'Ingeniería Forestal',
+      'ingenieria en agroindustria de los alimentos':'Ingeniería en Agroindustria de los Alimentos',
+      'agroindustria de los alimentos':'Ingeniería en Agroindustria de los Alimentos',
+      'agronegocios':'Agronegocios',
+      'ingles':'Inglés'
+    };
+    return map[key]||clean(raw);
+  }
+  function yearValue(raw){var m=String(raw||'').match(/[1-5]/); return m?m[0]:'';}
+  function parsePayload(raw){
+    var parts=String(raw||'').split('||').map(clean);
+    return {name:parts[0]||'', career:careerValue(parts[1]||''), year:yearValue(parts[2]||'')};
+  }
+  function readProfile(){
+    var profile={name:'',career:'',year:''};
     try{
       var params=new URLSearchParams(window.location.search||'');
-      name=params.get('student')||params.get('name')||params.get('nombre')||'';
+      var payload=params.get('student')||params.get('name')||params.get('nombre')||'';
+      profile=parsePayload(payload);
+      profile.career=careerValue(params.get('career')||params.get('carrera')||profile.career);
+      profile.year=yearValue(params.get('year')||params.get('ano')||params.get('año')||profile.year);
     }catch(e){}
-    if(!name){try{name=localStorage.getItem('fonetica_student_full_name')||'';}catch(e){}}
-    name=String(name||'').trim().replace(/\s+/g,' ');
-    if(!name) name='Estudiante registrado';
-    return name;
+    try{
+      if(!profile.name && localStorage.getItem('fonetica_student_payload')) profile=parsePayload(localStorage.getItem('fonetica_student_payload'));
+      if(!profile.name) profile.name=clean(localStorage.getItem('fonetica_student_full_name')||'');
+      if(!profile.career) profile.career=careerValue(localStorage.getItem('fonetica_student_career')||'');
+      if(!profile.year) profile.year=yearValue(localStorage.getItem('fonetica_student_year')||'');
+    }catch(e){}
+    return profile;
   }
-  function escapeHtml(s){return String(s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
   ready(function(){
-    var name=getStudentName();
-    try{localStorage.setItem('fonetica_student_full_name',name);}catch(e){}
-    var input=document.getElementById('studentName');
-    if(input) input.value=name;
-    var namePill=document.getElementById('namePill');
-    if(namePill) namePill.textContent='Estudiante: '+name;
-    var welcome=document.getElementById('welcome');
-    if(welcome) welcome.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Puedes continuar con la actividad.';
-    var host=document.getElementById('studentPanel')||document.getElementById('welcomePanel');
-    if(host && !document.getElementById('studentAutoBanner') && document.getElementById('studentPanel')){
+    var profile=readProfile();
+    var nameInput=document.getElementById('studentName');
+    var careerSelect=document.getElementById('studentCareer');
+    var yearSelect=document.getElementById('studentYear');
+    if(nameInput && profile.name) nameInput.value=profile.name;
+    if(careerSelect && profile.career) careerSelect.value=profile.career;
+    if(yearSelect && profile.year) yearSelect.value=profile.year;
+    var host=document.getElementById('studentPanel');
+    if(host && profile.name && !document.getElementById('studentAutoBanner')){
       var banner=document.createElement('div');
       banner.id='studentAutoBanner';
-      banner.innerHTML='✅ Estudiante registrado desde la página principal: <strong>'+escapeHtml(name)+'</strong>. Ya no es necesario escribir el nombre dentro del ejercicio.';
+      banner.innerHTML='✅ Datos detectados: <strong>'+esc(profile.name)+'</strong>'
+        +(profile.career?' | <strong>'+esc(profile.career)+'</strong>':'')
+        +(profile.year?' | <strong>Año '+esc(profile.year)+'</strong>':'')
+        +'. Revisa los datos y presiona <strong>Guardar y comenzar</strong>.';
       host.insertBefore(banner, host.firstChild);
-    }
-    var start=document.getElementById('startBtn');
-    if(start && !start.dataset.autoStartedWithoutNameBox){
-      start.dataset.autoStartedWithoutNameBox='1';
-      setTimeout(function(){ try{ start.click(); }catch(e){} },120);
     }
   });
 })();
