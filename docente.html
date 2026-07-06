@@ -108,49 +108,56 @@
       <button class="btn-red" id="clearResults">Borrar resultados guardados</button>
     </div>
     <div class="table-wrap"><table id="resultsTable"><thead><tr><th>Actividad</th><th>Nombre</th><th>Puntaje</th><th>Puntaje máximo</th><th>Porcentaje</th><th>Hora</th><th>Fecha</th><th>Intentos</th><th>Tiempo</th><th>Errores frecuentes</th><th>Estado</th></tr></thead><tbody id="resultRows"></tbody></table></div>
-    <div class="warning">Importante: como estos archivos funcionan sin internet, los resultados se guardan en el navegador donde el estudiante abre la actividad. Para reunir resultados de varios dispositivos, cada estudiante debe exportar o compartir el archivo/datos desde el mismo equipo donde trabajó.</div>
+    <div class="warning">Importante: Conectado dinámicamente a Firebase Realtime Database. Los resultados de los laberintos completados por los alumnos se sincronizan automáticamente en la nube.</div>
   </section>
 </div>
-<script type="module">import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
 const ACTIVITIES=[{"id": "vocal_a_laberinto", "title": "Vocal 1 /ɑː/", "desc": "Laberinto exacto: SARCASM", "href": "VOWELS/vocal_a_laberinto.html", "category": "VOWELS", "file": "vocal_a_laberinto.html"}, {"id": "vocal_o_laberinto", "title": "Vocal 2 /ɒ/", "desc": "Laberinto exacto: GOD → ON", "href": "VOWELS/vocal_o_laberinto.html", "category": "VOWELS", "file": "vocal_o_laberinto.html"}, {"id": "vocal_e_laberinto", "title": "Vocal 3 /e/", "desc": "Laberinto exacto: END → MEASURE", "href": "VOWELS/vocal_e_laberinto.html", "category": "VOWELS", "file": "vocal_e_laberinto.html"}, {"id": "vocal_ae_laberinto", "title": "Vocal 4 /æ/", "desc": "Laberinto exacto: CAP → LACK", "href": "VOWELS/vocal_ae_laberinto.html", "category": "VOWELS", "file": "vocal_ae_laberinto.html"}, {"id": "vocal_er_laberinto", "title": "Vocal 5 /ɜ:/", "desc": "Laberinto exacto: URN → TURKEY", "href": "VOWELS/vocal_er_laberinto.html", "category": "VOWELS", "file": "vocal_er_laberinto.html"}, {"id": "vocal_i_laberinto", "title": "Vocal 6 /i:/", "desc": "Laberinto exacto: EAT → GRIEF", "href": "VOWELS/vocal_i_laberinto.html", "category": "VOWELS", "file": "vocal_i_laberinto.html"}, {"id": "vocal_ih_laberinto", "title": "Vocal 7 /ɪ/", "desc": "Laberinto exacto: IS → KID", "href": "VOWELS/vocal_ih_laberinto.html", "category": "VOWELS", "file": "vocal_ih_laberinto.html"}, {"id": "vocal_aw_laberinto", "title": "Vocal 8 /ɔ:/", "desc": "Laberinto exacto: OR → TALK", "href": "VOWELS/vocal_aw_laberinto.html", "category": "VOWELS", "file": "vocal_aw_laberinto.html"}, {"id": "vocal_uh_laberinto", "title": "Vocal 9 /ʌ/", "desc": "Laberinto exacto: US → FUCK", "href": "VOWELS/vocal_uh_laberinto.html", "category": "VOWELS", "file": "vocal_uh_laberinto.html"}, {"id": "vocal_u_laberinto", "title": "Vocal 10 /u:/", "desc": "Laberinto exacto: FOOD → AVENUE", "href": "VOWELS/vocal_u_laberinto.html", "category": "VOWELS", "file": "vocal_u_laberinto.html"}, {"id": "vocal_oo_short_laberinto", "title": "Vocal 11 /ʊ/", "desc": "Laberinto exacto: COOK → WOULD", "href": "VOWELS/vocal_oo_short_laberinto.html", "category": "VOWELS", "file": "vocal_oo_short_laberinto.html"}, {"id": "vocal_schwa_laberinto", "title": "Vocal 12 /ə/", "desc": "Laberinto exacto: AGO → BEHIND", "href": "VOWELS/vocal_schwa_laberinto.html", "category": "VOWELS", "file": "vocal_schwa_laberinto.html"}, {"id": "vocal_ai_laberinto", "title": "Diptongo /aɪ/", "desc": "Laberinto exacto: EYE → HI", "href": "VOWELS/vocal_ai_laberinto.html", "category": "VOWELS", "file": "vocal_ai_laberinto.html"}, {"id": "vocal_ei_laberinto", "title": "Diptongo /eɪ/", "desc": "Laberinto exacto: ATE → SAY", "href": "VOWELS/vocal_ei_laberinto.html", "category": "VOWELS", "file": "vocal_ei_laberinto.html"}, {"id": "vocal_ia_laberinto", "title": "Diptongo /ɪə/", "desc": "Laberinto exacto: EAR → STEER", "href": "VOWELS/vocal_ia_laberinto.html", "category": "VOWELS", "file": "vocal_ia_laberinto.html"}, {"id": "vocal_oi_laberinto", "title": "Diptongo /ɔɪ/", "desc": "Laberinto exacto: OIL → SOIL", "href": "VOWELS/vocal_oi_laberinto.html", "category": "VOWELS", "file": "vocal_oi_laberinto.html"}, {"id": "vocal_ua_laberinto", "title": "Diptongo /ʊə/", "desc": "Laberinto exacto: SURE → OBSCURE", "href": "VOWELS/vocal_ua_laberinto.html", "category": "VOWELS", "file": "vocal_ua_laberinto.html"}, {"id": "vocal_au_laberinto", "title": "Diptongo /aʊ/", "desc": "Laberinto exacto: OUT → COW", "href": "VOWELS/vocal_au_laberinto.html", "category": "VOWELS", "file": "vocal_au_laberinto.html"}, {"id": "vocal_ea_laberinto", "title": "Diptongo /eə/", "desc": "Laberinto exacto: AIR → WEAR", "href": "VOWELS/vocal_ea_laberinto.html", "category": "VOWELS", "file": "vocal_ea_laberinto.html"}, {"id": "vocal_ou_laberinto", "title": "Diptongo /oʊ/", "desc": "Laberinto exacto: AGO → YELLOW", "href": "VOWELS/vocal_ou_laberinto.html", "category": "VOWELS", "file": "vocal_ou_laberinto.html"}, {"id": "vocal_ju_laberinto", "title": "Diptongo /ju/", "desc": "Laberinto exacto: ACCUSE → UNIVERSITY", "href": "VOWELS/vocal_ju_laberinto.html", "category": "VOWELS", "file": "vocal_ju_laberinto.html"}, {"id": "vocal_rcolored_laberinto", "title": "Vocal /ɚ/", "desc": "Laberinto exacto: WINTER → ACTOR", "href": "VOWELS/vocal_rcolored_laberinto.html", "category": "VOWELS", "file": "vocal_rcolored_laberinto.html"}, {"id": "vocal_aia_aua_laberinto", "title": "Diptongos /aɪə/ y /aʊə/", "desc": "Laberinto exacto: VOWEL → ADMIRE", "href": "VOWELS/vocal_aia_aua_laberinto.html", "category": "VOWELS", "file": "vocal_aia_aua_laberinto.html"}, {"id": "vocal_eia_oia_oua_laberinto", "title": "Triptongos /eɪə/, /ɔɪə/ y /əʊə/", "desc": "Laberinto exacto: BETRAYER → WIDOWER", "href": "VOWELS/vocal_eia_oia_oua_laberinto.html", "category": "VOWELS", "file": "vocal_eia_oia_oua_laberinto.html"}, {"id": "consonantes_sh_ch_th_laberinto", "title": "Consonantes /ʃ/, /tʃ/ y /θ/", "desc": "3 rutas de 50 palabras", "href": "CONSONANTS/consonantes_sh_ch_th_laberinto.html", "category": "CONSONANTS", "file": "consonantes_sh_ch_th_laberinto.html"}, {"id": "consonantes_ng_zh_dj_dh_laberinto", "title": "Consonantes /ŋ/, /ʒ/, /dʒ/ y /ð/", "desc": "4 rutas de 50 palabras: ALONG → WORTHY", "href": "CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html", "category": "CONSONANTS", "file": "consonantes_ng_zh_dj_dh_laberinto.html"}, {"id": "blends_laberinto", "title": "Blends consonánticos", "desc": "Encuentra 3 palabras por cada blend, sin salida", "href": "CONSONANTS/blends_laberinto.html", "category": "CONSONANTS", "file": "blends_laberinto.html"}];
+
 const CONFIG_KEY='fonetica_docente_config';
 const GLOBAL_RESULTS_KEY='fonetica_docente_resultados_global';
-function esc(s){return String(s==null?'':s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-function idFromHref(href){return (href.split('/').pop()||href).replace(/\.html$/,'');}
-function loadConfig(){try{let c=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}'); if(!c.activities)c.activities={}; return c;}catch(e){return {activities:{}};}}
-function saveConfigObj(c){c.updatedAt=new Date().toISOString(); localStorage.setItem(CONFIG_KEY,JSON.stringify(c));}
-function currentStatus(a){
+
+// Exportación al objeto global window para que sigan funcionando nativamente en el HTML
+window.esc = function(s){return String(s==null?'':s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+window.idFromHref = function(href){return (href.split('/').pop()||href).replace(/\.html$/,'');}
+window.loadConfig = function(){try{let c=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}'); if(!c.activities)c.activities={}; return c;}catch(e){return {activities:{}};}}
+window.saveConfigObj = function(c){c.updatedAt=new Date().toISOString(); localStorage.setItem(CONFIG_KEY,JSON.stringify(c));}
+
+window.currentStatus = function(a){
   const now=Date.now(); if(!a||!a.enabled)return ['No asignada','pill-off'];
   if(a.openAt && new Date(a.openAt).getTime()>now)return ['Programada','pill-wait'];
   if(a.closeAt && new Date(a.closeAt).getTime()<now)return ['Cerrada','pill-off'];
   return ['Abierta','pill-on'];
 }
-function renderActivities(){
+
+window.renderActivities = function(){
   const filter=document.getElementById('activityFilter').value;
-  const cfg=loadConfig();
+  const cfg=window.loadConfig();
   const rows=[];
   ACTIVITIES.filter(a=>filter==='all'||a.category===filter).forEach(a=>{
     const saved=cfg.activities[a.id]||{id:a.id,title:a.title,href:a.href,category:a.category,enabled:false,openAt:'',closeAt:'',timeLimitMinutes:''};
-    const st=currentStatus(saved);
-    rows.push(`<tr data-id="${esc(a.id)}"><td class="checkcell"><input type="checkbox" class="act-enabled" ${saved.enabled?'checked':''}></td><td><strong>${esc(a.title)}</strong><br><span class="mini">${esc(a.desc||a.id)}</span></td><td>${a.category==='CONSONANTS'?'Consonantes':'Vocales'}</td><td><input type="datetime-local" class="act-open" value="${esc(saved.openAt||'')}"></td><td><input type="datetime-local" class="act-close" value="${esc(saved.closeAt||'')}"></td><td><input type="number" min="0" step="1" class="act-timer" value="${esc(saved.timeLimitMinutes||'')}" placeholder="0"></td><td><span class="pill ${st[1]}">${st[0]}</span></td><td><a class="btn btn-soft" target="_blank" href="${esc(a.href)}">Abrir</a></td></tr>`);
+    const st=window.currentStatus(saved);
+    rows.push(`<tr data-id="${window.esc(a.id)}"><td class="checkcell"><input type="checkbox" class="act-enabled" ${saved.enabled?'checked':''}></td><td><strong>${window.esc(a.title)}</strong><br><span class="mini">${window.esc(a.desc||a.id)}</span></td><td>${a.category==='CONSONANTS'?'Consonantes':'Vocales'}</td><td><input type="datetime-local" class="act-open" value="${window.esc(saved.openAt||'')}"></td><td><input type="datetime-local" class="act-close" value="${window.esc(saved.closeAt||'')}"></td><td><input type="number" min="0" step="1" class="act-timer" value="${window.esc(saved.timeLimitMinutes||'')}" placeholder="0"></td><td><span class="pill ${st[1]}">${st[0]}</span></td><td><a class="btn btn-soft" target="_blank" href="${window.esc(a.href)}">Abrir</a></td></tr>`);
   });
   document.getElementById('activityRows').innerHTML=rows.join('');
 }
-function collectConfigFromTable(){
-  const cfg=loadConfig();
+
+window.collectConfigFromTable = function(){
+  const cfg=window.loadConfig();
   document.querySelectorAll('#activityRows tr').forEach(tr=>{
     const id=tr.getAttribute('data-id'); const a=ACTIVITIES.find(x=>x.id===id); if(!a)return;
     cfg.activities[id]={id:id,title:a.title,href:a.href,category:a.category,enabled:tr.querySelector('.act-enabled').checked,openAt:tr.querySelector('.act-open').value||'',closeAt:tr.querySelector('.act-close').value||'',timeLimitMinutes:tr.querySelector('.act-timer').value||''};
   });
   return cfg;
 }
-function saveConfig(){saveConfigObj(collectConfigFromTable()); renderActivities(); alert('Configuración docente guardada.');}
-// ==========================================
-// INTEGRACIÓN CON FIREBASE EN TIEMPO REAL
-// ==========================================
 
-// Credenciales oficiales de tu consola Firebase
+window.saveConfig = function(){window.saveConfigObj(window.collectConfigFromTable()); window.renderActivities(); alert('Configuración docente guardada.');}
+
+// Credenciales oficiales de Firebase vinculadas
 const firebaseConfig = {
   apiKey: "AIzaSyB0DDVk0cyVwwcM2eVijyCl79GQmrLhx4U",
   authDomain: "fonetica-completa.firebaseapp.com",
@@ -165,17 +172,15 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const registrosRef = ref(db, 'resultados_laberintos');
 
-// Almacén global dinámico de resultados sincronizados desde la nube
 let resultadosDesdeFirebase = [];
 
-// Escucha activa en la nube: cada vez que un alumno termine, la tabla se actualiza sola
+// Sincronización Realtime con la nube
 onValue(registrosRef, (snapshot) => {
   resultadosDesdeFirebase = [];
   if (snapshot.exists()) {
     const data = snapshot.val();
     Object.keys(data).forEach((key) => {
       const r = data[key];
-      // Mapeamos los datos de la nube con la estructura exacta que tu tabla nativa espera
       resultadosDesdeFirebase.push({
         activityId: r.actividadID || '',
         activityTitle: r.tituloActividad || 'Actividad',
@@ -183,7 +188,7 @@ onValue(registrosRef, (snapshot) => {
         score: r.puntajeObtenido || 0,
         max: r.maximoPuntajePosible || 0,
         timeSeconds: r.tiempoSegundos || 0,
-        timeLabel: formatSeconds(r.tiempoSegundos),
+        timeLabel: window.formatSeconds(r.tiempoSegundos),
         attempts: r.intentosRealizados || 1,
         frequentErrors: r.erroresFrecuentes || '—',
         dateISO: r.timestamp || new Date().toISOString(),
@@ -193,40 +198,46 @@ onValue(registrosRef, (snapshot) => {
       });
     });
   }
-  // Ejecuta de forma nativa tu renderizado existente para pintar la tabla con los datos nuevos
-  if (typeof renderResults === 'function') {
-    renderResults();
+  if (typeof window.renderResults === 'function') {
+    window.renderResults();
   }
 });
 
+window.loadGlobalResults = function() {
+  return resultadosDesdeFirebase;
+}
 
-function pct(r){const max=Number(r.max)||0; return max?Math.round((Number(r.score)||0)*100/max):0;}
-function parseDateParts(r){
+window.pct = function(r){const max=Number(r.max)||0; return max?Math.round((Number(r.score)||0)*100/max):0;}
+
+window.parseDateParts = function(r){
   let d=r.dateISO?new Date(r.dateISO):null;
   if(!d || isNaN(d.getTime())) d=new Date(r.date||Date.now());
   if(!d || isNaN(d.getTime())) d=new Date();
   return {date:d.toLocaleDateString(),time:d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}),stamp:d.getTime()};
 }
-function normalizeErrors(e){
+
+window.normalizeErrors = function(e){
   if(Array.isArray(e)) return e.join(', ');
   if(e && typeof e==='object') return Object.entries(e).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>x[0]+' ('+x[1]+')').join(', ');
   return String(e||'—');
 }
-function renderResultFilters(){
+
+window.renderResultFilters = function(){
   const sel=document.getElementById('resultActivityFilter'); const current=sel.value||'all';
-  sel.innerHTML='<option value="all">Todas las actividades</option>'+ACTIVITIES.map(a=>`<option value="${esc(a.id)}">${esc(a.title)}</option>`).join('');
+  sel.innerHTML='<option value="all">Todas las actividades</option>'+ACTIVITIES.map(a=>`<option value="${window.esc(a.id)}">${window.esc(a.title)}</option>`).join('');
   sel.value=current;
 }
-function renderResults(){
-  renderResultFilters();
+
+window.renderResults = function(){
+  window.renderResultFilters();
   const sort=document.getElementById('sortResults').value;
   const act=document.getElementById('resultActivityFilter').value;
   const search=(document.getElementById('studentSearch').value||'').toLowerCase().trim();
-  let rows=loadGlobalResults().filter(r=>(act==='all'||r.activityId===act));
+  let rows=window.loadGlobalResults().filter(r=>(act==='all'||r.activityId===act));
   if(search) rows=rows.filter(r=>String(r.name||'').toLowerCase().includes(search));
   rows.sort((a,b)=>{
     if(sort==='time') return (Number(a.timeSeconds)||999999999)-(Number(b.timeSeconds)||999999999);
-    if(sort==='date') return parseDateParts(b).stamp-parseDateParts(a).stamp;
+    if(sort==='date') return window.parseDateParts(b).stamp-window.parseDateParts(a).stamp;
     if(sort==='name') return String(a.name||'').localeCompare(String(b.name||''));
     return (Number(b.score)||0)-(Number(a.score)||0) || (Number(a.timeSeconds)||999999999)-(Number(b.timeSeconds)||999999999);
   });
@@ -236,38 +247,43 @@ function renderResults(){
   document.getElementById('sumRecords').textContent=rows.length;
   document.getElementById('sumStudents').textContent=studentSet.size;
   document.getElementById('sumBest').textContent=best;
-  document.getElementById('sumFastest').textContent=fastest?(fastest.timeLabel||formatSeconds(fastest.timeSeconds)):'—';
+  document.getElementById('sumFastest').textContent=fastest?(fastest.timeLabel||window.formatSeconds(fastest.timeSeconds)):'—';
   document.getElementById('resultRows').innerHTML=rows.map(r=>{
-    const dt=parseDateParts(r), per=pct(r);
-    return `<tr><td><strong>${esc(r.activityTitle||r.activity||r.activityId||'Actividad')}</strong></td><td><strong>${esc(r.name||'—')}</strong></td><td><strong>${esc(r.score||0)}</strong></td><td>${esc(r.max||0)}</td><td>${per}%</td><td>${esc(dt.time)}</td><td>${esc(dt.date)}</td><td>${esc(r.attempts||1)}</td><td>${esc(r.timeLabel||formatSeconds(r.timeSeconds)||'—')}</td><td class="error-list">${esc(normalizeErrors(r.frequentErrors))}</td><td>${esc(r.status||'En progreso')}</td></tr>`;
-  }).join('') || '<tr><td colspan="11" class="muted">Todavía no hay resultados guardados en este navegador.</td></tr>';
+    const dt=window.parseDateParts(r), per=window.pct(r);
+    return `<tr><td><strong>${window.esc(r.activityTitle||r.activity||r.activityId||'Actividad')}</strong></td><td><strong>${window.esc(r.name||'—')}</strong></td><td><strong>${window.esc(r.score||0)}</strong></td><td>${window.esc(r.max||0)}</td><td>${per}%</td><td>${window.esc(dt.time)}</td><td>${window.esc(dt.date)}</td><td>${window.esc(r.attempts||1)}</td><td>${window.esc(r.timeLabel||window.formatSeconds(r.timeSeconds)||'—')}</td><td class="error-list">${window.esc(window.normalizeErrors(r.frequentErrors))}</td><td>${window.esc(r.status||'En progreso')}</td></tr>`;
+  }).join('') || '<tr><td colspan="11" class="muted">Esperando conexiones de los estudiantes...</td></tr>';
 }
-function formatSeconds(s){s=Number(s)||0;if(!s)return '';let m=Math.floor(s/60),sec=s%60;return m+':'+String(sec).padStart(2,'0');}
-function exportExcel(){
-  renderResults();
+
+window.formatSeconds = function(s){s=Number(s)||0;if(!s)return '';let m=Math.floor(s/60),sec=s%60;return m+':'+String(sec).padStart(2,'0');}
+
+window.exportExcel = function(){
+  window.renderResults();
   const table=document.getElementById('resultsTable').cloneNode(true);
   const htmlDoc=`<html><head><meta charset="UTF-8"></head><body><h2>Resultados de Fonética - Docente</h2>${table.outerHTML}</body></html>`;
   const blob=new Blob([htmlDoc],{type:'application/vnd.ms-excel;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='resultados_fonetica_docente.xls'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
-function copyTable(){
+
+window.copyTable = function(){
   const text=[...document.querySelectorAll('#resultsTable tr')].map(tr=>[...tr.children].map(td=>td.innerText.replace(/\s+/g,' ').trim()).join('\t')).join('\n');
   if(navigator.clipboard){ navigator.clipboard.writeText(text).then(()=>alert('Tabla copiada.')); }
 }
-function clearResults(){if(confirm('¿Quieres borrar todos los resultados guardados en este navegador?')){localStorage.removeItem(GLOBAL_RESULTS_KEY); for(let i=localStorage.length-1;i>=0;i--){let k=localStorage.key(i); if(k && (k.indexOf('fonetica_resultados_')===0 || k.indexOf('fonetica_resultados_estado_')===0 || k.indexOf('fonetica_docente_errors_')===0 || k.indexOf('fonetica_docente_attempts')===0)) localStorage.removeItem(k);} renderResults();}}
+
+window.clearResults = function(){if(confirm('¿Quieres borrar todos los resultados locales de este navegador?')){localStorage.removeItem(GLOBAL_RESULTS_KEY); window.renderResults();}}
+
 document.addEventListener('DOMContentLoaded',()=>{
-  renderActivities(); renderResults();
-  document.getElementById('activityFilter').onchange=renderActivities;
+  window.renderActivities(); window.renderResults();
+  document.getElementById('activityFilter').onchange=window.renderActivities;
   document.getElementById('selectAll').onclick=()=>{document.querySelectorAll('#activityRows .act-enabled').forEach(x=>x.checked=true);};
   document.getElementById('clearAll').onclick=()=>{document.querySelectorAll('#activityRows .act-enabled').forEach(x=>x.checked=false);};
   document.getElementById('applyBulk').onclick=()=>{document.querySelectorAll('#activityRows tr').forEach(tr=>{if(tr.querySelector('.act-enabled').checked){let o=document.getElementById('bulkOpen').value,c=document.getElementById('bulkClose').value,t=document.getElementById('bulkTimer').value;if(o)tr.querySelector('.act-open').value=o;if(c)tr.querySelector('.act-close').value=c;if(t!=='')tr.querySelector('.act-timer').value=t;}});};
-  document.getElementById('saveConfig').onclick=saveConfig; document.getElementById('saveAllTop').onclick=saveConfig;
-  document.getElementById('resetConfig').onclick=()=>{if(confirm('¿Borrar la configuración docente? Las actividades quedarán abiertas como antes.')){localStorage.removeItem(CONFIG_KEY);renderActivities();}};
-  ['sortResults','resultActivityFilter','studentSearch'].forEach(id=>document.getElementById(id).addEventListener('input',renderResults));
-  document.getElementById('refreshResults').onclick=renderResults; document.getElementById('refreshTop').onclick=renderResults;
-  document.getElementById('exportExcel').onclick=exportExcel; document.getElementById('exportTop').onclick=exportExcel;
-  document.getElementById('copyTable').onclick=copyTable; document.getElementById('clearResults').onclick=clearResults;
-  setInterval(renderResults,4000);
+  document.getElementById('saveConfig').onclick=window.saveConfig; document.getElementById('saveAllTop').onclick=window.saveConfig;
+  document.getElementById('resetConfig').onclick=()=>{if(confirm('¿Borrar la configuración docente? Las actividades quedarán abiertas como antes.')){localStorage.removeItem(CONFIG_KEY);window.renderActivities();}};
+  ['sortResults','resultActivityFilter','studentSearch'].forEach(id=>document.getElementById(id).addEventListener('input',window.renderResults));
+  document.getElementById('refreshResults').onclick=window.renderResults; document.getElementById('refreshTop').onclick=window.renderResults;
+  document.getElementById('exportExcel').onclick=window.exportExcel; document.getElementById('exportTop').onclick=window.exportExcel;
+  document.getElementById('copyTable').onclick=window.copyTable; document.getElementById('clearResults').onclick=window.clearResults;
+  setInterval(window.renderResults,4000);
 });
 </script>
 </body>
