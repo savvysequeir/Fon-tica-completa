@@ -2073,5 +2073,221 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 </script>
 <!-- STUDENT_DATA_AND_VOCAB_LOCK_PATCH_END -->
 
+
+<!-- WORD_READER_TTS_START -->
+<style id="word-reader-tts-style">
+  .word-reader-panel{background:#f8fafc;border:1px solid #cbd5e1;border-radius:18px;padding:14px;margin-top:14px;display:grid;gap:10px}
+  .word-reader-title{font-weight:1000;color:#0f172a;font-size:1.05rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .word-reader-note{color:#475569;line-height:1.35;font-size:.94rem}
+  .word-reader-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .word-reader-controls input[type="text"]{min-width:min(100%,320px)}
+  .btn-reader{background:#0ea5e9;color:#ffffff;border:1px solid #0284c7;box-shadow:0 8px 18px rgba(14,165,233,.20)}
+  .btn-reader-stop{background:#64748b;color:#ffffff;border:1px solid #475569;box-shadow:none}
+  .reader-status{font-weight:900;color:#0369a1;background:#e0f2fe;border:1px solid #bae6fd;border-radius:999px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px}
+  @media(max-width:720px){.word-reader-controls button,.word-reader-controls input,.word-reader-controls select{width:100%}}
+</style>
+<script id="word-reader-tts-script">
+(function(){
+  try{
+    if(window.__wordReaderTTSInstalled) return;
+    window.__wordReaderTTSInstalled = true;
+
+    var originalPlayKey = null;
+
+    function ready(fn){
+      if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true});
+      else fn();
+    }
+    function cleanText(s){return String(s||'').replace(/^[0-9]+\.\s*/,'').replace(/\s+/g,' ').trim();}
+    function readerSupported(){return !!(window.speechSynthesis && window.SpeechSynthesisUtterance);}
+    function getLang(){var el=document.getElementById('wordReaderLang'); return el && el.value ? el.value : 'en-US';}
+    function getRate(){var el=document.getElementById('wordReaderRate'); var n=el?parseFloat(el.value):0.85; return isFinite(n) ? Math.max(.55, Math.min(1.25,n)) : .85;}
+    function setReaderStatus(msg, ok){
+      var el=document.getElementById('wordReaderStatus');
+      if(!el) return;
+      el.textContent = msg;
+      el.style.color = ok===false ? '#991b1b' : '#0369a1';
+      el.style.background = ok===false ? '#fee2e2' : '#e0f2fe';
+      el.style.borderColor = ok===false ? '#fecaca' : '#bae6fd';
+    }
+    function chooseVoice(lang){
+      try{
+        var voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+        if(!voices || !voices.length) return null;
+        var low = String(lang||'en-US').toLowerCase();
+        for(var i=0;i<voices.length;i++){ if(String(voices[i].lang||'').toLowerCase() === low) return voices[i]; }
+        var base = low.split('-')[0];
+        for(var j=0;j<voices.length;j++){ if(String(voices[j].lang||'').toLowerCase().indexOf(base)===0) return voices[j]; }
+      }catch(e){}
+      return null;
+    }
+    function speakText(text){
+      text = cleanText(text);
+      if(!text){setReaderStatus('Escribe o selecciona una palabra.', false); return;}
+      if(!readerSupported()){
+        setReaderStatus('Este navegador no permite lector de voz. Usa Google Chrome o Edge.', false);
+        try{ if(typeof toast==='function') toast('Este navegador no permite lector de voz. Usa Google Chrome o Edge.','bad'); }catch(e){}
+        return;
+      }
+      try{ window.speechSynthesis.cancel(); }catch(e){}
+      try{
+        var lang = getLang();
+        var utter = new SpeechSynthesisUtterance(text);
+        utter.lang = lang;
+        utter.rate = getRate();
+        utter.pitch = 1;
+        utter.volume = 1;
+        var voice = chooseVoice(lang);
+        if(voice) utter.voice = voice;
+        utter.onstart = function(){ setReaderStatus('Leyendo: “' + text + '”', true); };
+        utter.onend = function(){ setReaderStatus('Lectura terminada.', true); };
+        utter.onerror = function(){ setReaderStatus('No pude leer el texto. Haz clic otra vez.', false); };
+        window.speechSynthesis.speak(utter);
+      }catch(e){ setReaderStatus('Chrome bloqueó la voz. Haz clic otra vez.', false); }
+    }
+    window.leerPalabraFonetica = speakText;
+
+    function stopReader(){
+      try{ if(readerSupported()) window.speechSynthesis.cancel(); }catch(e){}
+      setReaderStatus('Lector detenido.', true);
+    }
+
+    function textFromAudioKey(key){
+      key = String(key||'');
+      if(/^word:/i.test(key)) return key.replace(/^word:/i,'');
+      if(/^vocab:/i.test(key)) return key.replace(/^vocab:/i,'');
+      if(/^sentence:/i.test(key)){
+        var n = parseInt(key.replace(/^sentence:/i,''),10);
+        try{ if(typeof SENTENCES!=='undefined' && SENTENCES[n-1]) return typeof SENTENCES[n-1] === 'string' ? SENTENCES[n-1] : (SENTENCES[n-1].text || String(SENTENCES[n-1])); }catch(e){}
+      }
+      return '';
+    }
+
+    function installPanel(){
+      if(document.getElementById('wordReaderPanel')) return;
+      var studentPanel = document.getElementById('studentPanel');
+      if(!studentPanel) return;
+      var panel = document.createElement('div');
+      panel.id = 'wordReaderPanel';
+      panel.className = 'word-reader-panel';
+      panel.innerHTML = '<div class="word-reader-title">🔈 Lector de palabras <span id="wordReaderStatus" class="reader-status">Listo para leer</span></div>'+ 
+        '<div class="word-reader-note">Escribe una palabra en inglés o usa los botones <strong>🔈 Lector</strong> que aparecen en las palabras del recorrido y en el vocabulario. Este lector usa la voz del navegador y no bloquea la carga de la página.</div>'+ 
+        '<div class="word-reader-controls">'+
+          '<input id="wordReaderInput" type="text" placeholder="Escribe una palabra: art, father, park..." />'+
+          '<select id="wordReaderLang" aria-label="Voz del lector"><option value="en-US">Inglés americano</option><option value="en-GB">Inglés británico</option></select>'+ 
+          '<select id="wordReaderRate" aria-label="Velocidad del lector"><option value="0.70">Lento</option><option value="0.85" selected>Normal</option><option value="1.00">Rápido</option></select>'+ 
+          '<button id="wordReaderSpeakBtn" type="button" class="btn-reader">🔈 Leer palabra</button>'+ 
+          '<button id="wordReaderStopBtn" type="button" class="btn-reader-stop">⏹ Detener</button>'+ 
+        '</div>';
+      var chromeNote = studentPanel.querySelector('.chrome-note');
+      if(chromeNote && chromeNote.parentNode) chromeNote.parentNode.insertBefore(panel, chromeNote.nextSibling);
+      else studentPanel.appendChild(panel);
+      var input = document.getElementById('wordReaderInput');
+      var speakBtn = document.getElementById('wordReaderSpeakBtn');
+      var stopBtn = document.getElementById('wordReaderStopBtn');
+      if(speakBtn) speakBtn.addEventListener('click',function(){speakText(input?input.value:'');});
+      if(stopBtn) stopBtn.addEventListener('click',stopReader);
+      if(input) input.addEventListener('keydown',function(ev){ if(ev.key==='Enter'){ev.preventDefault(); speakText(input.value);} });
+    }
+
+    function addButton(card, text, className, label, insertLine){
+      if(!card || card.querySelector('.'+className)) return;
+      text = cleanText(text);
+      if(!text) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'small btn-reader '+className;
+      btn.setAttribute('data-reader-text', text);
+      btn.textContent = label || '🔈 Lector';
+      var line = insertLine || card;
+      line.insertBefore(btn, line.firstChild);
+    }
+
+    function enhanceReaders(root){
+      root = root || document;
+      try{
+        root.querySelectorAll('.word-card').forEach(function(card){
+          var strong = card.querySelector('strong');
+          var line = card.querySelector('.upload-line') || card;
+          addButton(card, strong ? strong.textContent : '', 'word-reader-inline', '🔈 Lector', line);
+        });
+        root.querySelectorAll('.vocab-card').forEach(function(card){
+          var wordEl = card.querySelector('.vocab-word');
+          var line = card.querySelector('.row') || card;
+          addButton(card, wordEl ? wordEl.textContent : '', 'word-reader-inline', '🔈 Lector', line);
+        });
+        root.querySelectorAll('.vocab-phrase').forEach(function(card){
+          var textEl = card.querySelector('[style*="line-height"]') || card.querySelector('p') || card;
+          var line = card.querySelector('.row') || card;
+          addButton(card, textEl ? textEl.textContent : '', 'phrase-reader-inline', '🔈 Lector frase', line);
+        });
+      }catch(e){}
+    }
+
+    function installDelegatedReader(){
+      document.addEventListener('click',function(ev){
+        var btn = ev.target && ev.target.closest ? ev.target.closest('[data-reader-text]') : null;
+        if(!btn) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        var text = btn.getAttribute('data-reader-text') || '';
+        var input = document.getElementById('wordReaderInput');
+        if(input && text.length < 55) input.value = text;
+        speakText(text);
+      }, true);
+    }
+
+    function patchPlayKeyFallback(){
+      try{
+        if(window.__wordReaderPlayKeyPatched) return;
+        if(typeof window.playKey !== 'function') return;
+        window.__wordReaderPlayKeyPatched = true;
+        originalPlayKey = window.playKey;
+        window.playKey = async function(key){
+          var text = textFromAudioKey(key);
+          try{
+            if(typeof window.hasAudio === 'function'){
+              var ok = await window.hasAudio(key);
+              if(ok) return originalPlayKey.apply(this, arguments);
+              if(text){ speakText(text); return; }
+            }
+          }catch(e){}
+          try{ return await originalPlayKey.apply(this, arguments); }
+          catch(err){ if(text) speakText(text); }
+        };
+      }catch(e){}
+    }
+
+    function patchRenderer(name){
+      try{
+        var fn = window[name];
+        if(typeof fn !== 'function' || fn.__readerPatched) return;
+        window[name] = function(){
+          var out = fn.apply(this, arguments);
+          setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},60);
+          return out;
+        };
+        window[name].__readerPatched = true;
+      }catch(e){}
+    }
+
+    ready(function(){
+      installPanel();
+      installDelegatedReader();
+      patchPlayKeyFallback();
+      patchRenderer('renderWords');
+      patchRenderer('renderSentencePronunciation');
+      enhanceReaders(document);
+      document.addEventListener('click',function(){setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},250);},false);
+      setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},700);
+      setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},1800);
+    });
+  }catch(err){
+    try{console.error('Error en lector de palabras:', err);}catch(e){}
+  }
+})();
+</script>
+<!-- WORD_READER_TTS_END -->
+
 </body>
 </html>
