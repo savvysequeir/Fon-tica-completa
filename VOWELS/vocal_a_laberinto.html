@@ -98,17 +98,17 @@
 
 <style id="no-internal-name-style">
 
+  #studentPanel{margin-top:18px;}
+
+  #studentPanel .row:first-of-type{display:flex!important;}
+
   #studentPanel > h2:first-child,
 
   #studentPanel > p.muted:first-of-type,
 
-  #studentPanel > .row:first-of-type,
+  #studentPanel > #welcome{display:block!important;}
 
-  #studentPanel > #welcome,
-
-  #welcomePanel{display:none!important;}
-
-  #studentPanel{margin-top:18px;}
+  #studentCareer{min-width:min(100%,310px);}
 
   #studentAutoBanner{background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;border-radius:16px;padding:12px 14px;margin:12px 0;font-weight:900;line-height:1.35;}
 
@@ -151,13 +151,31 @@
 
         <option value="">-- Seleccionar Carrera --</option>
 
-        <option value="Veterinaria">Medicina Veterinaria</option>
+        <option value="Odontologia">Odontología</option>
+
+        <option value="Medicina">Medicina</option>
+
+        <option value="Quimica Farmaceutica">Química Farmacéutica</option>
+
+        <option value="Enfermeria">Enfermería</option>
+
+        <option value="Mecanica Dental">Mecánica Dental</option>
+
+        <option value="Veterinaria">Veterinaria</option>
+
+        <option value="Zootecnia">Zootecnia</option>
 
         <option value="Agronomia">Agronomía</option>
 
-        <option value="Forestal">Ingeniería Forestal</option>
+        <option value="Agricola">Agrícola</option>
 
-        <option value="Ambientales">Gestión Ambiental / Recursos Naturales</option>
+        <option value="Ingenieria Forestal">Ingeniería Forestal</option>
+
+        <option value="Ingenieria en Agroindustria de los Alimentos">Ingeniería en Agroindustria de los Alimentos</option>
+
+        <option value="Agronegocios">Agronegocios</option>
+
+        <option value="Ingles">Inglés</option>
 
         <option value="Otra">Otra Carrera / Curso General</option>
 
@@ -1055,9 +1073,17 @@ els.startBtn.addEventListener('click',()=>{
 
   const y=els.studentYear ? els.studentYear.value : '';
 
+  if(els.studentCareer && !c){ toast('Selecciona la carrera antes de comenzar.', 'warn'); els.studentCareer.focus(); return; }
+
+  if(els.studentYear && !y){ toast('Selecciona el año en curso antes de comenzar.', 'warn'); els.studentYear.focus(); return; }
+
   student=n; career=c; year=y;
 
-  try{ localStorage.setItem('fonetica_student_full_name', student); }catch(e){}
+  try{
+    localStorage.setItem('fonetica_student_full_name', student);
+    localStorage.setItem('fonetica_student_career', career);
+    localStorage.setItem('fonetica_student_year', year);
+  }catch(e){}
 
   const datos = [career ? career : '', year ? `Año ${year}` : ''].filter(Boolean).join(' - ');
 
@@ -1093,36 +1119,67 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 <script id="exercise-auto-start-script">
 (function(){
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
-  function getStudentName(){
-    var name='';
+  function readParam(names){
     try{
       var params=new URLSearchParams(window.location.search||'');
-      name=params.get('student')||params.get('name')||params.get('nombre')||'';
+      for(var i=0;i<names.length;i++){ var v=params.get(names[i]); if(v) return v; }
     }catch(e){}
+    return '';
+  }
+  function getStudentName(){
+    var name=readParam(['student','name','nombre']);
     if(!name){try{name=localStorage.getItem('fonetica_student_full_name')||'';}catch(e){}}
     name=String(name||'').trim().replace(/\s+/g,' ');
     if(!name) name='Estudiante registrado';
     return name;
   }
+  function getCareer(){
+    var v=readParam(['career','carrera']);
+    if(!v){try{v=localStorage.getItem('fonetica_student_career')||'';}catch(e){}}
+    return String(v||'').trim();
+  }
+  function getYear(){
+    var v=readParam(['year','anio','año']);
+    if(!v){try{v=localStorage.getItem('fonetica_student_year')||'';}catch(e){}}
+    return String(v||'').trim();
+  }
   function escapeHtml(s){return String(s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
+  function setSelectValue(select, value){
+    if(!select || !value) return false;
+    var target=String(value).trim().toLowerCase();
+    for(var i=0;i<select.options.length;i++){
+      var opt=select.options[i];
+      if(String(opt.value).trim().toLowerCase()===target || String(opt.textContent).trim().toLowerCase()===target){
+        select.value=opt.value;
+        return true;
+      }
+    }
+    return false;
+  }
   ready(function(){
     var name=getStudentName();
+    var career=getCareer();
+    var year=getYear();
     try{localStorage.setItem('fonetica_student_full_name',name);}catch(e){}
     var input=document.getElementById('studentName');
     if(input) input.value=name;
+    var careerSelect=document.getElementById('studentCareer');
+    var yearSelect=document.getElementById('studentYear');
+    var hasCareer=setSelectValue(careerSelect,career);
+    var hasYear=setSelectValue(yearSelect,year);
     var namePill=document.getElementById('namePill');
     if(namePill) namePill.textContent='Estudiante: '+name;
     var welcome=document.getElementById('welcome');
-    if(welcome) welcome.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Puedes continuar con la actividad.';
+    if(welcome) welcome.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Selecciona carrera y año para comenzar.';
     var host=document.getElementById('studentPanel')||document.getElementById('welcomePanel');
     if(host && !document.getElementById('studentAutoBanner') && document.getElementById('studentPanel')){
       var banner=document.createElement('div');
       banner.id='studentAutoBanner';
-      banner.innerHTML='✅ Estudiante registrado desde la página principal: <strong>'+escapeHtml(name)+'</strong>. Ya no es necesario escribir el nombre dentro del ejercicio.';
+      banner.innerHTML='✅ Nombre cargado: <strong>'+escapeHtml(name)+'</strong>. Selecciona la carrera y el año; después presiona <strong>comenzar</strong>.';
       host.insertBefore(banner, host.firstChild);
     }
     var start=document.getElementById('startBtn');
-    if(start && !start.dataset.autoStartedWithoutNameBox){
+    if(start && hasCareer && hasYear && !start.dataset.autoStartedWithoutNameBox){
       start.dataset.autoStartedWithoutNameBox='1';
       setTimeout(function(){ try{ start.click(); }catch(e){} },120);
     }
