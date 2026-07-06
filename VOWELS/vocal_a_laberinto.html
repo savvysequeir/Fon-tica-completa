@@ -43,10 +43,8 @@
     @media(max-width:720px){.wrap{padding:12px}.card{padding:15px}.maze{grid-template-columns:repeat(8,108px);min-width:900px}.cell{font-size:.82rem;min-height:58px;padding:6px 4px}.cell[data-long="1"]{font-size:.72rem}.hero{border-radius:20px}.row{align-items:stretch}button,input[type="text"],select{width:100%}}
   </style>
 
-
 <!-- NO_INTERNAL_NAME_STYLE_START -->
 <style id="no-internal-name-style">
-  /* El nombre se registra en la página principal. En los ejercicios ya no se pide nuevamente. */
   #studentPanel > h2:first-child,
   #studentPanel > p.muted:first-of-type,
   #studentPanel > .row:first-of-type,
@@ -167,7 +165,7 @@
 <script>
 const MAZE = [["ART", "SHADE", "SAY", "DAWN", "GERMAN", "MEASURE", "BAT", "CHAIR"], ["ARE", "ARTIST", "NARCISM", "JAR", "ARM", "ARC", "TAKE", "PAIR"], ["CAP", "FAT", "MADE", "SHARE", "PATTERN", "ARK", "ALLOW", "EQUAL"], ["HAPPEN", "MATH", "ALWAYS", "SERVANT", "MALL", "ARDENT", "BAR", "WARM"], ["THAT", "ANIMAL", "FAULT", "CHEAP", "EASY", "WEAR", "CAR", "FAIR"], ["MAP", "MAN", "AWAY", "SEAL", "TAG", "REACH", "DARK", "ABLE"], ["CHAT", "CAN", "DRAW", "HEAD", "EARN", "PHOTOGRAPH", "FATHER", "LARD"], ["CAUSE", "CAP", "FALL", "DEAD", "EARTH", "THOUSAND", "CALL", "MARK"], ["LACK", "DAD", "SALT", "MEADOW", "AIR", "TEAR", "ZEBRA", "HEART"], ["RAN", "TRAVEL", "WALL", "AMAZE", "LEAVE", "SODA", "SOFA", "CALM"], ["BEGAN", "SAT", "EACH", "TRACK", "PLEASE", "STRAW", "AUTO", "PARK"], ["SAD", "APE", "WAS", "AT", "WEAK", "PARTY", "FLAW", "PALM"], ["CHASE", "TAX", "CERTAIN", "EAT", "RAP", "AWE", "LAW", "SARCASM"], ["MONDAY", "WAR", "BROAD", "ATE", "LEARN", "AUGUST", "TAUGHT", "NAUGHTY"], ["WAY", "ANY", "SHAPE", "JACKET", "EAST", "EAGLE", "ALSO", "ALL"], ["DAY", "MANY", "ROAD", "READ", "CLAW", "SAW", "MEAN", "TEAM"], ["MAY", "WOMAN", "HOLIDAY", "DRAWN", "OBTAIN", "LEAD", "TEA", "FEAST"], ["JANUARY", "SUGAR", "SHAME", "ARRIVE", "ABOUT", "ALONG", "FAMOUS", "WHAT"]];
 const PATH = [[0, 0], [1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [2, 5], [3, 5], [3, 6], [4, 6], [5, 6], [6, 6], [6, 7], [7, 7], [8, 7], [9, 7], [10, 7], [11, 7], [12, 7]];
-const PRON = {"ART": "/ɑːt/", "ARE": "/ɑː/", "ARTIST": "/ˈɑːtɪst/", "NARCISM": "/ˈnɑːsɪzəm/", "JAR": "/dʒɑː/", "ARM": "/ɑːm/", "ARC": "/ɑːk/", "ARK": "/ɑːk/", "ARDENT": "/ˈɑːdənt/", "BAR": "/bɑː/", "CAR": "/kɑː/", "DARK": "/dɑːk/", "FATHER": "/ˈfɑːðə/", "LARD": "/lɑːd/", "MARK": "/mɑːk/", "HEART": "/hɑːt/", "CALM": "/kɑːm/", "PARK": "/pɑːk/", "PALM": "/pɑːm/", "SARCASM": "/ˈsɑːkæzəm/"};
+const PRON = {"ART": "/ɑːt/", "ARE": "/ɑː/", "ARTIST": "/ˈɑːtɪst/", "NARCISM": "/ˈnɑːsɪzəm/", "JAR": "/dʒɑː/", "ARM": "/ɑːm/", "ARC": "/ɑːk/", "ARK": "/ɑːk/", "ARDENT": "/ˈɑːdənt/", "BAR": "/bɑː/", "CAR": "/kɑː/", "DARK": "/dāːk/", "FATHER": "/ˈfɑːðə/", "LARD": "/lɑːd/", "MARK": "/mɑːk/", "HEART": "/hɑːt/", "CALM": "/kɑːm/", "PARK": "/pɑːk/", "PALM": "/pɑːm/", "SARCASM": "/ˈsɑːkæzəm/"};
 const SENTENCES = ["The artist left a jar of paint in the school near the east side of the park.", "Every student who sat on the dark lawn agreed to follow the rules of the team.", "The teacher told an awful story about an eagle who lived in a broad harbor.", "A needy child sat by the fence, eating bread while looking at the pool in the park.", "The boss gave an easy offer to the artist who painted the law mural on June.", "The eagle soared above the mall, where many people stood on the dark law.", "They believe that the naughty child broke the jar near the broad school gates.", "The police measured the edge of the ark and found food hidden in the dark room.", "A keen student made effort to fix the flaw in the art piece inside the cool gallery.", "We agree to meet in the west park after the awful noise at the school ended."];
 const SENTENCE_TARGETS = [["artist", "jar", "park"], ["dark"], ["harbor"], ["park"], ["artist"], ["dark"], ["jar"], ["ark", "dark"], ["art"], ["park"]];
 
@@ -353,7 +351,6 @@ function tokenize(sentence){
   return parts;
 }
 function isTargetToken(sentenceIndex, word, occurrenceIndex){
-  // We mark every token whose normalized word is listed as a target for that sentence.
   const norm = normalizeWord(word); return SENTENCE_TARGETS[sentenceIndex].includes(norm);
 }
 function totalSentenceTargets(){
@@ -419,7 +416,6 @@ function downloadText(filename, text, mime='text/plain'){
 }
 async function exportHtmlWithAudios(){
   const data = await exportAllAudioDataUrls(); const clone = document.documentElement.cloneNode(true); const script = clone.querySelector('#embedded-audio-data'); script.textContent = JSON.stringify(data).replace(/</g,'\\u003c');
-  // Keep the exported copy clean for a new student.
   const html = '<!DOCTYPE html>\n' + clone.outerHTML;
   downloadText('fonetica_vocal_a_con_audios.html', html, 'text/html;charset=utf-8');
   toast('HTML exportado con los audios cargados.', 'ok');
@@ -441,7 +437,6 @@ els.playSelectedAudioBtn.addEventListener('click',()=>playKey(els.audioTargetSel
 
 populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch(()=>refreshAudioStatus());
 </script>
-
 
 <!-- EXERCISE_AUTO_START_SCRIPT_START -->
 <script id="exercise-auto-start-script">
@@ -484,8 +479,6 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 })();
 </script>
 <!-- EXERCISE_AUTO_START_SCRIPT_END -->
-
-
 
 <!-- VOCABULARIO_GLOBAL_START -->
 <script id="vocabulario-global-script">
@@ -629,7 +622,6 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 </script>
 <!-- VOCABULARIO_GLOBAL_END -->
 
-
 <!-- UNDERSTAND_FINAL_PRACTICE_START -->
 <style id="understand-final-practice-style">
 .understand-box{margin-top:22px;padding:18px;border:2px solid #c7d2fe;border-radius:22px;background:linear-gradient(180deg,#eef2ff,#ffffff);box-shadow:0 14px 34px rgba(37,99,235,.10)}
@@ -670,7 +662,7 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
     try{ if(typeof PRON!=='undefined' && PRON){ Object.keys(PRON).forEach(function(w){addWord(list,seen,w,PRON[w],'Vocabulario');}); } }catch(e){}
     try{ if(typeof WORD_SOUNDS!=='undefined' && WORD_SOUNDS){ Object.keys(WORD_SOUNDS).forEach(function(w){addWord(list,seen,w,WORD_SOUNDS[w],'Vocabulario');}); } }catch(e){}
     try{ if(typeof WORD_ENTRIES!=='undefined' && Array.isArray(WORD_ENTRIES)){ WORD_ENTRIES.forEach(function(en){addWord(list,seen,en.word,en.ipa,en.blendName||en.blend||'Blend',en.id);}); } }catch(e){}
-    try{ if(typeof BLENDS!=='undefined' && Array.isArray(BLENDS)){ BLENDS.forEach(function(b){(b.words||[]).forEach(function(w){ var word=Array.isArray(w)?w[0]:(w.word||w); var ipa=Array.isArray(w)?w[1]:(w.ipa||mapLookup(word)); addWord(list,seen,word,ipa,b.name||'Blend',(w&&w.id)||null); });}); } }catch(e){}
+    try{ if(typeof BLENDS!=='undefined' && Array.isArray(BLENDS)){ BLENDS.forEach(function(b){b.words.forEach(function(w){ var word=Array.isArray(w)?w[0]:(w.word||w); var ipa=Array.isArray(w)?w[1]:(w.ipa||mapLookup(word)); addWord(list,seen,word,ipa,b.name||'Blend',(w&&w.id)||null); });}); } }catch(e){}
     function addArr(arr, group){ if(Array.isArray(arr)) arr.forEach(function(w){ if(Array.isArray(w)) return; addWord(list,seen,w,mapLookup(w),group); }); }
     try{ addArr(DISPLAY_WORDS,'Ruta'); }catch(e){} try{ addArr(WORDS_IN_PATH,'Ruta'); }catch(e){} try{ addArr(PATH_WORDS,'Ruta'); }catch(e){} try{ addArr(ALL_WORDS,'Vocabulario'); }catch(e){}
     try{ if(typeof PATH_BANKS!=='undefined' && Array.isArray(PATH_BANKS)){ PATH_BANKS.forEach(function(arr){addArr(arr,'Ruta');}); } }catch(e){}
@@ -768,7 +760,6 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 </script>
 <!-- UNDERSTAND_FINAL_PRACTICE_END -->
 
-
 <!-- RESULTADOS_GLOBAL_START -->
 <style id="resultados-global-style">
   .resultados-topbar{margin:14px 0 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -800,12 +791,13 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
   function getStudent(){
     var name='';
     try{name=(localStorage.getItem('fonetica_student_full_name')||'').trim();}catch(e){}
-    if(!name){try{name=(new URLSearchParams(location.search||'')).get('student')||'';}catch(e){}}
+    if(!name){try{name=(new URLSearchParams(location.search||'')).get('student')||'';}catch(e){} gen姓名BoxInputName();}
     if(!name){var inp=document.getElementById('studentName'); if(inp) name=inp.value||'';}
     try{ if(!name && window.student) name=window.student; }catch(e){}
     name=String(name||'').trim().replace(/\s+/g,' ');
     return name || 'Estudiante registrado';
   }
+  function gen姓名BoxInputName(){ try{ var inp=document.getElementById('studentName'); if(inp&&inp.value&&inp.value.trim()){localStorage.setItem('fonetica_student_full_name',inp.value.trim());} }catch(e){} }
   function loadState(){try{var x=JSON.parse(localStorage.getItem(STATE)||'{}'); return (x && typeof x==='object')?x:{};}catch(e){return {};}}
   function saveState(st){try{localStorage.setItem(STATE,JSON.stringify(st||{}));}catch(e){}}
   function loadRecords(){
@@ -962,7 +954,7 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
     var panel=document.createElement('section'); panel.id='resultadosPanel'; panel.className='resultados-panel resultados-hidden';
     panel.innerHTML='<h2>📊 Resultados del link</h2><p class="muted">Estudiante actual: <strong id="resultadoCurrentName">—</strong> · Puntaje máximo: <strong id="resultadoMaxScore">0</strong> puntos.</p><div class="resultados-grid"><div class="resultado-card"><strong>Laberinto</strong><span class="resultado-num" id="resultadoMaze">0/0</span><small>1 punto por cada palabra correcta de la ruta.</small></div><div class="resultado-card"><strong>Audios de palabras</strong><span class="resultado-num" id="resultadoWordAudio">0/0</span><small>1 punto por cada palabra escuchada.</small></div><div class="resultado-card"><strong>Palabras en oraciones</strong><span class="resultado-num" id="resultadoSentenceHits">0/0</span><small>1 punto por cada acierto.</small></div><div class="resultado-card"><strong>Audios de oraciones</strong><span class="resultado-num" id="resultadoSentenceAudio">0/0</span><small>1 punto por cada oración escuchada.</small></div><div class="resultado-card resultado-total"><strong>Total</strong><span class="resultado-num" id="resultadoTotal">0/0</span><small>Puntaje actual / puntaje máximo.</small></div></div><div class="resultados-actions"><button id="guardarResultadoBtn" class="btn-green">Guardar resultado actual</button><button id="actualizarResultadoBtn" class="btn-soft">Actualizar puntaje</button><button id="borrarResultadosBtn" class="btn-red">Borrar resultados de este link</button></div><h3>Personas que han realizado este link</h3><div class="resultados-table-wrap"><table class="resultados-table"><thead><tr><th>Nombre</th><th>Total</th><th>Laberinto</th><th>Audios palabras</th><th>Oraciones</th><th>Estado y fecha</th></tr></thead><tbody id="resultadosRows"></tbody></table></div><div class="resultado-note">Los resultados se guardan automáticamente en el navegador donde se abre la actividad. Si varios estudiantes usan este mismo navegador, aparecerán en esta tabla.</div><div class="resultado-warning">La puntuación máxima se calcula automáticamente: palabras del laberinto + audios de palabras + aciertos en oraciones + audios de oraciones.</div>';
     top.parentNode.insertBefore(panel, top.nextSibling);
-    var btn=document.getElementById('resultadosBtn'); if(btn) btn.onclick=function(){panel.classList.toggle('resultados-hidden'); renderResultados(true); if(!panel.classList.contains('resultados-hidden')) setTimeout(function(){panel.scrollIntoView({behavior:'smooth',block:'start'});},60);};
+    var btn=document.getElementById('resultadosBtn'); if(btn) btn.onclick=function(){panel.classList.toggle('resultados-hidden'); renderResultados(true); if(!panel.classList.contains('understand-hidden')) setTimeout(function(){panel.scrollIntoView({behavior:'smooth',block:'start'});},60);};
     var g=document.getElementById('guardarResultadoBtn'); if(g) g.onclick=function(){saveCurrentRecord();renderResultados(false);};
     var a=document.getElementById('actualizarResultadoBtn'); if(a) a.onclick=function(){saveCurrentRecord();renderResultados(false);};
     var b=document.getElementById('borrarResultadosBtn'); if(b) b.onclick=clearResults;
@@ -975,10 +967,8 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 </script>
 <!-- RESULTADOS_GLOBAL_END -->
 
-
 <!-- MINI_PRACTICE_VISIBILITY_FIX_START -->
 <style id="mini-practice-visibility-fix">
-  /* Corrección visual: las opciones de la mini práctica deben verse antes de responder. */
   .practice-options button.practice-option,
   button.practice-option,
   .practice-option{
@@ -1021,7 +1011,6 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 </style>
 <!-- MINI_PRACTICE_VISIBILITY_FIX_END -->
 
-
 <!-- DOCENTE_CONTROL_START -->
 <style id="docente-control-style">
   #docenteTimerBar{position:fixed;top:10px;right:10px;z-index:2147482990;background:#0f172a;color:#fff;border:2px solid #38bdf8;border-radius:999px;padding:10px 16px;font-weight:1000;box-shadow:0 12px 28px rgba(15,23,42,.25)}
@@ -1032,6 +1021,52 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
   #docenteBlockOverlay a,#docenteBlockOverlay button{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;border:0;border-radius:15px;background:#1d4ed8;color:white;font-weight:1000;padding:13px 16px;margin:8px;cursor:pointer}
   .docente-access-note{margin:12px 0;padding:12px;border-radius:16px;background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;font-weight:900}
 </style>
+
+<!-- CARGA DE INTEGRACIÓN FIREBASE ASÍNCRONA REALTIME -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0DDVk0cyVwwcM2eVijyCl79GQmrLhx4U",
+  authDomain: "fonetica-completa.firebaseapp.com",
+  databaseURL: "https://fonetica-completa-default-rtdb.firebaseio.com",
+  projectId: "fonetica-completa",
+  storageBucket: "fonetica-completa.firebasestorage.app",
+  messagingSenderId: "299781730803",
+  appId: "1:299781730803:web:9e71c2aeb60b5063e82286"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+// Exportar la función de empuje directo a la ventana global para docente_control
+window.enviarResultadoAFirebase = function(datosRecord) {
+  if(!datosRecord || !datosRecord.name || datosRecord.name === 'Estudiante registrado') return;
+  
+  // Limpiar caracteres especiales del nombre para crear una ruta de base de datos válida
+  const safeStudentPath = datosRecord.name.replace(/[\.#\$\[\]]/g, "_");
+  const targetId = datosRecord.activityId || "vocal_a_laberinto";
+  
+  const dbRef = ref(database, 'resultados_laberintos/' + safeStudentPath + '_' + targetId);
+  
+  // Mapear los campos con la estructura exacta que lee tu tabla nativa docente.html
+  set(dbRef, {
+    actividadID: targetId,
+    tituloActividad: datosRecord.activityTitle || "Actividad",
+    estudiante: datosRecord.name,
+    puntajeObtenido: Number(datosRecord.score) || 0,
+    maximoPuntajePosible: Number(datosRecord.max) || 0,
+    tiempoSegundos: Number(datosRecord.timeSeconds) || 0,
+    intentosRealizados: Number(datosRecord.attempts) || 1,
+    erroresFrecuentes: datosRecord.frequentErrors || "—",
+    timestamp: datosRecord.dateISO || new Date().toISOString(),
+    fechaRegistro: datosRecord.date ? datosRecord.date.split(" ")[0] : new Date().toLocaleDateString(),
+    horaRegistro: datosRecord.hour || new Date().toLocaleTimeString()
+  }).catch(e => console.log("Error de red Firebase sin conexión:", e));
+};
+</script>
+
 <script id="docente-control-script">
 (function(){
   if(window.__docenteControlInstalled) return; window.__docenteControlInstalled=true;
@@ -1090,7 +1125,13 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
   function saveGlobalResult(base){
     var rec=currentRecord(base); var arr=loadJSON(GLOBAL_KEY,[]); if(!Array.isArray(arr))arr=[]; var key=rec.activityId+'||'+rec.name; var idx=arr.findIndex(function(r){return (r.activityId+'||'+r.name)===key;});
     if(idx>=0){var old=arr[idx]; if((Number(rec.score)||0)>=(Number(old.score)||0) || (Number(rec.score)===Number(old.score)&&Number(rec.timeSeconds||999999)<Number(old.timeSeconds||999999))) arr[idx]=Object.assign({},old,rec,{attempts:rec.attempts}); else arr[idx]=Object.assign({},old,{attempts:rec.attempts,dateISO:rec.dateISO,date:rec.date,hour:rec.hour,timeSeconds:rec.timeSeconds,timeLabel:rec.timeLabel,frequentErrors:rec.frequentErrors,status:old.status||rec.status});}
-    else arr.push(rec); saveJSON(GLOBAL_KEY,arr.slice(-500)); return rec;
+    else arr.push(rec); saveJSON(GLOBAL_KEY,arr.slice(-500));
+    
+    // EMPUJE DINÁMICO FIREBASE CLOUD VINCULADO
+    if(typeof window.enviarResultadoAFirebase === 'function') {
+      window.enviarResultadoAFirebase(arr[idx >= 0 ? idx : arr.length - 1]);
+    }
+    return rec;
   }
   function wrapSave(){if(window.foneticaGuardarResultado&&!window.foneticaGuardarResultado.__docenteWrapped){oldSave=window.foneticaGuardarResultado;window.foneticaGuardarResultado=function(){if(wrapping)return oldSave.apply(this,arguments);wrapping=true;var r;try{r=oldSave.apply(this,arguments);}catch(e){}wrapping=false;return saveGlobalResult(r);};window.foneticaGuardarResultado.__docenteWrapped=true;}}
   ready(function(){if(!checkAccess())return; incrementAttempts(); installTimer(); installErrorCatcher(); setInterval(wrapSave,500); setInterval(function(){saveGlobalResult();},5000); window.addEventListener('beforeunload',function(){saveGlobalResult();}); document.addEventListener('click',function(e){var t=e.target;if(t&&t.id==='understandNo'){incrementAttempts();saveGlobalResult();}},true);});
