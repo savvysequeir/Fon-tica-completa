@@ -1864,5 +1864,437 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 </script>
 <!-- DOCENTE_CONTROL_END -->
 
+
+
+<!-- STUDENT_DATA_AND_VOCAB_LOCK_PATCH_START -->
+<style id="student-data-and-vocab-lock-style">
+  .student-field-wrap{display:grid;gap:7px;min-width:min(100%,260px);flex:1 1 260px;}
+  .student-field-wrap.student-name-wrap{flex-basis:360px;}
+  .student-field-label{font-weight:1000;color:#0f172a;font-size:.93rem;display:flex;gap:7px;align-items:center;}
+  .student-field-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:999px;background:#dbeafe;color:#1e3a8a;font-size:.82rem;font-weight:1000;}
+  .student-field-wrap input,.student-field-wrap select{width:100%;min-width:0;}
+  #studentDataPreview{margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;}
+  .student-data-box{background:#f8fafc;border:1px solid #dbe4ef;border-radius:16px;padding:12px;display:grid;gap:4px;}
+  .student-data-box strong{color:#0f172a;font-size:.95rem;}
+  .student-data-box span{color:#334155;font-weight:900;word-break:break-word;}
+  #studentAutoBanner .student-data-grid{margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;}
+  #studentAutoBanner .student-auto-cell{background:#ffffff;border:1px solid #a5f3fc;border-radius:14px;padding:10px;display:grid;gap:3px;}
+  #studentAutoBanner .student-auto-cell b{color:#164e63;}
+  #studentAutoBanner .student-auto-cell span{color:#0f172a;font-weight:1000;}
+  #vocabularioBtn.vocab-locked,#vocabularioBtn:disabled{background:#94a3b8!important;color:#f8fafc!important;cursor:not-allowed!important;opacity:.78!important;box-shadow:none!important;transform:none!important;filter:none!important;}
+  #vocabLockNote{background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;border-radius:14px;padding:9px 12px;font-weight:900;line-height:1.35;}
+  #vocabUnlockNote{background:#dcfce7;border:1px solid #86efac;color:#14532d;border-radius:14px;padding:9px 12px;font-weight:900;line-height:1.35;}
+  @media(max-width:720px){.student-field-wrap{flex-basis:100%;}#studentDataPreview{grid-template-columns:1fr;}}
+</style>
+<script id="student-data-and-vocab-lock-script">
+(function(){
+  if(window.__studentDataVocabLockPatchInstalled) return; window.__studentDataVocabLockPatchInstalled=true;
+  var vocabUnlocked=false;
+  var vocabJustOpened=false;
+  function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
+  function esc(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];});}
+  function clean(s){return String(s||'').trim().replace(/\s+/g,' ');}
+  function norm(s){return clean(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');}
+  function splitStudentPayload(raw){
+    raw=String(raw||'').trim();
+    var out={name:raw,career:'',year:''};
+    if(!raw) return out;
+    var parts=[];
+    if(raw.indexOf('||')>-1){ parts=raw.split('||'); }
+    else if(raw.indexOf('|')>-1){ parts=raw.split('|'); }
+    else { return out; }
+    out.name=clean(parts[0]||''); out.career=clean(parts[1]||''); out.year=clean(parts[2]||'');
+    return out;
+  }
+  function findOptionByLooseText(select, value){
+    if(!select || !value) return '';
+    var target=norm(value);
+    var aliases={
+      'odontologia':'odontologia','medicina':'medicina','quimicafarmaceutica':'quimicafarmaceutica','quimica':'quimicafarmaceutica',
+      'enfermeria':'enfermeria','mecanicadental':'mecanicadental','veterinaria':'veterinaria','zootecnia':'zootecnia',
+      'agronomia':'agronomia','agricola':'agricola','ingenieriaforestal':'ingenieriaforestal','forestal':'ingenieriaforestal',
+      'ingenieriaenagroindustriadelosalimentos':'ingenieriaenagroindustriadelosalimentos','agroindustriadelosalimentos':'ingenieriaenagroindustriadelosalimentos','agroindustria':'ingenieriaenagroindustriadelosalimentos',
+      'agronegocios':'agronegocios','ingles':'ingles','english':'ingles'
+    };
+    if(aliases[target]) target=aliases[target];
+    for(var i=0;i<select.options.length;i++){
+      var opt=select.options[i];
+      if(!opt.value) continue;
+      var ov=norm(opt.value), ot=norm(opt.textContent);
+      if(ov===target || ot===target || ov.indexOf(target)>=0 || ot.indexOf(target)>=0 || target.indexOf(ov)>=0 || target.indexOf(ot)>=0){return opt.value;}
+    }
+    return '';
+  }
+  function normalizeYear(raw){
+    raw=clean(raw);
+    if(!raw) return '';
+    var m=raw.match(/[1-5]/);
+    return m?m[0]:'';
+  }
+  function displayCareer(value){
+    var sel=document.getElementById('studentCareer');
+    if(sel){ var opt=sel.options[sel.selectedIndex]; if(opt && opt.value) return clean(opt.textContent); }
+    return clean(value)||'—';
+  }
+  function displayYear(value){
+    var sel=document.getElementById('studentYear');
+    if(sel){ var opt=sel.options[sel.selectedIndex]; if(opt && opt.value) return clean(opt.textContent); }
+    value=normalizeYear(value); return value ? ('Año '+value) : '—';
+  }
+  function applyParsed(raw){
+    var input=document.getElementById('studentName'), careerSel=document.getElementById('studentCareer'), yearSel=document.getElementById('studentYear');
+    var parsed=splitStudentPayload(raw);
+    if(input && parsed.name && parsed.name!==input.value) input.value=parsed.name;
+    if(careerSel && parsed.career){ var cv=findOptionByLooseText(careerSel, parsed.career); if(cv) careerSel.value=cv; }
+    if(yearSel && parsed.year){ var yv=normalizeYear(parsed.year); if(yv) yearSel.value=yv; }
+    persistCleanData(); updatePreview(); updateBanner();
+  }
+  function persistCleanData(){
+    var input=document.getElementById('studentName'), careerSel=document.getElementById('studentCareer'), yearSel=document.getElementById('studentYear');
+    var name=clean(input&&input.value), career=careerSel&&careerSel.value||'', year=yearSel&&yearSel.value||'';
+    if(name && (name.indexOf('||')>-1 || name.indexOf('|')>-1)){ var p=splitStudentPayload(name); if(input) input.value=p.name; name=p.name; if(p.career && careerSel){var cv=findOptionByLooseText(careerSel,p.career); if(cv){careerSel.value=cv; career=cv;}} if(p.year && yearSel){var yv=normalizeYear(p.year); if(yv){yearSel.value=yv; year=yv;}} }
+    try{ if(name) localStorage.setItem('fonetica_student_full_name',name); if(career) localStorage.setItem('fonetica_student_career',career); if(year) localStorage.setItem('fonetica_student_year',year); }catch(e){}
+  }
+  function wrapIdentityControls(){
+    var row=document.querySelector('#studentPanel .row'); if(!row || row.dataset.identityWrapped) return; row.dataset.identityWrapped='1';
+    function wrap(id,label,num,cls){
+      var el=document.getElementById(id); if(!el || el.parentElement.classList.contains('student-field-wrap')) return;
+      var w=document.createElement('div'); w.className='student-field-wrap '+(cls||'');
+      var lab=document.createElement('label'); lab.className='student-field-label'; lab.setAttribute('for',id);
+      lab.innerHTML='<span class="student-field-num">'+num+'</span>'+label;
+      el.parentNode.insertBefore(w,el); w.appendChild(lab); w.appendChild(el);
+    }
+    wrap('studentName','Nombre completo','1','student-name-wrap');
+    wrap('studentCareer','Carrera','2','student-career-wrap');
+    wrap('studentYear','Año','3','student-year-wrap');
+  }
+  function ensurePreview(){
+    var welcome=document.getElementById('welcome'); if(!welcome) return null;
+    var box=document.getElementById('studentDataPreview');
+    if(!box){ box=document.createElement('div'); box.id='studentDataPreview'; welcome.parentNode.insertBefore(box, welcome.nextSibling); }
+    return box;
+  }
+  function updatePreview(){
+    var box=ensurePreview(); if(!box) return;
+    var name=clean((document.getElementById('studentName')||{}).value)||'—';
+    var career=displayCareer((document.getElementById('studentCareer')||{}).value);
+    var year=displayYear((document.getElementById('studentYear')||{}).value);
+    box.innerHTML='<div class="student-data-box"><strong>1. Nombre completo</strong><span>'+esc(name)+'</span></div><div class="student-data-box"><strong>2. Carrera</strong><span>'+esc(career)+'</span></div><div class="student-data-box"><strong>3. Año</strong><span>'+esc(year)+'</span></div>';
+  }
+  function updateBanner(){
+    var banner=document.getElementById('studentAutoBanner'); if(!banner) return;
+    var name=clean((document.getElementById('studentName')||{}).value)||'—';
+    var career=displayCareer((document.getElementById('studentCareer')||{}).value);
+    var year=displayYear((document.getElementById('studentYear')||{}).value);
+    banner.innerHTML='✅ Datos cargados. Revisa cada casilla y luego presiona <strong>comenzar</strong>.<div class="student-data-grid"><div class="student-auto-cell"><b>1. Nombre completo</b><span>'+esc(name)+'</span></div><div class="student-auto-cell"><b>2. Carrera</b><span>'+esc(career)+'</span></div><div class="student-auto-cell"><b>3. Año</b><span>'+esc(year)+'</span></div></div>';
+  }
+  function initialSanitize(){
+    var input=document.getElementById('studentName'), careerSel=document.getElementById('studentCareer'), yearSel=document.getElementById('studentYear');
+    var raw='';
+    try{ raw=(new URLSearchParams(location.search||'')).get('student')||(new URLSearchParams(location.search||'')).get('nombre')||(new URLSearchParams(location.search||'')).get('name')||''; }catch(e){}
+    if(!raw){ try{raw=localStorage.getItem('fonetica_student_full_name')||'';}catch(e){} }
+    if(raw && (raw.indexOf('|')>-1)){ applyParsed(raw); }
+    else {
+      try{ if(input && !input.value) input.value=clean(localStorage.getItem('fonetica_student_full_name')||''); }catch(e){}
+      try{ var c=localStorage.getItem('fonetica_student_career')||''; if(careerSel && c){ var cv=findOptionByLooseText(careerSel,c); if(cv) careerSel.value=cv; } }catch(e){}
+      try{ var y=localStorage.getItem('fonetica_student_year')||''; if(yearSel && y){ var yv=normalizeYear(y); if(yv) yearSel.value=yv; } }catch(e){}
+      persistCleanData(); updatePreview(); updateBanner();
+    }
+  }
+  function interceptInsertButton(){
+    var btn=document.getElementById('insertNameBtn'); if(!btn || btn.dataset.identityPatch) return; btn.dataset.identityPatch='1';
+    btn.addEventListener('click',function(ev){
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      var current=clean((document.getElementById('studentName')||{}).value);
+      var raw=prompt('Escribe el nombre completo. También puedes pegar: Nombre completo||Carrera||Año', current && current.indexOf('|')<0 ? current : '');
+      if(raw && clean(raw)){ applyParsed(raw); var input=document.getElementById('studentName'); if(input) input.focus(); }
+    },true);
+  }
+  function bindIdentityEvents(){
+    ['studentName','studentCareer','studentYear'].forEach(function(id){ var el=document.getElementById(id); if(!el || el.dataset.identityBind) return; el.dataset.identityBind='1'; el.addEventListener('change',function(){ if(id==='studentName' && el.value.indexOf('|')>-1) applyParsed(el.value); else {persistCleanData(); updatePreview(); updateBanner();} }); el.addEventListener('blur',function(){ if(id==='studentName' && el.value.indexOf('|')>-1) applyParsed(el.value); else {persistCleanData(); updatePreview(); updateBanner();} }); });
+    var start=document.getElementById('startBtn'); if(start && !start.dataset.identityStartPatch){ start.dataset.identityStartPatch='1'; start.addEventListener('click',function(){ var input=document.getElementById('studentName'); if(input && input.value.indexOf('|')>-1) applyParsed(input.value); persistCleanData(); updatePreview(); updateBanner(); setTimeout(updatePreview,60); },true); start.addEventListener('click',function(){ setTimeout(function(){persistCleanData(); updatePreview(); updateBanner();},160); }); }
+  }
+  function isVocabPanelOpen(){ var panel=document.getElementById('vocabularioPanel'); return !!(panel && !panel.classList.contains('vocab-hidden')); }
+  function setVocabLocked(locked){
+    var btn=document.getElementById('vocabularioBtn'); if(!btn) return;
+    var top=document.getElementById('vocabularioTopbar');
+    var note=document.getElementById('vocabLockNote') || document.getElementById('vocabUnlockNote');
+    if(locked){
+      vocabUnlocked=false; btn.disabled=true; btn.classList.add('vocab-locked'); btn.innerHTML='🔒 Vocabulario bloqueado'; btn.title='Termina la mini práctica final para abrir el vocabulario.';
+      if(!note && top){ note=document.createElement('span'); note.id='vocabLockNote'; note.textContent='El vocabulario se abrirá después de completar la mini práctica final.'; top.appendChild(note); }
+      if(note){ note.id='vocabLockNote'; note.textContent='El vocabulario se abrirá después de completar la mini práctica final.'; }
+      var panel=document.getElementById('vocabularioPanel'); if(panel) panel.classList.add('vocab-hidden');
+    }else{
+      vocabUnlocked=true; btn.disabled=false; btn.classList.remove('vocab-locked'); btn.innerHTML='📚 Vocabulario'; btn.title='Abrir vocabulario del ejercicio.';
+      if(!note && top){ note=document.createElement('span'); top.appendChild(note); }
+      if(note){ note.id='vocabUnlockNote'; note.textContent='Vocabulario desbloqueado: mini práctica completada.'; }
+    }
+  }
+  function installVocabGuard(){
+    document.addEventListener('click',function(ev){
+      var btn=ev.target && ev.target.closest ? ev.target.closest('#vocabularioBtn') : null;
+      if(btn && !vocabUnlocked){
+        ev.preventDefault(); ev.stopImmediatePropagation();
+        try{ if(typeof toast==='function') toast('Primero completa la mini práctica final para desbloquear el vocabulario.','warn'); }catch(e){}
+        return false;
+      }
+    },true);
+    var obs=new MutationObserver(function(){ var btn=document.getElementById('vocabularioBtn'); if(btn && !vocabUnlocked){ setVocabLocked(true); } });
+    obs.observe(document.documentElement,{childList:true,subtree:true});
+    setTimeout(function(){setVocabLocked(true);},300);
+    setTimeout(function(){setVocabLocked(true);},1200);
+  }
+  function unlockVocabAndOpen(){
+    if(vocabJustOpened) return;
+    vocabJustOpened=true;
+    setVocabLocked(false);
+    var btn=document.getElementById('vocabularioBtn');
+    var panel=document.getElementById('vocabularioPanel');
+    try{ if(btn && panel && panel.classList.contains('vocab-hidden')) setTimeout(function(){btn.click();},80); }catch(e){}
+    try{ if(typeof toast==='function') toast('Mini práctica completada. Vocabulario desbloqueado.','ok'); }catch(e){}
+  }
+  function checkMiniPracticeCompleted(){
+    var container=document.getElementById('miniPracticeContainer'); if(!container) return;
+    var cards=container.querySelectorAll('.practice-card');
+    if(!cards.length) return;
+    for(var i=0;i<cards.length;i++){ if(!cards[i].getAttribute('data-done')) return; }
+    unlockVocabAndOpen();
+  }
+  function installMiniPracticeWatcher(){
+    document.addEventListener('click',function(ev){ if(ev.target && ev.target.closest && ev.target.closest('.practice-option')) setTimeout(checkMiniPracticeCompleted,120); },true);
+    var obs=new MutationObserver(function(){ var container=document.getElementById('miniPracticeContainer'); if(container && container.querySelector('.practice-card')){ vocabJustOpened=false; setVocabLocked(true); } });
+    obs.observe(document.documentElement,{childList:true,subtree:true});
+  }
+  ready(function(){
+    wrapIdentityControls(); initialSanitize(); interceptInsertButton(); bindIdentityEvents(); updatePreview(); setTimeout(function(){updateBanner(); updatePreview();},180);
+    installVocabGuard(); installMiniPracticeWatcher();
+  });
+})();
+</script>
+<!-- STUDENT_DATA_AND_VOCAB_LOCK_PATCH_END -->
+
+
+<!-- WORD_READER_TTS_START -->
+<style id="word-reader-tts-style">
+  .word-reader-panel{background:#f8fafc;border:1px solid #cbd5e1;border-radius:18px;padding:14px;margin-top:14px;display:grid;gap:10px}
+  .word-reader-title{font-weight:1000;color:#0f172a;font-size:1.05rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .word-reader-note{color:#475569;line-height:1.35;font-size:.94rem}
+  .word-reader-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .word-reader-controls input[type="text"]{min-width:min(100%,320px)}
+  .btn-reader{background:#0ea5e9;color:#ffffff;border:1px solid #0284c7;box-shadow:0 8px 18px rgba(14,165,233,.20)}
+  .btn-reader-stop{background:#64748b;color:#ffffff;border:1px solid #475569;box-shadow:none}
+  .reader-status{font-weight:900;color:#0369a1;background:#e0f2fe;border:1px solid #bae6fd;border-radius:999px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px}
+  @media(max-width:720px){.word-reader-controls button,.word-reader-controls input,.word-reader-controls select{width:100%}}
+</style>
+<script id="word-reader-tts-script">
+(function(){
+  if(window.__wordReaderTTSInstalled) return;
+  window.__wordReaderTTSInstalled = true;
+
+  var voicesLoaded = false;
+  var originalPlayKey = null;
+
+  function ready(fn){
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true});
+    else fn();
+  }
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function cleanText(s){return String(s||'').replace(/^[0-9]+\.?\s*/,'').replace(/\s+/g,' ').trim();}
+  function readerSupported(){return 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;}
+  function getLang(){var el=document.getElementById('wordReaderLang'); return el && el.value ? el.value : 'en-US';}
+  function getRate(){var el=document.getElementById('wordReaderRate'); var n=el?parseFloat(el.value):0.85; return isFinite(n) ? Math.max(.55, Math.min(1.25,n)) : .85;}
+  function setReaderStatus(msg, ok){
+    var el=document.getElementById('wordReaderStatus');
+    if(el){el.textContent = msg; el.style.color = ok===false ? '#991b1b' : '#0369a1'; el.style.background = ok===false ? '#fee2e2' : '#e0f2fe'; el.style.borderColor = ok===false ? '#fecaca' : '#bae6fd';}
+  }
+  function loadVoices(){
+    try{ var voices = speechSynthesis.getVoices(); voicesLoaded = voices && voices.length>0; return voices || []; }catch(e){ return []; }
+  }
+  function chooseVoice(lang){
+    var voices = loadVoices();
+    if(!voices.length) return null;
+    var exact = voices.find(function(v){return (v.lang||'').toLowerCase() === lang.toLowerCase();});
+    if(exact) return exact;
+    var base = lang.split('-')[0].toLowerCase();
+    return voices.find(function(v){return (v.lang||'').toLowerCase().indexOf(base) === 0;}) || voices.find(function(v){return /en/i.test(v.lang||v.name||'');}) || null;
+  }
+  function speakText(text, kind){
+    text = cleanText(text);
+    if(!text){setReaderStatus('Escribe o selecciona una palabra.', false); return;}
+    if(!readerSupported()){
+      setReaderStatus('Este navegador no permite lector de voz. Usa Google Chrome o Edge.', false);
+      try{ if(typeof toast==='function') toast('Este navegador no permite lector de voz. Usa Google Chrome o Edge.','bad'); }catch(e){}
+      return;
+    }
+    try{ speechSynthesis.cancel(); }catch(e){}
+    var lang = getLang();
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = getRate();
+    utter.pitch = 1;
+    utter.volume = 1;
+    var voice = chooseVoice(lang);
+    if(voice) utter.voice = voice;
+    utter.onstart = function(){ setReaderStatus('Leyendo: “' + text + '”', true); };
+    utter.onend = function(){ setReaderStatus('Lectura terminada.', true); };
+    utter.onerror = function(){ setReaderStatus('No pude leer el texto. Haz clic otra vez.', false); };
+    try{ speechSynthesis.speak(utter); }
+    catch(e){ setReaderStatus('Chrome bloqueó la voz. Haz clic otra vez.', false); }
+  }
+  window.leerPalabraFonetica = speakText;
+
+  function stopReader(){
+    try{ if(readerSupported()) speechSynthesis.cancel(); }catch(e){}
+    setReaderStatus('Lector detenido.', true);
+  }
+
+  function textFromAudioKey(key){
+    key = String(key||'');
+    if(/^word:/i.test(key)) return key.replace(/^word:/i,'');
+    if(/^vocab:/i.test(key)) return key.replace(/^vocab:/i,'');
+    if(/^sentence:/i.test(key)){
+      var n = parseInt(key.replace(/^sentence:/i,''),10);
+      try{ if(typeof SENTENCES!=='undefined' && SENTENCES[n-1]) return typeof SENTENCES[n-1] === 'string' ? SENTENCES[n-1] : (SENTENCES[n-1].text || String(SENTENCES[n-1])); }catch(e){}
+    }
+    return '';
+  }
+
+  function installPanel(){
+    if(document.getElementById('wordReaderPanel')) return;
+    var studentPanel = document.getElementById('studentPanel');
+    if(!studentPanel) return;
+    var panel = document.createElement('div');
+    panel.id = 'wordReaderPanel';
+    panel.className = 'word-reader-panel';
+    panel.innerHTML = '<div class="word-reader-title">🔈 Lector de palabras <span id="wordReaderStatus" class="reader-status">Listo para leer</span></div>'+
+      '<div class="word-reader-note">Escribe una palabra en inglés o usa los botones <strong>🔈 Lector</strong> que aparecen en las palabras del recorrido y en el vocabulario. Este lector usa la voz del navegador; no necesita audios subidos.</div>'+
+      '<div class="word-reader-controls">'+
+        '<input id="wordReaderInput" type="text" placeholder="Escribe una palabra: art, father, park..." />'+
+        '<select id="wordReaderLang" aria-label="Voz del lector"><option value="en-US">Inglés americano</option><option value="en-GB">Inglés británico</option></select>'+ 
+        '<select id="wordReaderRate" aria-label="Velocidad del lector"><option value="0.70">Lento</option><option value="0.85" selected>Normal</option><option value="1.00">Rápido</option></select>'+ 
+        '<button id="wordReaderSpeakBtn" class="btn-reader">🔈 Leer palabra</button>'+ 
+        '<button id="wordReaderStopBtn" class="btn-reader-stop">⏹ Detener</button>'+ 
+      '</div>';
+    var chromeNote = studentPanel.querySelector('.chrome-note');
+    if(chromeNote && chromeNote.parentNode) chromeNote.parentNode.insertBefore(panel, chromeNote.nextSibling);
+    else studentPanel.appendChild(panel);
+    var input = document.getElementById('wordReaderInput');
+    var speakBtn = document.getElementById('wordReaderSpeakBtn');
+    var stopBtn = document.getElementById('wordReaderStopBtn');
+    if(speakBtn) speakBtn.addEventListener('click',function(){speakText(input?input.value:'','word');});
+    if(stopBtn) stopBtn.addEventListener('click',stopReader);
+    if(input) input.addEventListener('keydown',function(ev){ if(ev.key==='Enter'){ev.preventDefault(); speakText(input.value,'word');} });
+    if(readerSupported()){
+      loadVoices();
+      try{ speechSynthesis.onvoiceschanged = function(){loadVoices();}; }catch(e){}
+    } else setReaderStatus('Lector no compatible en este navegador.', false);
+  }
+
+  function addInlineReaderToWordCard(card){
+    if(!card || card.querySelector('.word-reader-inline')) return;
+    var strong = card.querySelector('strong');
+    var line = card.querySelector('.upload-line') || card;
+    var word = strong ? cleanText(strong.textContent) : '';
+    if(!word) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'small btn-reader word-reader-inline';
+    btn.setAttribute('data-reader-text', word);
+    btn.textContent = '🔈 Lector';
+    var playBtn = line.querySelector('[data-play]');
+    if(playBtn && playBtn.nextSibling) line.insertBefore(btn, playBtn.nextSibling);
+    else line.insertBefore(btn, line.firstChild);
+  }
+
+  function addInlineReaderToVocabCard(card){
+    if(!card || card.querySelector('.word-reader-inline')) return;
+    var wordEl = card.querySelector('.vocab-word');
+    var line = card.querySelector('.row') || card;
+    var word = wordEl ? cleanText(wordEl.textContent) : '';
+    if(!word) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-reader small word-reader-inline';
+    btn.setAttribute('data-reader-text', word);
+    btn.textContent = '🔈 Lector';
+    var playBtn = line.querySelector('[data-vocab-play]');
+    if(playBtn && playBtn.nextSibling) line.insertBefore(btn, playBtn.nextSibling);
+    else line.insertBefore(btn, line.firstChild);
+  }
+
+  function addInlineReaderToPhrase(card){
+    if(!card || card.querySelector('.phrase-reader-inline')) return;
+    var textEl = card.querySelector('[style*="line-height"]');
+    var line = card.querySelector('.row') || card;
+    var text = textEl ? cleanText(textEl.textContent) : '';
+    if(!text || text.length < 2) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-reader small phrase-reader-inline';
+    btn.setAttribute('data-reader-text', text);
+    btn.textContent = '🔈 Lector frase';
+    var playBtn = line.querySelector('[data-vocab-play]');
+    if(playBtn && playBtn.nextSibling) line.insertBefore(btn, playBtn.nextSibling);
+    else line.insertBefore(btn, line.firstChild);
+  }
+
+  function enhanceReaders(root){
+    root = root || document;
+    root.querySelectorAll('.word-card').forEach(addInlineReaderToWordCard);
+    root.querySelectorAll('.vocab-card').forEach(addInlineReaderToVocabCard);
+    root.querySelectorAll('.vocab-phrase').forEach(addInlineReaderToPhrase);
+  }
+
+  function installDelegatedReader(){
+    document.addEventListener('click',function(ev){
+      var btn = ev.target && ev.target.closest ? ev.target.closest('[data-reader-text]') : null;
+      if(!btn) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      var text = btn.getAttribute('data-reader-text') || '';
+      var input = document.getElementById('wordReaderInput');
+      if(input && text.length < 55) input.value = text;
+      speakText(text, text.split(/\s+/).length > 1 ? 'sentence' : 'word');
+    }, true);
+  }
+
+  function patchPlayKeyFallback(){
+    if(window.__wordReaderPlayKeyPatched) return;
+    if(typeof window.playKey !== 'function') return;
+    window.__wordReaderPlayKeyPatched = true;
+    originalPlayKey = window.playKey;
+    window.playKey = async function(key){
+      var text = textFromAudioKey(key);
+      try{
+        if(typeof hasAudio === 'function'){
+          var ok = await hasAudio(key);
+          if(ok) return originalPlayKey.apply(this, arguments);
+          if(text){ speakText(text, text.split(/\s+/).length > 1 ? 'sentence' : 'word'); return; }
+        }
+      }catch(e){}
+      try{ return await originalPlayKey.apply(this, arguments); }
+      catch(err){ if(text) speakText(text, 'word'); }
+    };
+  }
+
+  ready(function(){
+    installPanel();
+    installDelegatedReader();
+    patchPlayKeyFallback();
+    enhanceReaders(document);
+    var obs = new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        Array.prototype.forEach.call(m.addedNodes || [], function(n){ if(n.nodeType === 1) enhanceReaders(n); });
+      });
+      patchPlayKeyFallback();
+    });
+    obs.observe(document.documentElement,{childList:true,subtree:true});
+    setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},700);
+    setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},1800);
+  });
+})();
+</script>
+<!-- WORD_READER_TTS_END -->
+
 </body>
 </html>
