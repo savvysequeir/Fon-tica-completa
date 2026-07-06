@@ -2,88 +2,102 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fonética | VOWELS & CONSONANTS</title>
+  <title>Fonética Inglesa | Menú Principal</title>
   <style>
-    body{font-family:system-ui,sans-serif;background:#eff6ff;padding:22px;color:#0f172a;}
-    .wrap{max-width:1040px;margin:auto;background:white;border-radius:24px;padding:24px;box-shadow:0 16px 40px rgba(0,0,0,.1);}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-top:20px;}
-    a.btn-activity{display:block;background:#1d4ed8;color:white;text-decoration:none;padding:20px;border-radius:15px;font-weight:900;text-align:center;}
-    a.btn-activity.con{background:#7c2d12}
+    body{font-family:system-ui,sans-serif;background:#eff6ff;color:#0f172a;margin:0;padding:20px}
+    .wrap{max-width:1000px;margin:auto;background:white;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.1)}
     
-    /* Portal de Registro */
-    #studentNameGate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(15,23,42,.95);}
-    #studentNameGate.gate-closed{display:none!important}
-    .gate-card{width:min(720px,100%);background:#fff;border-radius:30px;padding:38px;box-shadow:0 35px 90px rgba(0,0,0,.38);}
-    .gate-row{display:flex;gap:12px;flex-direction:column;margin-top:20px}
-    .gate-row input, .gate-row select{width:100%;border:2px solid #cbd5e1;border-radius:16px;padding:15px;font-size:1rem;}
-    .gate-row button{border:0;border-radius:16px;background:#16a34a;color:#fff;padding:15px;cursor:pointer;font-weight:950;}
+    /* Panel de Registro */
+    .register-panel{background:#f8fafc;border:2px solid #e2e8f0;padding:25px;border-radius:15px;margin-bottom:30px}
+    .input-group{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:15px}
+    input, select{padding:12px;border-radius:8px;border:1px solid #cbd5e1}
+    #saveBtn{background:#16a34a;color:white;border:0;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer}
+    
+    /* Grid de Actividades */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .btn-act{display:block;background:#1d4ed8;color:white;padding:15px;text-decoration:none;border-radius:10px;text-align:center;font-weight:bold}
+    .docente-btn{margin-top:30px;display:inline-block;background:#0f172a;color:white;padding:15px;text-decoration:none;border-radius:10px}
   </style>
 </head>
 <body>
 
-<!-- PORTAL DE REGISTRO -->
-<div id="studentNameGate">
-  <div class="gate-card">
-    <h1>🧾 Identificación Académica</h1>
-    <div class="gate-row">
-      <input id="gateName" type="text" placeholder="Nombre y Apellidos Completos" />
-      <select id="gateCareer">
-        <option value="">-- Seleccionar Carrera --</option>
+<div class="wrap">
+  <h1>Fonética Inglesa</h1>
+
+  <!-- 1. Panel de Registro -->
+  <div class="register-panel">
+    <h3>📝 Registrar datos del estudiante</h3>
+    <div id="welcomeMsg" style="color:#166534; font-weight:bold; margin-bottom:10px;"></div>
+    <div class="input-group">
+      <input id="nameInput" type="text" placeholder="Nombres y Apellidos">
+      <select id="careerInput">
+        <option value="">Seleccionar Carrera</option>
         <option value="Odontologia">Odontología</option>
         <option value="Medicina">Medicina</option>
+        <option value="Quimica Farmaceutica">Química Farmacéutica</option>
+        <option value="Enfermeria">Enfermería</option>
+        <option value="Mecanica Dental">Mecánica Dental</option>
         <option value="Veterinaria">Veterinaria</option>
+        <option value="Agricola">Agrícola</option>
         <option value="Agronomia">Agronomía</option>
-        <option value="Otra">Otra</option>
+        <option value="Ingenieria Forestal">Ingeniería Forestal</option>
+        <option value="Agronegocios">Agronegocios</option>
+        <option value="Zootecnia">Zootecnia</option>
+        <option value="Agroindustria">Agroindustria de los Alimentos</option>
+        <option value="Ingles">Inglés</option>
       </select>
-      <select id="gateYear">
-        <option value="">-- Año Académico --</option>
+      <select id="yearInput">
+        <option value="">Año</option>
         <option value="1">1er Año</option><option value="2">2do Año</option><option value="3">3er Año</option>
+        <option value="4">4to Año</option><option value="5">5to Año</option>
       </select>
-      <button id="gateBtn">Guardar Datos Académicos</button>
+      <button id="saveBtn">Guardar Datos</button>
     </div>
   </div>
-</div>
 
-<div class="wrap">
-  <h1>Fonética · VOWELS & CONSONANTS</h1>
-  <div id="activeStudentBanner" style="background:#dcfce7; padding:10px; border-radius:10px; margin-bottom:20px; display:none; font-weight:bold;"></div>
-  
-  <div class="grid">
-    <a class="btn-activity" href="VOWELS/vocal_a_laberinto.html">Vocal 1 /ɑː/</a>
-    <!-- Aquí irán tus otros enlaces -->
+  <!-- 2. Grid de Actividades -->
+  <h2>Actividades Disponibles</h2>
+  <div class="grid" id="activitiesGrid">
+    <a class="btn-act" href="VOWELS/vocal_a_laberinto.html">Vocal 1 /ɑː/</a>
+    <a class="btn-act" href="VOWELS/vocal_o_laberinto.html">Vocal 2 /ɒ/</a>
+    <a class="btn-act" href="VOWELS/vocal_e_laberinto.html">Vocal 3 /e/</a>
+    <a class="btn-act" href="VOWELS/vocal_ae_laberinto.html">Vocal 4 /æ/</a>
+    <a class="btn-act" href="VOWELS/vocal_er_laberinto.html">Vocal 5 /ɜ:/</a>
+    <a class="btn-act" href="VOWELS/vocal_i_laberinto.html">Vocal 6 /i:/</a>
+    <a class="btn-act" href="VOWELS/vocal_ih_laberinto.html">Vocal 7 /ɪ/</a>
+    <a class="btn-act" href="VOWELS/vocal_aw_laberinto.html">Vocal 8 /ɔ:/</a>
+    <a class="btn-act" href="VOWELS/vocal_uh_laberinto.html">Vocal 9 /ʌ/</a>
+    <a class="btn-act" href="VOWELS/vocal_u_laberinto.html">Vocal 10 /u:/</a>
+    <a class="btn-act" href="VOWELS/vocal_oo_short_laberinto.html">Vocal 11 /ʊ/</a>
+    <a class="btn-act" href="VOWELS/vocal_schwa_laberinto.html">Vocal 12 /ə/</a>
   </div>
 
-  <div style="margin-top:40px; border-top: 2px dashed #cbd5e1; padding-top: 20px;">
-    <h2>👩‍🏫 Portal del Docente</h2>
-    <a href="docente.html" style="background:#0f172a; padding:15px; color:white; text-decoration:none; border-radius:10px; display:inline-block;">Abrir interfaz docente</a>
-  </div>
+  <a class="docente-btn" href="docente.html">👩‍🏫 Portal del Docente</a>
 </div>
 
 <script>
-  // Lógica del portal
-  var gate = document.getElementById('studentNameGate');
-  var banner = document.getElementById('activeStudentBanner');
-  var saved = localStorage.getItem('fonetica_student_full_name');
-
-  if(saved) {
-    gate.classList.add('gate-closed');
-    banner.style.display = 'block';
-    banner.textContent = '✅ Estudiante: ' + saved.split('||')[0];
+  function updateUI() {
+    var saved = localStorage.getItem('fonetica_student_full_name');
+    if(saved) {
+      document.getElementById('welcomeMsg').textContent = "✅ Estudiante registrado: " + saved.split('||')[0];
+    }
   }
 
-  document.getElementById('gateBtn').onclick = function() {
-    var n = document.getElementById('gateName').value;
-    var c = document.getElementById('gateCareer').value;
-    var y = document.getElementById('gateYear').value;
+  document.getElementById('saveBtn').onclick = function() {
+    var n = document.getElementById('nameInput').value;
+    var c = document.getElementById('careerInput').value;
+    var y = document.getElementById('yearInput').value;
     if(n && c && y) {
       localStorage.setItem('fonetica_student_full_name', n + '||' + c + '||' + y);
-      location.reload();
+      updateUI();
+      alert("Datos guardados. Ya puedes entrar a los laberintos.");
     } else {
       alert("Completa todos los campos");
     }
   };
+  
+  updateUI();
 </script>
-</div>
+
 </body>
 </html>
