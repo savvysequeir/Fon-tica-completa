@@ -995,17 +995,23 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
     var status=(b.score>=b.max && b.max>0)?'Completado':'En progreso';
     return {name:getStudent() + genHTMLInfoDocente(),score:b.score,max:b.max,maze:b.maze,mazeMax:b.mazeMax,wordAudio:b.wordAudio,wordAudioMax:b.wordAudioMax,sentenceHits:b.sentenceHits,sentenceHitsMax:b.sentenceHitsMax,sentenceAudio:b.sentenceAudio,sentenceAudioMax:b.sentenceAudioMax,date:new Date().toLocaleString(),status:status,activity:title()};
   }
-  function saveCurrentRecord(){
-    var record=makeRecord(currentBreakdown());
-    var records=loadRecords();
-    var idx=records.findIndex(function(r){return String(r.name||'')===String(record.name||'');});
-    if(idx>=0){
-      if((Number(record.score)||0) >= (Number(records[idx].score)||0) || record.status==='Completado' || records[idx].status!=='Completado') records[idx]=record;
-      else {records[idx].date=record.date; records[idx].status=records[idx].status||record.status;}
-    } else records.push(record);
-    saveRecords(records);
-    return record;
+function saveCurrentRecord(){
+  var record=makeRecord(currentBreakdown());
+  
+  // Limpieza: quitamos la carrera y año del nombre solo para que se vea bien en la tabla
+  if (record.name.includes("||")) {
+     record.name = record.name.split("||")[0].trim();
   }
+  
+  var records=loadRecords();
+  var idx=records.findIndex(function(r){return String(r.name||'')===String(record.name||'');});
+  if(idx>=0){
+    if((Number(record.score)||0) >= (Number(records[idx].score)||0) || record.status==='Completado' || records[idx].status!=='Completado') records[idx]=record;
+    else {records[idx].date=record.date; records[idx].status=records[idx].status||record.status;}
+  } else records.push(record);
+  saveRecords(records);
+  return record;
+}
   function normalizeRecord(r){
     return {name:r.name||'Estudiante registrado',score:Number(r.score)||0,max:Number(r.max)||0,maze:Number(r.maze)||0,mazeMax:Number(r.mazeMax)||0,wordAudio:Number(r.wordAudio)||0,wordAudioMax:Number(r.wordAudioMax)||0,sentenceHits:Number(r.sentenceHits)||0,sentenceHitsMax:Number(r.sentenceHitsMax)||0,sentenceAudio:Number(r.sentenceAudio)||0,sentenceAudioMax:Number(r.sentenceAudioMax)||0,status:r.status||'En progreso',date:r.date||new Date().toLocaleString()};
   }
