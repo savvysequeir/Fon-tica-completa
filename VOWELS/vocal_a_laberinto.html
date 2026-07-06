@@ -87,7 +87,6 @@
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0f172a;color:white;border-radius:999px;padding:12px 18px;font-weight:900;box-shadow:0 14px 40px rgba(15,23,42,.35);z-index:99;max-width:90%;text-align:center}.toast.ok{background:#166534}.toast.warn{background:#92400e}.toast.bad{background:#991b1b}
 
     .btn-mic{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;box-shadow:none}.btn-mic.recording{background:#fee2e2;color:#b91c1c;border-color:#fecaca;animation:timerPulse .8s infinite alternate}
-    .speech-feedback{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:.82rem;font-weight:900;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.speech-ok{background:#dcfce7;color:#166534;border-color:#bbf7d0}.speech-warn{background:#fef9c3;color:#713f12;border-color:#fde68a}.speech-bad{background:#fee2e2;color:#991b1b;border-color:#fecaca}.speech-transcript{display:block;margin-top:6px;color:#475569;font-size:.88rem;font-weight:700}
 
     @media(max-width:720px){.wrap{padding:12px}.card{padding:15px}.maze{grid-template-columns:repeat(8,108px);min-width:900px}.cell{font-size:.82rem;min-height:58px;padding:6px 4px}.cell[data-long="1"]{font-size:.72rem}.hero{border-radius:20px}.row{align-items:stretch}button,input[type="text"],select{width:100%}}
 
@@ -99,17 +98,17 @@
 
 <style id="no-internal-name-style">
 
-  #studentPanel{margin-top:18px;}
-
-  #studentPanel .row:first-of-type{display:flex!important;}
-
   #studentPanel > h2:first-child,
 
   #studentPanel > p.muted:first-of-type,
 
-  #studentPanel > #welcome{display:block!important;}
+  #studentPanel > .row:first-of-type,
 
-  #studentCareer{min-width:min(100%,310px);}
+  #studentPanel > #welcome,
+
+  #welcomePanel{display:none!important;}
+
+  #studentPanel{margin-top:18px;}
 
   #studentAutoBanner{background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;border-radius:16px;padding:12px 14px;margin:12px 0;font-weight:900;line-height:1.35;}
 
@@ -152,31 +151,13 @@
 
         <option value="">-- Seleccionar Carrera --</option>
 
-        <option value="Odontologia">Odontología</option>
-
-        <option value="Medicina">Medicina</option>
-
-        <option value="Quimica Farmaceutica">Química Farmacéutica</option>
-
-        <option value="Enfermeria">Enfermería</option>
-
-        <option value="Mecanica Dental">Mecánica Dental</option>
-
-        <option value="Veterinaria">Veterinaria</option>
-
-        <option value="Zootecnia">Zootecnia</option>
+        <option value="Veterinaria">Medicina Veterinaria</option>
 
         <option value="Agronomia">Agronomía</option>
 
-        <option value="Agricola">Agrícola</option>
+        <option value="Forestal">Ingeniería Forestal</option>
 
-        <option value="Ingenieria Forestal">Ingeniería Forestal</option>
-
-        <option value="Ingenieria en Agroindustria de los Alimentos">Ingeniería en Agroindustria de los Alimentos</option>
-
-        <option value="Agronegocios">Agronegocios</option>
-
-        <option value="Ingles">Inglés</option>
+        <option value="Ambientales">Gestión Ambiental / Recursos Naturales</option>
 
         <option value="Otra">Otra Carrera / Curso General</option>
 
@@ -312,7 +293,7 @@
 
     <h2>4. Palabras correctas y pronunciación</h2>
 
-    <p class="muted">Escucha las palabras del recorrido y presiona el micrófono para leerlas en voz alta. El reconocimiento funciona mejor en Google Chrome o Microsoft Edge; debes permitir el uso del micrófono.</p>
+    <p class="muted">Escucha las palabras del recorrido y presiona el micrófono para evaluar tu pronunciación (Speaking).</p>
 
     <div class="word-grid" id="wordList"></div>
 
@@ -342,7 +323,7 @@
 
     <h2>6. Pronunciación de cada oración</h2>
 
-    <p class="muted">Sube o escucha la pronunciación completa de cada oración. Luego usa el micrófono para leer la oración completa y recibir retroalimentación automática.</p>
+    <p class="muted">Sube o escucha la pronunciación completa de cada oración. ¡Usa el micrófono para practicar tu lectura!</p>
 
     <div class="sentence-list" id="sentencePronunciationList"></div>
 
@@ -576,159 +557,103 @@ async function playKey(key){
 
 // ==========================================
 
-// RECONOCIMIENTO DE VOZ PARA PALABRAS Y ORACIONES (SPEAKING)
+// FUNCIÓN NATIVA DE RECONOCIMIENTO DE VOZ (SPEAKING)
 
 // ==========================================
-let activeSpeechRecognition = null;
 
-function normalizeSpeechText(value){
-  return String(value || '')
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[’']/g, '')
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
+function activarMicrofono(textoEsperado, botonElemento) {
 
-function wordsFromSpeech(value){
-  const cleaned = normalizeSpeechText(value);
-  return cleaned ? cleaned.split(' ').filter(Boolean) : [];
-}
-
-function speechScore(expected, transcript, mode='sentence'){
-  const exp = normalizeSpeechText(expected);
-  const got = normalizeSpeechText(transcript);
-  const expWords = wordsFromSpeech(exp);
-  const gotWords = wordsFromSpeech(got);
-  if(!exp || !got) return {ok:false, percent:0, matched:0, total:expWords.length || 1};
-
-  if(mode === 'word'){
-    const target = expWords[0] || exp;
-    const ok = gotWords.includes(target) || got === target || got.includes(target);
-    return {ok, percent: ok ? 100 : 0, matched: ok ? 1 : 0, total:1};
-  }
-
-  if(got === exp || got.includes(exp) || exp.includes(got)){
-    return {ok:true, percent:100, matched:expWords.length, total:expWords.length};
-  }
-
-  let matched = 0;
-  const remaining = gotWords.slice();
-  expWords.forEach(word => {
-    const i = remaining.indexOf(word);
-    if(i >= 0){ matched++; remaining.splice(i,1); }
-  });
-  const total = Math.max(expWords.length, 1);
-  const percent = Math.round((matched / total) * 100);
-  return {ok: percent >= 72, percent, matched, total};
-}
-
-function updateSpeechFeedback(button, message, status='warn', transcript=''){
-  const card = button.closest('.word-card, .sentence-card') || button.parentElement;
-  const feedback = card ? card.querySelector('.speech-feedback') : null;
-  const transcriptBox = card ? card.querySelector('.speech-transcript') : null;
-  if(feedback){
-    feedback.className = 'speech-feedback ' + (status === 'ok' ? 'speech-ok' : status === 'bad' ? 'speech-bad' : 'speech-warn');
-    feedback.textContent = message;
-  }
-  if(transcriptBox){
-    transcriptBox.textContent = transcript ? `Chrome escuchó: “${transcript}”` : '';
-  }
-}
-
-function resetSpeechButton(button, label){
-  button.classList.remove('recording');
-  if(button.dataset.speechDone === '1') return;
-  button.textContent = label || (button.dataset.speechMode === 'word' ? '🎙️ Leer palabra' : '🎙️ Leer oración');
-  button.disabled = false;
-}
-
-function activarMicrofono(textoEsperado, botonElemento, modo='sentence') {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    toast('El reconocimiento de voz no es compatible con este navegador. Usa Google Chrome o Microsoft Edge.', 'bad');
-    updateSpeechFeedback(botonElemento, 'Navegador no compatible', 'bad');
+
+    toast("El reconocimiento de voz no es compatible con este navegador. Usa Chrome o Edge.", "bad");
+
     return;
+
   }
 
-  try{
-    if(activeSpeechRecognition){ activeSpeechRecognition.abort(); }
-  }catch(e){}
+
 
   const recognition = new SpeechRecognition();
-  activeSpeechRecognition = recognition;
+
   recognition.lang = 'en-US';
+
   recognition.interimResults = false;
-  recognition.continuous = false;
-  recognition.maxAlternatives = 3;
 
-  const normalLabel = modo === 'word' ? '🎙️ Leer palabra' : '🎙️ Leer oración';
-  botonElemento.dataset.speechDone = '0';
-  botonElemento.disabled = true;
+  recognition.maxAlternatives = 1;
+
+
+
   botonElemento.classList.add('recording');
-  botonElemento.textContent = '🛑 Escuchando...';
-  updateSpeechFeedback(botonElemento, 'Escuchando...', 'warn');
-  toast(modo === 'word' ? 'Lee la palabra en inglés.' : 'Lee la oración completa en inglés.', 'ok');
 
-  try{
-    recognition.start();
-  }catch(e){
-    botonElemento.disabled = false;
-    resetSpeechButton(botonElemento, normalLabel);
-    toast('No se pudo iniciar el micrófono. Revisa el permiso del navegador.', 'bad');
-    updateSpeechFeedback(botonElemento, 'Permiso de micrófono requerido', 'bad');
-    return;
-  }
+  botonElemento.textContent = "🛑 Grabando...";
+
+  toast("Escuchando... Pronuncia ahora en inglés.", "ok");
+
+
+
+  recognition.start();
+
+
 
   recognition.onresult = function(event) {
-    const alternatives = Array.from(event.results[0] || []).map(item => item.transcript || '');
-    const transcript = alternatives[0] || '';
-    const best = alternatives
-      .map(t => ({text:t, score:speechScore(textoEsperado, t, modo)}))
-      .sort((a,b)=>b.score.percent-a.score.percent)[0] || {text:transcript, score:speechScore(textoEsperado, transcript, modo)};
 
-    const result = best.score;
-    botonElemento.disabled = false;
+    const transcript = event.results[0][0].transcript.toLowerCase().trim().replace(/[\.\?,!]/g, "");
 
-    if(result.ok){
-      botonElemento.dataset.speechDone = '1';
-      botonElemento.textContent = '✅ Correcto';
-      botonElemento.style.background = '#dcfce7';
-      botonElemento.style.color = '#166534';
-      botonElemento.style.borderColor = '#bbf7d0';
-      updateSpeechFeedback(botonElemento, modo === 'word' ? 'Palabra reconocida' : `Lectura aceptada ${result.percent}%`, 'ok', best.text);
-      toast(modo === 'word' ? `Correcto. Escuché: “${best.text}”` : `Buena lectura. Coincidencia: ${result.percent}%`, 'ok');
+    const esperadoLimpio = textoEsperado.toLowerCase().trim().replace(/[\.\?,!]/g, "");
+
+
+
+    if (transcript === esperadoLimpio || esperadoLimpio.includes(transcript) && transcript.length > 2) {
+
+      toast(`¡Excelente pronunciación! Escuché: "${transcript}"`, "ok");
+
+      botonElemento.style.background = "#dcfce7";
+
+      botonElemento.style.color = "#166534";
+
+      botonElemento.style.borderColor = "#bbf7d0";
+
+      botonElemento.textContent = "✅ Correcto";
+
     } else {
-      botonElemento.textContent = '🎙️ Reintentar';
-      updateSpeechFeedback(botonElemento, modo === 'word' ? 'No coincidió' : `Coincidencia ${result.percent}%`, 'warn', best.text);
-      toast(`Inténtalo de nuevo. Chrome escuchó: “${best.text}”`, 'warn');
+
+      toast(`Inténtalo de nuevo. Escuché: "${transcript}"`, "warn");
+
+      botonElemento.textContent = "🎙️ Reintentar";
+
     }
+
   };
 
-  recognition.onerror = function(event) {
-    botonElemento.disabled = false;
-    resetSpeechButton(botonElemento, normalLabel);
-    const msg = event && event.error === 'not-allowed' ? 'Permiso de micrófono denegado' : 'No se detectó audio claro';
-    updateSpeechFeedback(botonElemento, msg, 'bad');
-    toast(msg + '. Revisa el micrófono e inténtalo otra vez.', 'bad');
+
+
+  recognition.onerror = function() {
+
+    toast("No se detectó audio o el permiso fue denegado.", "bad");
+
+    botonElemento.textContent = "🎙️ Hablar";
+
   };
+
+
 
   recognition.onend = function() {
-    if(activeSpeechRecognition === recognition) activeSpeechRecognition = null;
-    botonElemento.disabled = false;
-    resetSpeechButton(botonElemento, normalLabel);
+
+    botonElemento.classList.remove('recording');
+
+    if (botonElemento.textContent === "🛑 Grabando...") {
+
+      botonElemento.textContent = "🎙️ Hablar";
+
+    }
+
   };
+
 }
 
-function bindSpeechButtons(root){
-  (root || document).querySelectorAll('[data-speech-target]').forEach(btn => {
-    if(btn.dataset.speechBound === '1') return;
-    btn.dataset.speechBound = '1';
-    btn.addEventListener('click', () => activarMicrofono(btn.dataset.speechTarget || '', btn, btn.dataset.speechMode || 'sentence'));
-  });
-}
+
 
 function audioKeyWord(word){return `word:${word}`;} function audioKeySentence(i){return `sentence:${i+1}`;}
 
@@ -892,23 +817,19 @@ function renderWords(){
 
         <button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar</button>
 
-        <button class="small btn-mic" data-speech-target="${escapeAttr(w)}" data-speech-mode="word">🎙️ Leer palabra</button>
-        <span class="speech-feedback">Sin intento</span>
+        <button class="small btn-mic" onclick="activarMicrofono('${escapeAttr(w)}', this)">🎙️ Hablar</button>
 
         <label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label>
 
         <span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span>
 
       </div>
-      <span class="speech-transcript"></span>
 
     </div>`;
 
   }).join('');
 
   bindAudioButtons(els.wordList);
-
-  bindSpeechButtons(els.wordList);
 
   refreshAudioStatus();
 
@@ -1016,13 +937,11 @@ function renderSentencePronunciation(){
 
     }).join('');
 
-    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar oración</button><button class="small btn-mic" data-speech-target="${escapeAttr(s)}" data-speech-mode="sentence">🎙️ Leer oración</button><label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label><span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span><span class="speech-feedback">Sin intento</span></div><span class="speech-transcript"></span></div>`;
+    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar oración</button><button class="small btn-mic" onclick="activarMicrofono('${escapeAttr(s.replace(/'/g, "\\'"))}', this)">🎙️ Hablar</button><label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label><span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span></div></div>`;
 
   }).join('');
 
   bindAudioButtons(els.sentencePronunciationList);
-
-  bindSpeechButtons(els.sentencePronunciationList);
 
   refreshAudioStatus();
 
@@ -1136,17 +1055,9 @@ els.startBtn.addEventListener('click',()=>{
 
   const y=els.studentYear ? els.studentYear.value : '';
 
-  if(els.studentCareer && !c){ toast('Selecciona la carrera antes de comenzar.', 'warn'); els.studentCareer.focus(); return; }
-
-  if(els.studentYear && !y){ toast('Selecciona el año en curso antes de comenzar.', 'warn'); els.studentYear.focus(); return; }
-
   student=n; career=c; year=y;
 
-  try{
-    localStorage.setItem('fonetica_student_full_name', student);
-    localStorage.setItem('fonetica_student_career', career);
-    localStorage.setItem('fonetica_student_year', year);
-  }catch(e){}
+  try{ localStorage.setItem('fonetica_student_full_name', student); }catch(e){}
 
   const datos = [career ? career : '', year ? `Año ${year}` : ''].filter(Boolean).join(' - ');
 
@@ -1182,67 +1093,36 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 <script id="exercise-auto-start-script">
 (function(){
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
-  function readParam(names){
+  function getStudentName(){
+    var name='';
     try{
       var params=new URLSearchParams(window.location.search||'');
-      for(var i=0;i<names.length;i++){ var v=params.get(names[i]); if(v) return v; }
+      name=params.get('student')||params.get('name')||params.get('nombre')||'';
     }catch(e){}
-    return '';
-  }
-  function getStudentName(){
-    var name=readParam(['student','name','nombre']);
     if(!name){try{name=localStorage.getItem('fonetica_student_full_name')||'';}catch(e){}}
     name=String(name||'').trim().replace(/\s+/g,' ');
     if(!name) name='Estudiante registrado';
     return name;
   }
-  function getCareer(){
-    var v=readParam(['career','carrera']);
-    if(!v){try{v=localStorage.getItem('fonetica_student_career')||'';}catch(e){}}
-    return String(v||'').trim();
-  }
-  function getYear(){
-    var v=readParam(['year','anio','año']);
-    if(!v){try{v=localStorage.getItem('fonetica_student_year')||'';}catch(e){}}
-    return String(v||'').trim();
-  }
   function escapeHtml(s){return String(s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
-  function setSelectValue(select, value){
-    if(!select || !value) return false;
-    var target=String(value).trim().toLowerCase();
-    for(var i=0;i<select.options.length;i++){
-      var opt=select.options[i];
-      if(String(opt.value).trim().toLowerCase()===target || String(opt.textContent).trim().toLowerCase()===target){
-        select.value=opt.value;
-        return true;
-      }
-    }
-    return false;
-  }
   ready(function(){
     var name=getStudentName();
-    var career=getCareer();
-    var year=getYear();
     try{localStorage.setItem('fonetica_student_full_name',name);}catch(e){}
     var input=document.getElementById('studentName');
     if(input) input.value=name;
-    var careerSelect=document.getElementById('studentCareer');
-    var yearSelect=document.getElementById('studentYear');
-    var hasCareer=setSelectValue(careerSelect,career);
-    var hasYear=setSelectValue(yearSelect,year);
     var namePill=document.getElementById('namePill');
     if(namePill) namePill.textContent='Estudiante: '+name;
     var welcome=document.getElementById('welcome');
-    if(welcome) welcome.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Selecciona carrera y año para comenzar.';
+    if(welcome) welcome.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Puedes continuar con la actividad.';
     var host=document.getElementById('studentPanel')||document.getElementById('welcomePanel');
     if(host && !document.getElementById('studentAutoBanner') && document.getElementById('studentPanel')){
       var banner=document.createElement('div');
       banner.id='studentAutoBanner';
-      banner.innerHTML='✅ Nombre cargado: <strong>'+escapeHtml(name)+'</strong>. Selecciona la carrera y el año; después presiona <strong>comenzar</strong>.';
+      banner.innerHTML='✅ Estudiante registrado desde la página principal: <strong>'+escapeHtml(name)+'</strong>. Ya no es necesario escribir el nombre dentro del ejercicio.';
       host.insertBefore(banner, host.firstChild);
     }
     var start=document.getElementById('startBtn');
-    if(start && hasCareer && hasYear && !start.dataset.autoStartedWithoutNameBox){
+    if(start && !start.dataset.autoStartedWithoutNameBox){
       start.dataset.autoStartedWithoutNameBox='1';
       setTimeout(function(){ try{ start.click(); }catch(e){} },120);
     }
@@ -1863,431 +1743,6 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 })();
 </script>
 <!-- DOCENTE_CONTROL_END -->
-
-
-
-<!-- STUDENT_DATA_AND_VOCAB_LOCK_PATCH_START -->
-<style id="student-data-and-vocab-lock-style">
-  .student-field-wrap{display:grid;gap:7px;min-width:min(100%,260px);flex:1 1 260px;}
-  .student-field-wrap.student-name-wrap{flex-basis:360px;}
-  .student-field-label{font-weight:1000;color:#0f172a;font-size:.93rem;display:flex;gap:7px;align-items:center;}
-  .student-field-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:999px;background:#dbeafe;color:#1e3a8a;font-size:.82rem;font-weight:1000;}
-  .student-field-wrap input,.student-field-wrap select{width:100%;min-width:0;}
-  #studentDataPreview{margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;}
-  .student-data-box{background:#f8fafc;border:1px solid #dbe4ef;border-radius:16px;padding:12px;display:grid;gap:4px;}
-  .student-data-box strong{color:#0f172a;font-size:.95rem;}
-  .student-data-box span{color:#334155;font-weight:900;word-break:break-word;}
-  #studentAutoBanner .student-data-grid{margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;}
-  #studentAutoBanner .student-auto-cell{background:#ffffff;border:1px solid #a5f3fc;border-radius:14px;padding:10px;display:grid;gap:3px;}
-  #studentAutoBanner .student-auto-cell b{color:#164e63;}
-  #studentAutoBanner .student-auto-cell span{color:#0f172a;font-weight:1000;}
-  #vocabularioBtn.vocab-locked,#vocabularioBtn:disabled{background:#94a3b8!important;color:#f8fafc!important;cursor:not-allowed!important;opacity:.78!important;box-shadow:none!important;transform:none!important;filter:none!important;}
-  #vocabLockNote{background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;border-radius:14px;padding:9px 12px;font-weight:900;line-height:1.35;}
-  #vocabUnlockNote{background:#dcfce7;border:1px solid #86efac;color:#14532d;border-radius:14px;padding:9px 12px;font-weight:900;line-height:1.35;}
-  @media(max-width:720px){.student-field-wrap{flex-basis:100%;}#studentDataPreview{grid-template-columns:1fr;}}
-</style>
-<script id="student-data-and-vocab-lock-script">
-(function(){
-  if(window.__studentDataVocabLockPatchInstalled) return; window.__studentDataVocabLockPatchInstalled=true;
-  var vocabUnlocked=false;
-  var vocabJustOpened=false;
-  function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
-  function esc(s){return String(s==null?'':s).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];});}
-  function clean(s){return String(s||'').trim().replace(/\s+/g,' ');}
-  function norm(s){return clean(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');}
-  function splitStudentPayload(raw){
-    raw=String(raw||'').trim();
-    var out={name:raw,career:'',year:''};
-    if(!raw) return out;
-    var parts=[];
-    if(raw.indexOf('||')>-1){ parts=raw.split('||'); }
-    else if(raw.indexOf('|')>-1){ parts=raw.split('|'); }
-    else { return out; }
-    out.name=clean(parts[0]||''); out.career=clean(parts[1]||''); out.year=clean(parts[2]||'');
-    return out;
-  }
-  function findOptionByLooseText(select, value){
-    if(!select || !value) return '';
-    var target=norm(value);
-    var aliases={
-      'odontologia':'odontologia','medicina':'medicina','quimicafarmaceutica':'quimicafarmaceutica','quimica':'quimicafarmaceutica',
-      'enfermeria':'enfermeria','mecanicadental':'mecanicadental','veterinaria':'veterinaria','zootecnia':'zootecnia',
-      'agronomia':'agronomia','agricola':'agricola','ingenieriaforestal':'ingenieriaforestal','forestal':'ingenieriaforestal',
-      'ingenieriaenagroindustriadelosalimentos':'ingenieriaenagroindustriadelosalimentos','agroindustriadelosalimentos':'ingenieriaenagroindustriadelosalimentos','agroindustria':'ingenieriaenagroindustriadelosalimentos',
-      'agronegocios':'agronegocios','ingles':'ingles','english':'ingles'
-    };
-    if(aliases[target]) target=aliases[target];
-    for(var i=0;i<select.options.length;i++){
-      var opt=select.options[i];
-      if(!opt.value) continue;
-      var ov=norm(opt.value), ot=norm(opt.textContent);
-      if(ov===target || ot===target || ov.indexOf(target)>=0 || ot.indexOf(target)>=0 || target.indexOf(ov)>=0 || target.indexOf(ot)>=0){return opt.value;}
-    }
-    return '';
-  }
-  function normalizeYear(raw){
-    raw=clean(raw);
-    if(!raw) return '';
-    var m=raw.match(/[1-5]/);
-    return m?m[0]:'';
-  }
-  function displayCareer(value){
-    var sel=document.getElementById('studentCareer');
-    if(sel){ var opt=sel.options[sel.selectedIndex]; if(opt && opt.value) return clean(opt.textContent); }
-    return clean(value)||'—';
-  }
-  function displayYear(value){
-    var sel=document.getElementById('studentYear');
-    if(sel){ var opt=sel.options[sel.selectedIndex]; if(opt && opt.value) return clean(opt.textContent); }
-    value=normalizeYear(value); return value ? ('Año '+value) : '—';
-  }
-  function applyParsed(raw){
-    var input=document.getElementById('studentName'), careerSel=document.getElementById('studentCareer'), yearSel=document.getElementById('studentYear');
-    var parsed=splitStudentPayload(raw);
-    if(input && parsed.name && parsed.name!==input.value) input.value=parsed.name;
-    if(careerSel && parsed.career){ var cv=findOptionByLooseText(careerSel, parsed.career); if(cv) careerSel.value=cv; }
-    if(yearSel && parsed.year){ var yv=normalizeYear(parsed.year); if(yv) yearSel.value=yv; }
-    persistCleanData(); updatePreview(); updateBanner();
-  }
-  function persistCleanData(){
-    var input=document.getElementById('studentName'), careerSel=document.getElementById('studentCareer'), yearSel=document.getElementById('studentYear');
-    var name=clean(input&&input.value), career=careerSel&&careerSel.value||'', year=yearSel&&yearSel.value||'';
-    if(name && (name.indexOf('||')>-1 || name.indexOf('|')>-1)){ var p=splitStudentPayload(name); if(input) input.value=p.name; name=p.name; if(p.career && careerSel){var cv=findOptionByLooseText(careerSel,p.career); if(cv){careerSel.value=cv; career=cv;}} if(p.year && yearSel){var yv=normalizeYear(p.year); if(yv){yearSel.value=yv; year=yv;}} }
-    try{ if(name) localStorage.setItem('fonetica_student_full_name',name); if(career) localStorage.setItem('fonetica_student_career',career); if(year) localStorage.setItem('fonetica_student_year',year); }catch(e){}
-  }
-  function wrapIdentityControls(){
-    var row=document.querySelector('#studentPanel .row'); if(!row || row.dataset.identityWrapped) return; row.dataset.identityWrapped='1';
-    function wrap(id,label,num,cls){
-      var el=document.getElementById(id); if(!el || el.parentElement.classList.contains('student-field-wrap')) return;
-      var w=document.createElement('div'); w.className='student-field-wrap '+(cls||'');
-      var lab=document.createElement('label'); lab.className='student-field-label'; lab.setAttribute('for',id);
-      lab.innerHTML='<span class="student-field-num">'+num+'</span>'+label;
-      el.parentNode.insertBefore(w,el); w.appendChild(lab); w.appendChild(el);
-    }
-    wrap('studentName','Nombre completo','1','student-name-wrap');
-    wrap('studentCareer','Carrera','2','student-career-wrap');
-    wrap('studentYear','Año','3','student-year-wrap');
-  }
-  function ensurePreview(){
-    var welcome=document.getElementById('welcome'); if(!welcome) return null;
-    var box=document.getElementById('studentDataPreview');
-    if(!box){ box=document.createElement('div'); box.id='studentDataPreview'; welcome.parentNode.insertBefore(box, welcome.nextSibling); }
-    return box;
-  }
-  function updatePreview(){
-    var box=ensurePreview(); if(!box) return;
-    var name=clean((document.getElementById('studentName')||{}).value)||'—';
-    var career=displayCareer((document.getElementById('studentCareer')||{}).value);
-    var year=displayYear((document.getElementById('studentYear')||{}).value);
-    box.innerHTML='<div class="student-data-box"><strong>1. Nombre completo</strong><span>'+esc(name)+'</span></div><div class="student-data-box"><strong>2. Carrera</strong><span>'+esc(career)+'</span></div><div class="student-data-box"><strong>3. Año</strong><span>'+esc(year)+'</span></div>';
-  }
-  function updateBanner(){
-    var banner=document.getElementById('studentAutoBanner'); if(!banner) return;
-    var name=clean((document.getElementById('studentName')||{}).value)||'—';
-    var career=displayCareer((document.getElementById('studentCareer')||{}).value);
-    var year=displayYear((document.getElementById('studentYear')||{}).value);
-    banner.innerHTML='✅ Datos cargados. Revisa cada casilla y luego presiona <strong>comenzar</strong>.<div class="student-data-grid"><div class="student-auto-cell"><b>1. Nombre completo</b><span>'+esc(name)+'</span></div><div class="student-auto-cell"><b>2. Carrera</b><span>'+esc(career)+'</span></div><div class="student-auto-cell"><b>3. Año</b><span>'+esc(year)+'</span></div></div>';
-  }
-  function initialSanitize(){
-    var input=document.getElementById('studentName'), careerSel=document.getElementById('studentCareer'), yearSel=document.getElementById('studentYear');
-    var raw='';
-    try{ raw=(new URLSearchParams(location.search||'')).get('student')||(new URLSearchParams(location.search||'')).get('nombre')||(new URLSearchParams(location.search||'')).get('name')||''; }catch(e){}
-    if(!raw){ try{raw=localStorage.getItem('fonetica_student_full_name')||'';}catch(e){} }
-    if(raw && (raw.indexOf('|')>-1)){ applyParsed(raw); }
-    else {
-      try{ if(input && !input.value) input.value=clean(localStorage.getItem('fonetica_student_full_name')||''); }catch(e){}
-      try{ var c=localStorage.getItem('fonetica_student_career')||''; if(careerSel && c){ var cv=findOptionByLooseText(careerSel,c); if(cv) careerSel.value=cv; } }catch(e){}
-      try{ var y=localStorage.getItem('fonetica_student_year')||''; if(yearSel && y){ var yv=normalizeYear(y); if(yv) yearSel.value=yv; } }catch(e){}
-      persistCleanData(); updatePreview(); updateBanner();
-    }
-  }
-  function interceptInsertButton(){
-    var btn=document.getElementById('insertNameBtn'); if(!btn || btn.dataset.identityPatch) return; btn.dataset.identityPatch='1';
-    btn.addEventListener('click',function(ev){
-      ev.preventDefault(); ev.stopImmediatePropagation();
-      var current=clean((document.getElementById('studentName')||{}).value);
-      var raw=prompt('Escribe el nombre completo. También puedes pegar: Nombre completo||Carrera||Año', current && current.indexOf('|')<0 ? current : '');
-      if(raw && clean(raw)){ applyParsed(raw); var input=document.getElementById('studentName'); if(input) input.focus(); }
-    },true);
-  }
-  function bindIdentityEvents(){
-    ['studentName','studentCareer','studentYear'].forEach(function(id){ var el=document.getElementById(id); if(!el || el.dataset.identityBind) return; el.dataset.identityBind='1'; el.addEventListener('change',function(){ if(id==='studentName' && el.value.indexOf('|')>-1) applyParsed(el.value); else {persistCleanData(); updatePreview(); updateBanner();} }); el.addEventListener('blur',function(){ if(id==='studentName' && el.value.indexOf('|')>-1) applyParsed(el.value); else {persistCleanData(); updatePreview(); updateBanner();} }); });
-    var start=document.getElementById('startBtn'); if(start && !start.dataset.identityStartPatch){ start.dataset.identityStartPatch='1'; start.addEventListener('click',function(){ var input=document.getElementById('studentName'); if(input && input.value.indexOf('|')>-1) applyParsed(input.value); persistCleanData(); updatePreview(); updateBanner(); setTimeout(updatePreview,60); },true); start.addEventListener('click',function(){ setTimeout(function(){persistCleanData(); updatePreview(); updateBanner();},160); }); }
-  }
-  function isVocabPanelOpen(){ var panel=document.getElementById('vocabularioPanel'); return !!(panel && !panel.classList.contains('vocab-hidden')); }
-  function setVocabLocked(locked){
-    var btn=document.getElementById('vocabularioBtn'); if(!btn) return;
-    var top=document.getElementById('vocabularioTopbar');
-    var note=document.getElementById('vocabLockNote') || document.getElementById('vocabUnlockNote');
-    if(locked){
-      vocabUnlocked=false; btn.disabled=true; btn.classList.add('vocab-locked'); btn.innerHTML='🔒 Vocabulario bloqueado'; btn.title='Termina la mini práctica final para abrir el vocabulario.';
-      if(!note && top){ note=document.createElement('span'); note.id='vocabLockNote'; note.textContent='El vocabulario se abrirá después de completar la mini práctica final.'; top.appendChild(note); }
-      if(note){ note.id='vocabLockNote'; note.textContent='El vocabulario se abrirá después de completar la mini práctica final.'; }
-      var panel=document.getElementById('vocabularioPanel'); if(panel) panel.classList.add('vocab-hidden');
-    }else{
-      vocabUnlocked=true; btn.disabled=false; btn.classList.remove('vocab-locked'); btn.innerHTML='📚 Vocabulario'; btn.title='Abrir vocabulario del ejercicio.';
-      if(!note && top){ note=document.createElement('span'); top.appendChild(note); }
-      if(note){ note.id='vocabUnlockNote'; note.textContent='Vocabulario desbloqueado: mini práctica completada.'; }
-    }
-  }
-  function installVocabGuard(){
-    document.addEventListener('click',function(ev){
-      var btn=ev.target && ev.target.closest ? ev.target.closest('#vocabularioBtn') : null;
-      if(btn && !vocabUnlocked){
-        ev.preventDefault(); ev.stopImmediatePropagation();
-        try{ if(typeof toast==='function') toast('Primero completa la mini práctica final para desbloquear el vocabulario.','warn'); }catch(e){}
-        return false;
-      }
-    },true);
-    var obs=new MutationObserver(function(){ var btn=document.getElementById('vocabularioBtn'); if(btn && !vocabUnlocked){ setVocabLocked(true); } });
-    obs.observe(document.documentElement,{childList:true,subtree:true});
-    setTimeout(function(){setVocabLocked(true);},300);
-    setTimeout(function(){setVocabLocked(true);},1200);
-  }
-  function unlockVocabAndOpen(){
-    if(vocabJustOpened) return;
-    vocabJustOpened=true;
-    setVocabLocked(false);
-    var btn=document.getElementById('vocabularioBtn');
-    var panel=document.getElementById('vocabularioPanel');
-    try{ if(btn && panel && panel.classList.contains('vocab-hidden')) setTimeout(function(){btn.click();},80); }catch(e){}
-    try{ if(typeof toast==='function') toast('Mini práctica completada. Vocabulario desbloqueado.','ok'); }catch(e){}
-  }
-  function checkMiniPracticeCompleted(){
-    var container=document.getElementById('miniPracticeContainer'); if(!container) return;
-    var cards=container.querySelectorAll('.practice-card');
-    if(!cards.length) return;
-    for(var i=0;i<cards.length;i++){ if(!cards[i].getAttribute('data-done')) return; }
-    unlockVocabAndOpen();
-  }
-  function installMiniPracticeWatcher(){
-    document.addEventListener('click',function(ev){ if(ev.target && ev.target.closest && ev.target.closest('.practice-option')) setTimeout(checkMiniPracticeCompleted,120); },true);
-    var obs=new MutationObserver(function(){ var container=document.getElementById('miniPracticeContainer'); if(container && container.querySelector('.practice-card')){ vocabJustOpened=false; setVocabLocked(true); } });
-    obs.observe(document.documentElement,{childList:true,subtree:true});
-  }
-  ready(function(){
-    wrapIdentityControls(); initialSanitize(); interceptInsertButton(); bindIdentityEvents(); updatePreview(); setTimeout(function(){updateBanner(); updatePreview();},180);
-    installVocabGuard(); installMiniPracticeWatcher();
-  });
-})();
-</script>
-<!-- STUDENT_DATA_AND_VOCAB_LOCK_PATCH_END -->
-
-
-<!-- WORD_READER_TTS_START -->
-<style id="word-reader-tts-style">
-  .word-reader-panel{background:#f8fafc;border:1px solid #cbd5e1;border-radius:18px;padding:14px;margin-top:14px;display:grid;gap:10px}
-  .word-reader-title{font-weight:1000;color:#0f172a;font-size:1.05rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .word-reader-note{color:#475569;line-height:1.35;font-size:.94rem}
-  .word-reader-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .word-reader-controls input[type="text"]{min-width:min(100%,320px)}
-  .btn-reader{background:#0ea5e9;color:#ffffff;border:1px solid #0284c7;box-shadow:0 8px 18px rgba(14,165,233,.20)}
-  .btn-reader-stop{background:#64748b;color:#ffffff;border:1px solid #475569;box-shadow:none}
-  .reader-status{font-weight:900;color:#0369a1;background:#e0f2fe;border:1px solid #bae6fd;border-radius:999px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px}
-  @media(max-width:720px){.word-reader-controls button,.word-reader-controls input,.word-reader-controls select{width:100%}}
-</style>
-<script id="word-reader-tts-script">
-(function(){
-  try{
-    if(window.__wordReaderTTSInstalled) return;
-    window.__wordReaderTTSInstalled = true;
-
-    var originalPlayKey = null;
-
-    function ready(fn){
-      if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true});
-      else fn();
-    }
-    function cleanText(s){return String(s||'').replace(/^[0-9]+\.\s*/,'').replace(/\s+/g,' ').trim();}
-    function readerSupported(){return !!(window.speechSynthesis && window.SpeechSynthesisUtterance);}
-    function getLang(){var el=document.getElementById('wordReaderLang'); return el && el.value ? el.value : 'en-US';}
-    function getRate(){var el=document.getElementById('wordReaderRate'); var n=el?parseFloat(el.value):0.85; return isFinite(n) ? Math.max(.55, Math.min(1.25,n)) : .85;}
-    function setReaderStatus(msg, ok){
-      var el=document.getElementById('wordReaderStatus');
-      if(!el) return;
-      el.textContent = msg;
-      el.style.color = ok===false ? '#991b1b' : '#0369a1';
-      el.style.background = ok===false ? '#fee2e2' : '#e0f2fe';
-      el.style.borderColor = ok===false ? '#fecaca' : '#bae6fd';
-    }
-    function chooseVoice(lang){
-      try{
-        var voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-        if(!voices || !voices.length) return null;
-        var low = String(lang||'en-US').toLowerCase();
-        for(var i=0;i<voices.length;i++){ if(String(voices[i].lang||'').toLowerCase() === low) return voices[i]; }
-        var base = low.split('-')[0];
-        for(var j=0;j<voices.length;j++){ if(String(voices[j].lang||'').toLowerCase().indexOf(base)===0) return voices[j]; }
-      }catch(e){}
-      return null;
-    }
-    function speakText(text){
-      text = cleanText(text);
-      if(!text){setReaderStatus('Escribe o selecciona una palabra.', false); return;}
-      if(!readerSupported()){
-        setReaderStatus('Este navegador no permite lector de voz. Usa Google Chrome o Edge.', false);
-        try{ if(typeof toast==='function') toast('Este navegador no permite lector de voz. Usa Google Chrome o Edge.','bad'); }catch(e){}
-        return;
-      }
-      try{ window.speechSynthesis.cancel(); }catch(e){}
-      try{
-        var lang = getLang();
-        var utter = new SpeechSynthesisUtterance(text);
-        utter.lang = lang;
-        utter.rate = getRate();
-        utter.pitch = 1;
-        utter.volume = 1;
-        var voice = chooseVoice(lang);
-        if(voice) utter.voice = voice;
-        utter.onstart = function(){ setReaderStatus('Leyendo: “' + text + '”', true); };
-        utter.onend = function(){ setReaderStatus('Lectura terminada.', true); };
-        utter.onerror = function(){ setReaderStatus('No pude leer el texto. Haz clic otra vez.', false); };
-        window.speechSynthesis.speak(utter);
-      }catch(e){ setReaderStatus('Chrome bloqueó la voz. Haz clic otra vez.', false); }
-    }
-    window.leerPalabraFonetica = speakText;
-
-    function stopReader(){
-      try{ if(readerSupported()) window.speechSynthesis.cancel(); }catch(e){}
-      setReaderStatus('Lector detenido.', true);
-    }
-
-    function textFromAudioKey(key){
-      key = String(key||'');
-      if(/^word:/i.test(key)) return key.replace(/^word:/i,'');
-      if(/^vocab:/i.test(key)) return key.replace(/^vocab:/i,'');
-      if(/^sentence:/i.test(key)){
-        var n = parseInt(key.replace(/^sentence:/i,''),10);
-        try{ if(typeof SENTENCES!=='undefined' && SENTENCES[n-1]) return typeof SENTENCES[n-1] === 'string' ? SENTENCES[n-1] : (SENTENCES[n-1].text || String(SENTENCES[n-1])); }catch(e){}
-      }
-      return '';
-    }
-
-    function installPanel(){
-      if(document.getElementById('wordReaderPanel')) return;
-      var studentPanel = document.getElementById('studentPanel');
-      if(!studentPanel) return;
-      var panel = document.createElement('div');
-      panel.id = 'wordReaderPanel';
-      panel.className = 'word-reader-panel';
-      panel.innerHTML = '<div class="word-reader-title">🔈 Lector de palabras <span id="wordReaderStatus" class="reader-status">Listo para leer</span></div>'+ 
-        '<div class="word-reader-note">Escribe una palabra en inglés o usa los botones <strong>🔈 Lector</strong> que aparecen en las palabras del recorrido y en el vocabulario. Este lector usa la voz del navegador y no bloquea la carga de la página.</div>'+ 
-        '<div class="word-reader-controls">'+
-          '<input id="wordReaderInput" type="text" placeholder="Escribe una palabra: art, father, park..." />'+
-          '<select id="wordReaderLang" aria-label="Voz del lector"><option value="en-US">Inglés americano</option><option value="en-GB">Inglés británico</option></select>'+ 
-          '<select id="wordReaderRate" aria-label="Velocidad del lector"><option value="0.70">Lento</option><option value="0.85" selected>Normal</option><option value="1.00">Rápido</option></select>'+ 
-          '<button id="wordReaderSpeakBtn" type="button" class="btn-reader">🔈 Leer palabra</button>'+ 
-          '<button id="wordReaderStopBtn" type="button" class="btn-reader-stop">⏹ Detener</button>'+ 
-        '</div>';
-      var chromeNote = studentPanel.querySelector('.chrome-note');
-      if(chromeNote && chromeNote.parentNode) chromeNote.parentNode.insertBefore(panel, chromeNote.nextSibling);
-      else studentPanel.appendChild(panel);
-      var input = document.getElementById('wordReaderInput');
-      var speakBtn = document.getElementById('wordReaderSpeakBtn');
-      var stopBtn = document.getElementById('wordReaderStopBtn');
-      if(speakBtn) speakBtn.addEventListener('click',function(){speakText(input?input.value:'');});
-      if(stopBtn) stopBtn.addEventListener('click',stopReader);
-      if(input) input.addEventListener('keydown',function(ev){ if(ev.key==='Enter'){ev.preventDefault(); speakText(input.value);} });
-    }
-
-    function addButton(card, text, className, label, insertLine){
-      if(!card || card.querySelector('.'+className)) return;
-      text = cleanText(text);
-      if(!text) return;
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'small btn-reader '+className;
-      btn.setAttribute('data-reader-text', text);
-      btn.textContent = label || '🔈 Lector';
-      var line = insertLine || card;
-      line.insertBefore(btn, line.firstChild);
-    }
-
-    function enhanceReaders(root){
-      root = root || document;
-      try{
-        root.querySelectorAll('.word-card').forEach(function(card){
-          var strong = card.querySelector('strong');
-          var line = card.querySelector('.upload-line') || card;
-          addButton(card, strong ? strong.textContent : '', 'word-reader-inline', '🔈 Lector', line);
-        });
-        root.querySelectorAll('.vocab-card').forEach(function(card){
-          var wordEl = card.querySelector('.vocab-word');
-          var line = card.querySelector('.row') || card;
-          addButton(card, wordEl ? wordEl.textContent : '', 'word-reader-inline', '🔈 Lector', line);
-        });
-        root.querySelectorAll('.vocab-phrase').forEach(function(card){
-          var textEl = card.querySelector('[style*="line-height"]') || card.querySelector('p') || card;
-          var line = card.querySelector('.row') || card;
-          addButton(card, textEl ? textEl.textContent : '', 'phrase-reader-inline', '🔈 Lector frase', line);
-        });
-      }catch(e){}
-    }
-
-    function installDelegatedReader(){
-      document.addEventListener('click',function(ev){
-        var btn = ev.target && ev.target.closest ? ev.target.closest('[data-reader-text]') : null;
-        if(!btn) return;
-        ev.preventDefault();
-        ev.stopPropagation();
-        var text = btn.getAttribute('data-reader-text') || '';
-        var input = document.getElementById('wordReaderInput');
-        if(input && text.length < 55) input.value = text;
-        speakText(text);
-      }, true);
-    }
-
-    function patchPlayKeyFallback(){
-      try{
-        if(window.__wordReaderPlayKeyPatched) return;
-        if(typeof window.playKey !== 'function') return;
-        window.__wordReaderPlayKeyPatched = true;
-        originalPlayKey = window.playKey;
-        window.playKey = async function(key){
-          var text = textFromAudioKey(key);
-          try{
-            if(typeof window.hasAudio === 'function'){
-              var ok = await window.hasAudio(key);
-              if(ok) return originalPlayKey.apply(this, arguments);
-              if(text){ speakText(text); return; }
-            }
-          }catch(e){}
-          try{ return await originalPlayKey.apply(this, arguments); }
-          catch(err){ if(text) speakText(text); }
-        };
-      }catch(e){}
-    }
-
-    function patchRenderer(name){
-      try{
-        var fn = window[name];
-        if(typeof fn !== 'function' || fn.__readerPatched) return;
-        window[name] = function(){
-          var out = fn.apply(this, arguments);
-          setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},60);
-          return out;
-        };
-        window[name].__readerPatched = true;
-      }catch(e){}
-    }
-
-    ready(function(){
-      installPanel();
-      installDelegatedReader();
-      patchPlayKeyFallback();
-      patchRenderer('renderWords');
-      patchRenderer('renderSentencePronunciation');
-      enhanceReaders(document);
-      document.addEventListener('click',function(){setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},250);},false);
-      setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},700);
-      setTimeout(function(){enhanceReaders(document); patchPlayKeyFallback();},1800);
-    });
-  }catch(err){
-    try{console.error('Error en lector de palabras:', err);}catch(e){}
-  }
-})();
-</script>
-<!-- WORD_READER_TTS_END -->
 
 </body>
 </html>
