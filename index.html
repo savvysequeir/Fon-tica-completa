@@ -14,6 +14,9 @@
     .btn-act{display:block;background:#1d4ed8;color:white;padding:15px;text-decoration:none;border-radius:10px;text-align:center;font-weight:bold}
     .btn-con{background:#7c2d12}
     .docente-btn{margin-top:40px;display:inline-block;background:#0f172a;color:white;padding:15px;text-decoration:none;border-radius:10px}
+    /* Estilos del Footer */
+    .footer-section{margin-top:50px; text-align:center; border-top:2px solid #e2e8f0; padding-top:20px;}
+    .footer-image{width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:15px; border:4px solid #1d4ed8;}
   </style>
 </head>
 <body>
@@ -65,7 +68,7 @@
     <a class="btn-act" href="VOWELS/vocal_u_laberinto.html">Vocal 10 /u:/</a>
     <a class="btn-act" href="VOWELS/vocal_oo_short_laberinto.html">Vocal 11 /ʊ/</a>
     <a class="btn-act" href="VOWELS/vocal_schwa_laberinto.html">Vocal 12 /ə/</a>
-    <!-- Diptongos (10) -->
+    <!-- Diptongos y Consonantes -->
     <a class="btn-act" href="VOWELS/vocal_ai_laberinto.html">Diptongo /aɪ/</a>
     <a class="btn-act" href="VOWELS/vocal_ei_laberinto.html">Diptongo /eɪ/</a>
     <a class="btn-act" href="VOWELS/vocal_ia_laberinto.html">Diptongo /ɪə/</a>
@@ -76,13 +79,18 @@
     <a class="btn-act" href="VOWELS/vocal_ou_laberinto.html">Diptongo /oʊ/</a>
     <a class="btn-act" href="VOWELS/vocal_ju_laberinto.html">Diptongo /ju/</a>
     <a class="btn-act" href="VOWELS/vocal_rcolored_laberinto.html">Vocal /ɚ/</a>
-    <!-- Triptongos (2) -->
     <a class="btn-act" href="VOWELS/vocal_aia_aua_laberinto.html">Triptongo /aɪə/ & /aʊə/</a>
-    <a class="btn-act" href="VOWELS/vocal_eia_oia_oua_laberinto.html">Triptongo /eɪə/, /ɔɪə/ & /əʊə/</a>
-    <!-- Consonantes (3) -->
+    <a class="btn-act" href="VOWELS/vocal_eia_oia_oua_laberinto.html">Triptongo /eɪə/ & /ɔɪə/</a>
     <a class="btn-act btn-con" href="CONSONANTS/consonantes_sh_ch_th_laberinto.html">Consonantes 1</a>
     <a class="btn-act btn-con" href="CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html">Consonantes 2</a>
     <a class="btn-act btn-con" href="CONSONANTS/blends_laberinto.html">Consonantes 3 (Blends)</a>
+  </div>
+
+  <div class="footer-section">
+    <img src="URL_DE_TU_IMAGEN" alt="Creador" class="footer-image">
+    <h3>Desarrollado por:</h3>
+    <p><strong>Wascar Enrique Sequeira Hurtado</strong></p>
+    <p>Educador | Creador de Herramientas Educativas Digitales</p>
   </div>
 
   <a class="docente-btn" href="docente.html">👩‍🏫 Portal del Docente</a>
@@ -91,7 +99,7 @@
 <script>
   function updateUI() {
     var saved = localStorage.getItem('fonetica_student_full_name');
-    if(saved) document.getElementById('welcomeMsg').textContent = "✅ Estudiante registrado: " + saved.split('||')[0];
+    if(saved) document.getElementById('welcomeMsg').textContent = "✅ Estudiante: " + saved.split('||')[0];
   }
   document.getElementById('saveBtn').onclick = function() {
     var n = document.getElementById('nameInput').value, c = document.getElementById('careerInput').value, y = document.getElementById('yearInput').value;
@@ -100,5 +108,6 @@
   };
   updateUI();
 </script>
+
 </body>
 </html>
