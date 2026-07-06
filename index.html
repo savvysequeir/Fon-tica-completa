@@ -5,18 +5,18 @@
   #studentNameGate{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,64,175,.94),rgba(15,118,110,.92));color:#0f172a}
   #studentNameGate.gate-closed{display:none!important}
   #studentNameGate .gate-card{width:min(720px,100%);background:#fff;border-radius:30px;padding:clamp(22px,4vw,38px);box-shadow:0 35px 90px rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.6);text-align:left}
-  #studentNameGate .gate-kicker{display:inline-flex;align-items:center;gap:8px;background:#dbeafe;color:#1e3a8a;border:1px solid #bfdbfe;border-radius:999px;padding:8px 12px;font-weight:900;font-size:.9rem;margin-bottom:12px}
+  #studentNameGate .gate-kicker{display:inline-flex;align-items:center;gap:8px;background:#dbeafe;color:#1e3a8a;border:1px solid #bfdbfe;border-radius999px;padding:8px 12px;font-weight:900;font-size:.9rem;margin-bottom:12px}
   #studentNameGate h1{margin:0 0 10px!important;font-size:clamp(1.8rem,4vw,2.8rem)!important;line-height:1.05!important;color:#0f172a!important}
   #studentNameGate p{margin:8px 0 0;color:#475569;line-height:1.55;font-size:1rem}
-  #studentNameGate .gate-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;align-items:center}
-  #studentNameGate input{flex:1;min-width:min(100%,330px);border:2px solid #cbd5e1;border-radius:16px;padding:15px 16px;font-size:1.05rem;color:#0f172a;background:#fff;outline:none}
-  #studentNameGate input:focus{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.14)}
-  #studentNameGate button{border:0;border-radius:16px;background:#16a34a;color:#fff;font-weight:950;padding:15px 18px;cursor:pointer;box-shadow:0 12px 28px rgba(22,163,74,.26);font-size:1rem}
+  #studentNameGate .gate-row{display:flex;gap:12px;flex-direction:column;margin-top:20px}
+  #studentNameGate input, #studentNameGate select{width:100%;border:2px solid #cbd5e1;border-radius:16px;padding:15px 16px;font-size:1.05rem;color:#0f172a;background:#fff;outline:none}
+  #studentNameGate input:focus, #studentNameGate select:focus{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.14)}
+  #studentNameGate button{width:100%;border:0;border-radius:16px;background:#16a34a;color:#fff;font-weight:950;padding:15px 18px;cursor:pointer;box-shadow:0 12px 28px rgba(22,163,74,.26);font-size:1.05rem;margin-top:8px}
   #studentNameGate button:hover{filter:brightness(1.03);transform:translateY(-1px)}
   #studentNameGate .gate-error{min-height:24px;margin-top:10px;color:#991b1b;font-weight:900}
   #studentNameGate .gate-note{margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:12px;color:#334155;font-weight:700}
   body.student-gate-open{overflow:hidden!important}
-  @media(max-width:560px){#studentNameGate{align-items:flex-start;overflow:auto}#studentNameGate .gate-card{margin-top:18px}#studentNameGate button{width:100%}}
+  @media(max-width:560px){#studentNameGate{align-items:flex-start;overflow:auto}#studentNameGate .gate-card{margin-top:18px}}
 </style>
 <!-- STUDENT_GATE_STYLE_END -->
 </head><body>
@@ -24,14 +24,33 @@
 <div id="studentNameGate" role="dialog" aria-modal="true" aria-labelledby="studentGateTitle">
   <div class="gate-card">
     <div class="gate-kicker">🧾 Paso obligatorio</div>
-    <h1 id="studentGateTitle">Nombre y apellidos del estudiante</h1>
-    <p>Antes de ver la actividad, escribe el nombre completo del estudiante. Después presiona el botón verde para continuar.</p>
+    <h1 id="studentGateTitle">Identificación de Estudiantes</h1>
+    <p>Por favor ingresa tus datos académicos antes de iniciar. Los laberintos registrarán tus puntajes y prácticas de Speaking automáticamente en la nube.</p>
     <div class="gate-row">
-      <input id="gateStudentFullName" type="text" placeholder="Ejemplo: Juan Carlos Pérez López" autocomplete="name" />
-      <button id="gateContinueBtn" type="button">Agregar nombre y apellidos</button>
+      <input id="gateStudentFullName" type="text" placeholder="Nombre y Apellidos Completos" autocomplete="name" />
+      
+      <select id="gateStudentCareer" aria-label="Seleccionar carrera">
+        <option value="">-- Seleccionar tu Carrera --</option>
+        <option value="Veterinaria">Medicina Veterinaria</option>
+        <option value="Agronomia">Agronómica</option>
+        <option value="Forestal">Ingeniería Forestal</option>
+        <option value="Ambientales">Gestión Ambiental / Recursos Naturales</option>
+        <option value="Otra">Otra Carrera / Curso General</option>
+      </select>
+
+      <select id="gateStudentYear" aria-label="Seleccionar año">
+        <option value="">-- Año Académico en Curso --</option>
+        <option value="1">1er Año</option>
+        <option value="2">2do Año</option>
+        <option value="3">3er Año</option>
+        <option value="4">4to Año</option>
+        <option value="5">5to Año</option>
+      </select>
+
+      <button id="gateContinueBtn" type="button">Guardar Datos Académicos</button>
     </div>
     <div id="gateNameError" class="gate-error" aria-live="polite"></div>
-    <div class="gate-note">El nombre quedará registrado en esta actividad y se enviará automáticamente al panel de identificación de la página.</div>
+    <div class="gate-note">El nombre, carrera y año quedarán guardados de forma global para todos los ejercicios interactivos.</div>
   </div>
 </div>
 <!-- STUDENT_GATE_HTML_END -->
@@ -61,6 +80,7 @@
 <a href="VOWELS/vocal_aia_aua_laberinto.html">Diptongos /aɪə/ y /aʊə/<small>Laberinto exacto: VOWEL → ADMIRE</small></a>
 <a href="VOWELS/vocal_eia_oia_oua_laberinto.html">Triptongos /eɪə/, /ɔɪə/ y /əʊə/<small>Laberinto exacto: BETRAYER → WIDOWER</small></a>
 </div><h2>Consonants</h2><div class="grid"><a class="con" href="CONSONANTS/consonantes_sh_ch_th_laberinto.html">Consonantes /ʃ/, /tʃ/ y /θ/<small>3 rutas de 50 palabras</small></a><a class="con" href="CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html">Consonantes /ŋ/, /ʒ/, /dʒ/ y /ð/<small>4 rutas de 50 palabras: ALONG → WORTHY</small></a><a class="con" href="CONSONANTS/blends_laberinto.html">Blends consonánticos<small>Encuentra 3 palabras por cada blend, sin salida</small></a></div><div class="note docente-index-note"><a href="docente.html" style="background:#0f172a;color:white;margin-bottom:10px">👩‍🏫 Abrir interfaz docente</a><strong>Panel docente:</strong> asigna actividades, programa fecha/hora, cronómetro, resultados y exportación a Excel.</div><div class="note">Para abrir en Google Chrome: descomprime el ZIP, entra a la carpeta <strong>fonetica</strong> y abre <strong>index.html</strong> con Google Chrome. La página funciona sin internet.</div></div>
+
 <!-- STUDENT_GATE_SCRIPT_START -->
 <script id="student-gate-script">
 (function(){
@@ -69,40 +89,56 @@
   ready(function(){
     var gate=document.getElementById('studentNameGate');
     var input=document.getElementById('gateStudentFullName');
+    var careerSelect=document.getElementById('gateStudentCareer');
+    var yearSelect=document.getElementById('gateStudentYear');
     var btn=document.getElementById('gateContinueBtn');
     var err=document.getElementById('gateNameError');
-    if(!gate||!input||!btn) return;
+    if(!gate||!input||!btn||!careerSelect||!yearSelect) return;
+    
     document.body.classList.add('student-gate-open');
     var saved='';
     try{saved=localStorage.getItem('fonetica_student_full_name')||'';}catch(e){}
-    if(saved) input.value=saved;
-    function updateExistingPanels(name){
-      document.querySelectorAll('#studentName').forEach(function(el){ if('value' in el) el.value=name; });
-      document.querySelectorAll('#namePill').forEach(function(el){ el.textContent='Estudiante: '+name; });
-      document.querySelectorAll('#welcome').forEach(function(el){ el.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Puedes continuar con la actividad.'; });
-      document.querySelectorAll('[data-student-name-display]').forEach(function(el){ el.textContent=name; });
+    if(saved) {
+      // Si ya hay un formato compuesto [Nombre || Carrera || Año], limpiamos el input
+      if(saved.includes("||")){
+        input.value = saved.split("||")[0].trim();
+      } else {
+        input.value = saved;
+      }
     }
+    
     function continueActivity(){
       var name=(input.value||'').trim().replace(/\s+/g,' ');
+      var career=careerSelect.value;
+      var year=yearSelect.value;
+      
       if(name.split(' ').filter(Boolean).length<2){
-        err.textContent='Escribe al menos nombre y apellido para continuar.';
+        err.textContent='Escribe al menos tu nombre y un apellido para continuar.';
         input.focus();
         return;
       }
+      if(!career){
+        err.textContent='Por favor selecciona tu carrera universitaria.';
+        return;
+      }
+      if(!year){
+        err.textContent='Por favor indica el año académico que estás cursando.';
+        return;
+      }
+      
       err.textContent='';
-      try{localStorage.setItem('fonetica_student_full_name',name);}catch(e){}
-      updateExistingPanels(name);
+      
+      // Empaquetar la info en un token limpio que los laberintos saben decodificar por la URL
+      var tokenUnificado = name + "||" + career + "||" + year;
+      
+      try{
+        localStorage.setItem('fonetica_student_full_name', tokenUnificado);
+      }catch(e){}
+      
       gate.classList.add('gate-closed');
       document.body.classList.remove('student-gate-open');
-      var start=document.getElementById('startBtn');
-      if(start && !start.dataset.studentGateAutoStarted){
-        start.dataset.studentGateAutoStarted='1';
-        setTimeout(function(){ try{ start.click(); }catch(e){} },80);
-      }
     }
     btn.addEventListener('click',continueActivity);
-    input.addEventListener('keydown',function(e){ if(e.key==='Enter') continueActivity(); });
-    setTimeout(function(){input.focus();},120);
   });
 })();
 </script>
@@ -112,106 +148,32 @@
 <script id="index-link-name-forwarder">
 (function(){
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
-  function getName(){try{return (localStorage.getItem('fonetica_student_full_name')||'').trim().replace(/\s+/g,' ');}catch(e){return '';}}
+  function getName(){try{return (localStorage.getItem('fonetica_student_full_name')||'').trim();}catch(e){return '';}}
   function updateLinks(){
-    var name=getName();
-    if(!name) return;
+    var rawData=getName();
+    if(!rawValue) return;
+    // Si la info viene unificada, pasamos el token exacto por la URL para alimentar los scripts internos
     document.querySelectorAll('a[href$=".html"],a[href*=".html?"]').forEach(function(a){
       try{
         var u=new URL(a.getAttribute('href'), window.location.href);
-        if(!/index\.html$/i.test(u.pathname)) u.searchParams.set('student', name);
+        if(!/index\.html$/i.test(u.pathname)) u.searchParams.set('student', rawData);
         a.setAttribute('href', u.href);
       }catch(e){}
     });
   }
+  var rawValue = '';
   ready(function(){
+    rawValue = getName();
     updateLinks();
     document.addEventListener('click', function(e){
       var a=e.target.closest && e.target.closest('a[href]');
       if(!a) return;
+      rawValue = getName();
       updateLinks();
     }, true);
-    setInterval(updateLinks, 600);
+    setInterval(function(){ rawValue = getName(); updateLinks(); }, 600);
   });
 })();
 </script>
-<!-- SECCIÓN PEDAGÓGICA DE FONÉTICA -->
-<hr style="margin: 40px 0; border: 0; border-top: 2px dashed #cbd5e1;">
-
-<section style="font-family: system-ui, -apple-system, sans-serif; padding: 20px; max-width: 900px; margin: auto; color: #334155; line-height: 1.6;">
-    
-    <h2 style="color: #1e293b; font-size: 2rem; border-bottom: 3px solid #3b82f6; padding-bottom: 8px; margin-bottom: 20px;">
-        📚 Guía de Estudio: Fonética Práctica (Vocales)
-    </h2>
-    
-    <p style="font-size: 1.1rem; margin-bottom: 25px;">
-        Para dominar la pronunciación en inglés, es fundamental comprender que las vocales no se limitan a sus cinco letras escritas (A, E, I, O, U). El inglés cuenta con más de 12 sonidos vocálicos puros y múltiples diptongos. ¡Usa esta guía para repasar los conceptos clave antes de ingresar a los laberintos interactivos!
-    </p>
-
-    <!-- INSTRUCCIONES -->
-    <div style="background-color: #f8fafc; border-left: 5px solid #3b82f6; padding: 15px 20px; border-radius: 4px; margin-bottom: 35px;">
-        <h3 style="color: #1e293b; margin-top: 0; font-size: 1.3rem;">🎯 Instrucciones para Estudiantes</h3>
-        <ul style="margin-bottom: 0; padding-left: 20px;">
-            <li><strong>Explora la teoría:</strong> Revisa la tabla de sonidos y practica la forma de los labios para cada fonema.</li>
-            <li><strong>Inicia el reto:</strong> Elige uno de los laberintos interactivos en el menú superior.</li>
-            <li><strong>Escucha y avanza:</strong> Conduce el avatar utilizando las flechas de tu teclado y presta atención al audio para identificar el sonido correcto.</li>
-        </ul>
-    </div>
-
-    <!-- TABLA COMPARATIVA -->
-    <h3 style="color: #1e293b; font-size: 1.4rem; margin-bottom: 15px;">📊 Tabla Comparativa de Sonidos Vocálicos</h3>
-    <div style="overflow-x: auto; margin-bottom: 35px;">
-        <table style="width: 100%; border-collapse: collapse; min-width: 500px; text-align: left; font-size: 1rem;">
-            <thead>
-                <tr style="background-color: #1e293b; color: #ffffff;">
-                    <th style="padding: 12px; border: 1px solid #cbd5e1;">Tipo de Sonido</th>
-                    <th style="padding: 12px; border: 1px solid #cbd5e1;">Símbolo IPA</th>
-                    <th style="padding: 12px; border: 1px solid #cbd5e1;">Palabra Ejemplo</th>
-                    <th style="padding: 12px; border: 1px solid #cbd5e1;">Nota de Pronunciación</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="background-color: #ffffff;">
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-weight: bold; color: #ef4444;">Vocal Corta</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 1.1rem;">/ɪ/</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-style: italic;">Ship (Barco)</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1;">Sonido intermedio entre la 'i' y la 'e' en español. Labios relajados.</td>
-                </tr>
-                <tr style="background-color: #f8fafc;">
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-weight: bold; color: #22c55e;">Vocal Larga</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 1.1rem;">/i:/</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-style: italic;">Sheep (Oveja)</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1;">Sonido similar a una 'i' sostenida en español. Labios estirados en sonrisa.</td>
-                </tr>
-                <tr style="background-color: #ffffff;">
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-weight: bold; color: #ef4444;">Vocal Corta</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 1.1rem;">/æ/</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-style: italic;">Cat (Gato)</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1;">Abre la boca grande como para decir una 'a', pero pronuncia una 'e'.</td>
-                </tr>
-                <tr style="background-color: #f8fafc;">
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-weight: bold; color: #6366f1;">Diptongo</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 1.1rem;">/aɪ/</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-style: italic;">My (Mi / Mío)</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1;">Transición suave desde el sonido 'a' hacia el sonido 'i'.</td>
-                </tr>
-                <tr style="background-color: #ffffff;">
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-weight: bold; color: #a855f7;">Vocal Especial</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-family: monospace; font-size: 1.1rem;">/ə/ (Schwa)</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1; font-style: italic;">Teacher (Docente)</td>
-                    <td style="padding: 12px; border: 1px solid #cbd5e1;">El sonido más común en inglés. Vocal completamente neutra y relajada.</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- RECOMENDACIÓN -->
-    <p style="font-size: 1rem; font-style: italic; color: #64748b; text-align: center;">
-        💡 Recuerda: Articular correctamente la apertura de la boca y la posición de la lengua es el secreto para una excelente pronunciación.
-    </p>
-
-</section>
-<!-- FIN DE SECCIÓN PEDAGÓGICA -->
-  
-  <!-- INDEX_LINK_NAME_FORWARDER_END -->
+<!-- INDEX_LINK_NAME_FORWARDER_END -->
 </body></html>
