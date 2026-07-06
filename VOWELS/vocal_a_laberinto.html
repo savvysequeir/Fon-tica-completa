@@ -87,6 +87,7 @@
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0f172a;color:white;border-radius:999px;padding:12px 18px;font-weight:900;box-shadow:0 14px 40px rgba(15,23,42,.35);z-index:99;max-width:90%;text-align:center}.toast.ok{background:#166534}.toast.warn{background:#92400e}.toast.bad{background:#991b1b}
 
     .btn-mic{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;box-shadow:none}.btn-mic.recording{background:#fee2e2;color:#b91c1c;border-color:#fecaca;animation:timerPulse .8s infinite alternate}
+    .speech-feedback{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:.82rem;font-weight:900;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.speech-ok{background:#dcfce7;color:#166534;border-color:#bbf7d0}.speech-warn{background:#fef9c3;color:#713f12;border-color:#fde68a}.speech-bad{background:#fee2e2;color:#991b1b;border-color:#fecaca}.speech-transcript{display:block;margin-top:6px;color:#475569;font-size:.88rem;font-weight:700}
 
     @media(max-width:720px){.wrap{padding:12px}.card{padding:15px}.maze{grid-template-columns:repeat(8,108px);min-width:900px}.cell{font-size:.82rem;min-height:58px;padding:6px 4px}.cell[data-long="1"]{font-size:.72rem}.hero{border-radius:20px}.row{align-items:stretch}button,input[type="text"],select{width:100%}}
 
@@ -98,17 +99,17 @@
 
 <style id="no-internal-name-style">
 
+  #studentPanel{margin-top:18px;}
+
+  #studentPanel .row:first-of-type{display:flex!important;}
+
   #studentPanel > h2:first-child,
 
   #studentPanel > p.muted:first-of-type,
 
-  #studentPanel > .row:first-of-type,
+  #studentPanel > #welcome{display:block!important;}
 
-  #studentPanel > #welcome,
-
-  #welcomePanel{display:none!important;}
-
-  #studentPanel{margin-top:18px;}
+  #studentCareer{min-width:min(100%,310px);}
 
   #studentAutoBanner{background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;border-radius:16px;padding:12px 14px;margin:12px 0;font-weight:900;line-height:1.35;}
 
@@ -151,13 +152,31 @@
 
         <option value="">-- Seleccionar Carrera --</option>
 
-        <option value="Veterinaria">Medicina Veterinaria</option>
+        <option value="Odontologia">Odontología</option>
+
+        <option value="Medicina">Medicina</option>
+
+        <option value="Quimica Farmaceutica">Química Farmacéutica</option>
+
+        <option value="Enfermeria">Enfermería</option>
+
+        <option value="Mecanica Dental">Mecánica Dental</option>
+
+        <option value="Veterinaria">Veterinaria</option>
+
+        <option value="Zootecnia">Zootecnia</option>
 
         <option value="Agronomia">Agronomía</option>
 
-        <option value="Forestal">Ingeniería Forestal</option>
+        <option value="Agricola">Agrícola</option>
 
-        <option value="Ambientales">Gestión Ambiental / Recursos Naturales</option>
+        <option value="Ingenieria Forestal">Ingeniería Forestal</option>
+
+        <option value="Ingenieria en Agroindustria de los Alimentos">Ingeniería en Agroindustria de los Alimentos</option>
+
+        <option value="Agronegocios">Agronegocios</option>
+
+        <option value="Ingles">Inglés</option>
 
         <option value="Otra">Otra Carrera / Curso General</option>
 
@@ -293,7 +312,7 @@
 
     <h2>4. Palabras correctas y pronunciación</h2>
 
-    <p class="muted">Escucha las palabras del recorrido y presiona el micrófono para evaluar tu pronunciación (Speaking).</p>
+    <p class="muted">Escucha las palabras del recorrido y presiona el micrófono para leerlas en voz alta. El reconocimiento funciona mejor en Google Chrome o Microsoft Edge; debes permitir el uso del micrófono.</p>
 
     <div class="word-grid" id="wordList"></div>
 
@@ -323,7 +342,7 @@
 
     <h2>6. Pronunciación de cada oración</h2>
 
-    <p class="muted">Sube o escucha la pronunciación completa de cada oración. ¡Usa el micrófono para practicar tu lectura!</p>
+    <p class="muted">Sube o escucha la pronunciación completa de cada oración. Luego usa el micrófono para leer la oración completa y recibir retroalimentación automática.</p>
 
     <div class="sentence-list" id="sentencePronunciationList"></div>
 
@@ -557,103 +576,159 @@ async function playKey(key){
 
 // ==========================================
 
-// FUNCIÓN NATIVA DE RECONOCIMIENTO DE VOZ (SPEAKING)
+// RECONOCIMIENTO DE VOZ PARA PALABRAS Y ORACIONES (SPEAKING)
 
 // ==========================================
+let activeSpeechRecognition = null;
 
-function activarMicrofono(textoEsperado, botonElemento) {
+function normalizeSpeechText(value){
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
+function wordsFromSpeech(value){
+  const cleaned = normalizeSpeechText(value);
+  return cleaned ? cleaned.split(' ').filter(Boolean) : [];
+}
+
+function speechScore(expected, transcript, mode='sentence'){
+  const exp = normalizeSpeechText(expected);
+  const got = normalizeSpeechText(transcript);
+  const expWords = wordsFromSpeech(exp);
+  const gotWords = wordsFromSpeech(got);
+  if(!exp || !got) return {ok:false, percent:0, matched:0, total:expWords.length || 1};
+
+  if(mode === 'word'){
+    const target = expWords[0] || exp;
+    const ok = gotWords.includes(target) || got === target || got.includes(target);
+    return {ok, percent: ok ? 100 : 0, matched: ok ? 1 : 0, total:1};
+  }
+
+  if(got === exp || got.includes(exp) || exp.includes(got)){
+    return {ok:true, percent:100, matched:expWords.length, total:expWords.length};
+  }
+
+  let matched = 0;
+  const remaining = gotWords.slice();
+  expWords.forEach(word => {
+    const i = remaining.indexOf(word);
+    if(i >= 0){ matched++; remaining.splice(i,1); }
+  });
+  const total = Math.max(expWords.length, 1);
+  const percent = Math.round((matched / total) * 100);
+  return {ok: percent >= 72, percent, matched, total};
+}
+
+function updateSpeechFeedback(button, message, status='warn', transcript=''){
+  const card = button.closest('.word-card, .sentence-card') || button.parentElement;
+  const feedback = card ? card.querySelector('.speech-feedback') : null;
+  const transcriptBox = card ? card.querySelector('.speech-transcript') : null;
+  if(feedback){
+    feedback.className = 'speech-feedback ' + (status === 'ok' ? 'speech-ok' : status === 'bad' ? 'speech-bad' : 'speech-warn');
+    feedback.textContent = message;
+  }
+  if(transcriptBox){
+    transcriptBox.textContent = transcript ? `Chrome escuchó: “${transcript}”` : '';
+  }
+}
+
+function resetSpeechButton(button, label){
+  button.classList.remove('recording');
+  if(button.dataset.speechDone === '1') return;
+  button.textContent = label || (button.dataset.speechMode === 'word' ? '🎙️ Leer palabra' : '🎙️ Leer oración');
+  button.disabled = false;
+}
+
+function activarMicrofono(textoEsperado, botonElemento, modo='sentence') {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-
-    toast("El reconocimiento de voz no es compatible con este navegador. Usa Chrome o Edge.", "bad");
-
+    toast('El reconocimiento de voz no es compatible con este navegador. Usa Google Chrome o Microsoft Edge.', 'bad');
+    updateSpeechFeedback(botonElemento, 'Navegador no compatible', 'bad');
     return;
-
   }
 
-
+  try{
+    if(activeSpeechRecognition){ activeSpeechRecognition.abort(); }
+  }catch(e){}
 
   const recognition = new SpeechRecognition();
-
+  activeSpeechRecognition = recognition;
   recognition.lang = 'en-US';
-
   recognition.interimResults = false;
+  recognition.continuous = false;
+  recognition.maxAlternatives = 3;
 
-  recognition.maxAlternatives = 1;
-
-
-
+  const normalLabel = modo === 'word' ? '🎙️ Leer palabra' : '🎙️ Leer oración';
+  botonElemento.dataset.speechDone = '0';
+  botonElemento.disabled = true;
   botonElemento.classList.add('recording');
+  botonElemento.textContent = '🛑 Escuchando...';
+  updateSpeechFeedback(botonElemento, 'Escuchando...', 'warn');
+  toast(modo === 'word' ? 'Lee la palabra en inglés.' : 'Lee la oración completa en inglés.', 'ok');
 
-  botonElemento.textContent = "🛑 Grabando...";
-
-  toast("Escuchando... Pronuncia ahora en inglés.", "ok");
-
-
-
-  recognition.start();
-
-
+  try{
+    recognition.start();
+  }catch(e){
+    botonElemento.disabled = false;
+    resetSpeechButton(botonElemento, normalLabel);
+    toast('No se pudo iniciar el micrófono. Revisa el permiso del navegador.', 'bad');
+    updateSpeechFeedback(botonElemento, 'Permiso de micrófono requerido', 'bad');
+    return;
+  }
 
   recognition.onresult = function(event) {
+    const alternatives = Array.from(event.results[0] || []).map(item => item.transcript || '');
+    const transcript = alternatives[0] || '';
+    const best = alternatives
+      .map(t => ({text:t, score:speechScore(textoEsperado, t, modo)}))
+      .sort((a,b)=>b.score.percent-a.score.percent)[0] || {text:transcript, score:speechScore(textoEsperado, transcript, modo)};
 
-    const transcript = event.results[0][0].transcript.toLowerCase().trim().replace(/[\.\?,!]/g, "");
+    const result = best.score;
+    botonElemento.disabled = false;
 
-    const esperadoLimpio = textoEsperado.toLowerCase().trim().replace(/[\.\?,!]/g, "");
-
-
-
-    if (transcript === esperadoLimpio || esperadoLimpio.includes(transcript) && transcript.length > 2) {
-
-      toast(`¡Excelente pronunciación! Escuché: "${transcript}"`, "ok");
-
-      botonElemento.style.background = "#dcfce7";
-
-      botonElemento.style.color = "#166534";
-
-      botonElemento.style.borderColor = "#bbf7d0";
-
-      botonElemento.textContent = "✅ Correcto";
-
+    if(result.ok){
+      botonElemento.dataset.speechDone = '1';
+      botonElemento.textContent = '✅ Correcto';
+      botonElemento.style.background = '#dcfce7';
+      botonElemento.style.color = '#166534';
+      botonElemento.style.borderColor = '#bbf7d0';
+      updateSpeechFeedback(botonElemento, modo === 'word' ? 'Palabra reconocida' : `Lectura aceptada ${result.percent}%`, 'ok', best.text);
+      toast(modo === 'word' ? `Correcto. Escuché: “${best.text}”` : `Buena lectura. Coincidencia: ${result.percent}%`, 'ok');
     } else {
-
-      toast(`Inténtalo de nuevo. Escuché: "${transcript}"`, "warn");
-
-      botonElemento.textContent = "🎙️ Reintentar";
-
+      botonElemento.textContent = '🎙️ Reintentar';
+      updateSpeechFeedback(botonElemento, modo === 'word' ? 'No coincidió' : `Coincidencia ${result.percent}%`, 'warn', best.text);
+      toast(`Inténtalo de nuevo. Chrome escuchó: “${best.text}”`, 'warn');
     }
-
   };
 
-
-
-  recognition.onerror = function() {
-
-    toast("No se detectó audio o el permiso fue denegado.", "bad");
-
-    botonElemento.textContent = "🎙️ Hablar";
-
+  recognition.onerror = function(event) {
+    botonElemento.disabled = false;
+    resetSpeechButton(botonElemento, normalLabel);
+    const msg = event && event.error === 'not-allowed' ? 'Permiso de micrófono denegado' : 'No se detectó audio claro';
+    updateSpeechFeedback(botonElemento, msg, 'bad');
+    toast(msg + '. Revisa el micrófono e inténtalo otra vez.', 'bad');
   };
-
-
 
   recognition.onend = function() {
-
-    botonElemento.classList.remove('recording');
-
-    if (botonElemento.textContent === "🛑 Grabando...") {
-
-      botonElemento.textContent = "🎙️ Hablar";
-
-    }
-
+    if(activeSpeechRecognition === recognition) activeSpeechRecognition = null;
+    botonElemento.disabled = false;
+    resetSpeechButton(botonElemento, normalLabel);
   };
-
 }
 
-
+function bindSpeechButtons(root){
+  (root || document).querySelectorAll('[data-speech-target]').forEach(btn => {
+    if(btn.dataset.speechBound === '1') return;
+    btn.dataset.speechBound = '1';
+    btn.addEventListener('click', () => activarMicrofono(btn.dataset.speechTarget || '', btn, btn.dataset.speechMode || 'sentence'));
+  });
+}
 
 function audioKeyWord(word){return `word:${word}`;} function audioKeySentence(i){return `sentence:${i+1}`;}
 
@@ -817,19 +892,23 @@ function renderWords(){
 
         <button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar</button>
 
-        <button class="small btn-mic" onclick="activarMicrofono('${escapeAttr(w)}', this)">🎙️ Hablar</button>
+        <button class="small btn-mic" data-speech-target="${escapeAttr(w)}" data-speech-mode="word">🎙️ Leer palabra</button>
+        <span class="speech-feedback">Sin intento</span>
 
         <label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label>
 
         <span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span>
 
       </div>
+      <span class="speech-transcript"></span>
 
     </div>`;
 
   }).join('');
 
   bindAudioButtons(els.wordList);
+
+  bindSpeechButtons(els.wordList);
 
   refreshAudioStatus();
 
@@ -937,11 +1016,13 @@ function renderSentencePronunciation(){
 
     }).join('');
 
-    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar oración</button><button class="small btn-mic" onclick="activarMicrofono('${escapeAttr(s.replace(/'/g, "\\'"))}', this)">🎙️ Hablar</button><label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label><span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span></div></div>`;
+    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar oración</button><button class="small btn-mic" data-speech-target="${escapeAttr(s)}" data-speech-mode="sentence">🎙️ Leer oración</button><label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label><span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span><span class="speech-feedback">Sin intento</span></div><span class="speech-transcript"></span></div>`;
 
   }).join('');
 
   bindAudioButtons(els.sentencePronunciationList);
+
+  bindSpeechButtons(els.sentencePronunciationList);
 
   refreshAudioStatus();
 
@@ -1055,9 +1136,17 @@ els.startBtn.addEventListener('click',()=>{
 
   const y=els.studentYear ? els.studentYear.value : '';
 
+  if(els.studentCareer && !c){ toast('Selecciona la carrera antes de comenzar.', 'warn'); els.studentCareer.focus(); return; }
+
+  if(els.studentYear && !y){ toast('Selecciona el año en curso antes de comenzar.', 'warn'); els.studentYear.focus(); return; }
+
   student=n; career=c; year=y;
 
-  try{ localStorage.setItem('fonetica_student_full_name', student); }catch(e){}
+  try{
+    localStorage.setItem('fonetica_student_full_name', student);
+    localStorage.setItem('fonetica_student_career', career);
+    localStorage.setItem('fonetica_student_year', year);
+  }catch(e){}
 
   const datos = [career ? career : '', year ? `Año ${year}` : ''].filter(Boolean).join(' - ');
 
@@ -1093,36 +1182,67 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 <script id="exercise-auto-start-script">
 (function(){
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
-  function getStudentName(){
-    var name='';
+  function readParam(names){
     try{
       var params=new URLSearchParams(window.location.search||'');
-      name=params.get('student')||params.get('name')||params.get('nombre')||'';
+      for(var i=0;i<names.length;i++){ var v=params.get(names[i]); if(v) return v; }
     }catch(e){}
+    return '';
+  }
+  function getStudentName(){
+    var name=readParam(['student','name','nombre']);
     if(!name){try{name=localStorage.getItem('fonetica_student_full_name')||'';}catch(e){}}
     name=String(name||'').trim().replace(/\s+/g,' ');
     if(!name) name='Estudiante registrado';
     return name;
   }
+  function getCareer(){
+    var v=readParam(['career','carrera']);
+    if(!v){try{v=localStorage.getItem('fonetica_student_career')||'';}catch(e){}}
+    return String(v||'').trim();
+  }
+  function getYear(){
+    var v=readParam(['year','anio','año']);
+    if(!v){try{v=localStorage.getItem('fonetica_student_year')||'';}catch(e){}}
+    return String(v||'').trim();
+  }
   function escapeHtml(s){return String(s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
+  function setSelectValue(select, value){
+    if(!select || !value) return false;
+    var target=String(value).trim().toLowerCase();
+    for(var i=0;i<select.options.length;i++){
+      var opt=select.options[i];
+      if(String(opt.value).trim().toLowerCase()===target || String(opt.textContent).trim().toLowerCase()===target){
+        select.value=opt.value;
+        return true;
+      }
+    }
+    return false;
+  }
   ready(function(){
     var name=getStudentName();
+    var career=getCareer();
+    var year=getYear();
     try{localStorage.setItem('fonetica_student_full_name',name);}catch(e){}
     var input=document.getElementById('studentName');
     if(input) input.value=name;
+    var careerSelect=document.getElementById('studentCareer');
+    var yearSelect=document.getElementById('studentYear');
+    var hasCareer=setSelectValue(careerSelect,career);
+    var hasYear=setSelectValue(yearSelect,year);
     var namePill=document.getElementById('namePill');
     if(namePill) namePill.textContent='Estudiante: '+name;
     var welcome=document.getElementById('welcome');
-    if(welcome) welcome.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Puedes continuar con la actividad.';
+    if(welcome) welcome.innerHTML='Bienvenido/a, <strong>'+escapeHtml(name)+'</strong>. Selecciona carrera y año para comenzar.';
     var host=document.getElementById('studentPanel')||document.getElementById('welcomePanel');
     if(host && !document.getElementById('studentAutoBanner') && document.getElementById('studentPanel')){
       var banner=document.createElement('div');
       banner.id='studentAutoBanner';
-      banner.innerHTML='✅ Estudiante registrado desde la página principal: <strong>'+escapeHtml(name)+'</strong>. Ya no es necesario escribir el nombre dentro del ejercicio.';
+      banner.innerHTML='✅ Nombre cargado: <strong>'+escapeHtml(name)+'</strong>. Selecciona la carrera y el año; después presiona <strong>comenzar</strong>.';
       host.insertBefore(banner, host.firstChild);
     }
     var start=document.getElementById('startBtn');
-    if(start && !start.dataset.autoStartedWithoutNameBox){
+    if(start && hasCareer && hasYear && !start.dataset.autoStartedWithoutNameBox){
       start.dataset.autoStartedWithoutNameBox='1';
       setTimeout(function(){ try{ start.click(); }catch(e){} },120);
     }
