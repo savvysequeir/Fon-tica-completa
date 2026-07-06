@@ -531,6 +531,44 @@ populateAudioSelector(); ensureEmbeddedLoaded().then(refreshAudioStatus).catch((
 <script id="exercise-auto-start-script">
 (function(){
   function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
+  ready(function(){
+    // 1. Obtener datos del localStorage o URL
+    var rawData = (new URLSearchParams(window.location.search).get('student')) || localStorage.getItem('fonetica_student_full_name') || '';
+    
+    // 2. Separar los datos por las barras "||"
+    var partes = rawData.split("||");
+    var nombre = partes[0] ? partes[0].trim() : "Estudiante";
+    var carrera = partes[1] ? partes[1].trim() : "N/A";
+    var anio = partes[2] ? partes[2].trim() : "N/A";
+
+    // 3. Limpiar el input principal (solo muestra el nombre)
+    var input = document.getElementById('studentName');
+    if(input) input.value = nombre;
+    
+    // 4. Actualizar el Banner de Registro para que sea legible
+    var host = document.getElementById('studentPanel');
+    if(host){
+      var banner = document.createElement('div');
+      banner.id = 'studentAutoBanner';
+      banner.style = "background:#ecfeff; border:1px solid #a5f3fc; color:#164e63; border-radius:16px; padding:15px; margin:15px 0; font-weight:900;";
+      banner.innerHTML = '✅ <strong>Estudiante registrado:</strong> ' + nombre + '<br>' +
+                         '🎓 <strong>Carrera:</strong> ' + carrera + '<br>' +
+                         '📅 <strong>Año:</strong> ' + anio + '° Año';
+      host.insertBefore(banner, host.children[1]); // Lo pone debajo del título
+    }
+    
+    // 5. Auto-iniciar si ya hay datos
+    var startBtn = document.getElementById('startBtn');
+    if(startBtn && rawData) {
+      setTimeout(function(){ startBtn.click(); }, 500);
+    }
+  });
+})();
+</script>
+<!-- EXERCISE_AUTO_START_SCRIPT_END -->
+<script id="exercise-auto-start-script">
+(function(){
+  function ready(fn){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',fn,{once:true});} else {fn();} }
   function getStudentName(){
     var name='';
     try{
