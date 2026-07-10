@@ -364,7 +364,19 @@ let chequeoBotones = setInterval(() => {
   }
 }, 100);
 
-setInterval(window.renderResults, 4000);
+// Código para el botón de guardar configuración
+    document.getElementById('saveConfig').addEventListener('click', function() {
+        const config = {
+            inicio: document.getElementById('bulkOpen').value,
+            cierre: document.getElementById('bulkClose').value,
+            cronometro: document.getElementById('bulkTimer').value,
+            filtro: document.getElementById('activityFilter').value
+        };
+        localStorage.setItem('configuracionDocente', JSON.stringify(config));
+        alert('Configuración guardada para los estudiantes.');
+    });
+
+    setInterval(window.renderResults, 4000);
 </script>
 </body>
 </html>
