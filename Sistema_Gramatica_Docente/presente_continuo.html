@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gramática - Presente Continuo</title>
+  <style>
+    :root{
+      --bg:#08111f;
+      --panel:#0f1f35;
+      --panel-2:#142842;
+      --card:#10243c;
+      --text:#eef6ff;
+      --muted:#b7c9dc;
+      --accent:#54d6ff;
+      --accent2:#9af079;
+      --danger:#ff6b6b;
+      --warning:#ffd166;
+      --ok:#52e0a2;
+      --line:rgba(255,255,255,.14);
+      --shadow:0 18px 40px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(84,214,255,.18), transparent 28%),
+        radial-gradient(circle at 80% 0%, rgba(154,240,121,.11), transparent 24%),
+        linear-gradient(135deg,#06101d,#0c1b2d 42%,#08111f);
+      min-height:100vh;
+    }
+    header{
+      position:relative;
+      padding:38px 18px 28px;
+      overflow:hidden;
+      border-bottom:1px solid var(--line);
+    }
+    .hero{max-width:1180px;margin:auto;display:grid;grid-template-columns:1.5fr .8fr;gap:20px;align-items:center}
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:rgba(255,255,255,.06);font-size:.92rem}
+    h1{font-size:clamp(2.2rem,5vw,5rem);line-height:.94;margin:18px 0 12px;letter-spacing:-.06em}
+    .subtitle{font-size:1.1rem;color:var(--muted);max-width:760px;margin:0 0 20px;line-height:1.65}
+    .hero-card{background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.04));border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+    .hero-card strong{color:var(--accent)}
+    .quicknav{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .quicknav a,.ghost-btn,.primary-btn,.danger-btn,.mini-btn{
+      appearance:none;border:0;text-decoration:none;cursor:pointer;border-radius:14px;padding:11px 14px;font-weight:750;color:#06101d;background:var(--accent);transition:.18s transform,.18s opacity,.18s background;display:inline-flex;align-items:center;justify-content:center;gap:8px
+    }
+    .quicknav a:hover,.ghost-btn:hover,.primary-btn:hover,.danger-btn:hover,.mini-btn:hover{transform:translateY(-2px)}
+    .ghost-btn{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--line)}
+    .primary-btn{background:var(--accent2)}
+    .danger-btn{background:var(--danger);color:white}
+    .mini-btn{padding:8px 10px;border-radius:11px;background:rgba(84,214,255,.15);color:var(--text);border:1px solid rgba(84,214,255,.35)}
+    button:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+    main{max-width:1180px;margin:auto;padding:26px 18px 80px}
+    section{background:rgba(15,31,53,.82);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin:20px 0;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
+    h2{font-size:clamp(1.55rem,3vw,2.35rem);margin:0 0 12px;letter-spacing:-.03em}
+    h3{font-size:1.18rem;margin:20px 0 10px;color:#dff6ff}
+    p{color:var(--muted);line-height:1.7}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .card,.rule,.question-card{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));border:1px solid var(--line);border-radius:18px;padding:16px}
+    label{font-weight:750;display:block;margin-bottom:8px;color:#eaf7ff}
+    input,select,textarea{
+      width:100%;background:#06101d;color:var(--text);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:12px 13px;font:inherit;outline:none
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(84,214,255,.12)}
+    .insert-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .insert-row button{white-space:nowrap}
+    .student-chip{margin-top:10px;padding:11px 12px;border-radius:14px;background:rgba(154,240,121,.08);border:1px solid rgba(154,240,121,.25);color:#dafbd0;min-height:44px}
+    .status-line{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+    .pill{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--muted);border-radius:999px;padding:8px 12px;font-weight:750;font-size:.93rem}
+    .pill.ok{color:#d7ffe9;border-color:rgba(82,224,162,.35);background:rgba(82,224,162,.1)}
+    .pill.warn{color:#fff2c2;border-color:rgba(255,209,102,.4);background:rgba(255,209,102,.12)}
+    .pill.bad{color:#ffd7d7;border-color:rgba(255,107,107,.4);background:rgba(255,107,107,.12)}
+    .table-wrap{overflow:auto;border-radius:17px;border:1px solid var(--line)}
+    table{width:100%;border-collapse:collapse;background:rgba(6,16,29,.5);min-width:760px}
+    th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{background:rgba(84,214,255,.11);color:#eafaff;font-size:.93rem;letter-spacing:.02em;text-transform:uppercase}
+    tr:last-child td{border-bottom:0}
+    .empty{text-align:center;color:var(--muted);padding:24px}
+    .explanation-list{display:grid;gap:12px}
+    .formula{font-family:"Segoe UI",system-ui,sans-serif;background:rgba(84,214,255,.08);border:1px solid rgba(84,214,255,.24);padding:10px 12px;border-radius:13px;color:#e7fbff;line-height:1.55}
+    .rule ul{margin:10px 0 0;padding-left:20px;color:var(--muted);line-height:1.65}
+    .vocab-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}
+    .vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:12px;max-height:520px;overflow:auto;padding-right:4px}
+    .vocab-item{background:rgba(6,16,29,.5);border:1px solid var(--line);border-radius:16px;padding:13px}
+    .vocab-word{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:850;font-size:1.05rem}
+    .ipa{color:var(--accent);font-weight:750;margin-top:3px}
+    .meaning{color:var(--muted);font-size:.95rem;margin-top:4px}
+    .locked{position:relative;opacity:.55;pointer-events:none;filter:grayscale(.3)}
+    .lock-note{display:none;margin:12px 0;padding:12px 14px;border-radius:14px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.36);color:#ffe7a5;font-weight:800}
+    .lock-note.show{display:block}
+    .progressbar{height:11px;background:rgba(255,255,255,.09);border-radius:999px;overflow:hidden;border:1px solid var(--line);margin:12px 0}
+    .progressbar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.25s width}
+    .scramble{font-size:1.2rem;line-height:1.7;padding:14px;border:1px dashed rgba(84,214,255,.45);border-radius:16px;background:rgba(84,214,255,.06);color:#e8fbff;margin:12px 0;word-spacing:6px}
+    .answer-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;margin-top:10px}
+    .feedback{min-height:28px;margin-top:10px;font-weight:850}
+    .feedback.good{color:var(--ok)}
+    .feedback.bad{color:var(--danger)}
+    .feedback.info{color:var(--warning)}
+    .small{font-size:.92rem;color:var(--muted)}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+    .modal{max-width:560px;width:100%;background:linear-gradient(180deg,#132946,#0b1728);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow)}
+    .modal h2{margin-bottom:8px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+    .quiz-options{display:grid;gap:10px;margin-top:12px}
+    .quiz-options button{text-align:left;justify-content:flex-start;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:12px;cursor:pointer;font-weight:650}
+    .quiz-options button.selected{border-color:var(--accent);background:rgba(84,214,255,.16)}
+    .quiz-options button.correct{border-color:rgba(82,224,162,.7);background:rgba(82,224,162,.15)}
+    .quiz-options button.wrong{border-color:rgba(255,107,107,.7);background:rgba(255,107,107,.13)}
+    .footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .hidden{display:none!important}
+    .note-box{background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.35);border-radius:16px;padding:14px;color:#ffe9ad;line-height:1.65}
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.grid,.grid-2{grid-template-columns:1fr}.answer-row{grid-template-columns:1fr}.insert-row{flex-direction:column;align-items:stretch}.quicknav a{width:100%;justify-content:center}}
+    @media print{body{background:white;color:#111}header,.quicknav,.footer-actions,.modal-backdrop,.mini-btn,.ghost-btn,.primary-btn,.danger-btn{display:none!important}section{box-shadow:none;border:1px solid #ccc;background:white;color:#111}p,.small,.meaning{color:#333}table{background:white;color:#111}.card,.rule,.question-card{background:white;color:#111}.formula{color:#111;background:#f1f1f1}}
+  </style>
+<script src="control_acceso.js"></script>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div>
+        <span class="badge">📘 Página de gramática interactiva</span>
+        <h1>Presente Continuo</h1>
+        <p class="subtitle">Aprende la estructura, los usos, las reglas de <strong>-ing</strong>, los verbos que normalmente no se usan en continuo, vocabulario con audio y actividades con control de errores.</p>
+        <nav class="quicknav" aria-label="Navegación rápida">
+          <a href="#resultados">Resultados</a>
+          <a href="#identificacion">Identificación</a>
+          <a href="#explicacion">Explicación</a>
+          <a href="#vocabulario">Vocabulario</a>
+          <a href="#actividades">Actividades</a>
+        </nav>
+      </div>
+      <div class="hero-card">
+        <h3>Ruta de trabajo</h3>
+        <p>Primero inserta los datos del estudiante. Luego estudia la explicación, practica el vocabulario y completa las actividades. Si llegas a 3 errores en una actividad, esa actividad se reinicia.</p>
+        <div class="status-line">
+          <span class="pill ok">Audio</span>
+          <span class="pill warn">Máximo 3 errores</span>
+          <span class="pill">1 punto por oración</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="resultados">
+      <h2>Resultados</h2>
+      <p>Este cuadro registra nombre, carrera, año, puntaje, fecha y estado. Cada oración correcta de las actividades vale 1 punto; el total máximo es 100 puntos.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre completo</th>
+              <th>Carrera</th>
+              <th>Año</th>
+              <th>Puntajes</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody">
+            <tr><td colspan="6" class="empty">Aún no hay resultados registrados.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="footer-actions">
+        <button class="ghost-btn" onclick="print()">🖨️ Imprimir resultados</button>
+        <button class="danger-btn" onclick="clearResults()">🗑️ Borrar resultados</button>
+      </div>
+    </section>
+
+    <section id="identificacion">
+      <h2>I. Identificación del estudiante</h2>
+      <p>Inserta cada dato para que aparezca guardado en su casilla correspondiente.</p>
+      <div class="grid">
+        <div class="card">
+          <label for="studentName">1.1 Nombre completo</label>
+          <input id="studentName" type="text" placeholder="Escribe el nombre completo" autocomplete="name" />
+          <div class="insert-row"><button class="primary-btn" onclick="insertName()">Insertar</button></div>
+          <div id="nameDisplay" class="student-chip">1. Nombre completo: —</div>
+        </div>
+        <div class="card">
+          <label for="careerSelect">1.2 Carrera</label>
+          <select id="careerSelect">
+            <option value="">Selecciona una carrera</option>
+            <option>Odontología</option>
+            <option>Medicina</option>
+            <option>Química Farmacéutica</option>
+            <option>Enfermería</option>
+            <option>Mecánica Dental</option>
+            <option>Veterinaria</option>
+            <option>Zootecnia</option>
+            <option>Agronomía</option>
+            <option>Agrícola</option>
+            <option>Ingeniería Forestal</option>
+            <option>Ingeniería en Agroindustria de los Alimentos</option>
+            <option>Agronegocios</option>
+            <option>Inglés</option>
+          </select>
+          <div class="insert-row"><button class="primary-btn" onclick="insertCareer()">Insertar</button></div>
+          <div id="careerDisplay" class="student-chip">2. Carrera: —</div>
+        </div>
+        <div class="card">
+          <label for="yearSelect">1.3 Año que cursa</label>
+          <select id="yearSelect">
+            <option value="">Selecciona el año</option>
+            <option>Primer año</option>
+            <option>Segundo año</option>
+            <option>Tercer año</option>
+            <option>Cuarto año</option>
+            <option>Quinto año</option>
+            <option>Sexto año</option>
+          </select>
+          <div class="insert-row"><button class="primary-btn" onclick="insertYear()">Insertar</button></div>
+          <div id="yearDisplay" class="student-chip">3. Año: —</div>
+        </div>
+      </div>
+      <div id="studentReady" class="lock-note show">⚠️ Inserta nombre, carrera y año para activar las actividades.</div>
+    </section>
+
+    <section id="explicacion">
+      <h2>II. Explicación</h2>
+      <div class="explanation-list">
+        <div class="rule">
+          <h3>2.1 Estructuras</h3>
+          <div class="formula"><strong>Positiva:</strong> Subject + am/is/are + verb-ing + complement.</div>
+          <div class="formula"><strong>Negativa:</strong> Subject + am/is/are + not + verb-ing + complement.</div>
+          <div class="formula"><strong>Interrogativa:</strong> Am/Is/Are + subject + verb-ing + complement?</div>
+          <div class="formula"><strong>Con modales:</strong> Subject + modal + be + verb-ing + complement.</div>
+        </div>
+        <div class="grid-2">
+          <div class="rule">
+            <h3>2.2 Positiva: verb to be + -ing</h3>
+            <p>El presente continuo se forma con el verbo <strong>to be</strong> como auxiliar y el verbo principal con <strong>-ing</strong>.</p>
+            <ul>
+              <li><strong>I am</strong> studying.</li>
+              <li><strong>He/She/It is</strong> studying.</li>
+              <li><strong>You/We/They are</strong> studying.</li>
+            </ul>
+            <h3>Reglas para añadir -ing</h3>
+            <ul>
+              <li>Regla general: <strong>work → working</strong>.</li>
+              <li>Verbos terminados en <strong>-e</strong>: se elimina la <strong>e</strong>. <strong>make → making</strong>.</li>
+              <li>Verbos terminados en <strong>-ie</strong>: cambia <strong>ie</strong> por <strong>y</strong>. <strong>lie → lying</strong>.</li>
+              <li>Una sílaba CVC: se duplica la última consonante. <strong>run → running</strong>.</li>
+              <li>Verbos terminados en <strong>-y</strong>: se conserva la <strong>y</strong>. <strong>play → playing</strong>.</li>
+            </ul>
+          </div>
+          <div class="rule">
+            <h3>Verbos que normalmente no se usan con -ing</h3>
+            <p>Algunos verbos expresan estados mentales, posesión, sentidos u opiniones. Por eso, normalmente se usan en presente simple, no en continuo.</p>
+            <ul>
+              <li><strong>Mente:</strong> know, understand, believe, remember, forget.</li>
+              <li><strong>Deseo/gusto:</strong> want, need, prefer, like, love, hate.</li>
+              <li><strong>Posesión:</strong> have, own, belong.</li>
+              <li><strong>Percepción:</strong> see, hear, smell, taste.</li>
+              <li><strong>Estado/apariencia:</strong> seem, appear, cost, mean.</li>
+            </ul>
+            <p class="small">Nota: algunos pueden usarse con -ing cuando cambian de significado: <em>I am thinking about you</em>, <em>She is having lunch</em>.</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="rule">
+            <h3>2.3 Negativa</h3>
+            <div class="formula">Subject + am/is/are + not + verb-ing + complement.</div>
+            <ul>
+              <li>I am not working today.</li>
+              <li>She is not studying now.</li>
+              <li>They are not playing soccer.</li>
+            </ul>
+          </div>
+          <div class="rule">
+            <h3>2.4 Interrogative</h3>
+            <div class="formula">Am/Is/Are + subject + verb-ing + complement?</div>
+            <ul>
+              <li>Are you listening?</li>
+              <li>Is he cooking dinner?</li>
+              <li>Am I speaking clearly?</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="rule">
+            <h3>2.5 Usos</h3>
+            <ul>
+              <li>Acciones que ocurren ahora: <strong>She is reading now.</strong></li>
+              <li>Acciones temporales: <strong>I am working on a project this week.</strong></li>
+              <li>Cambios o procesos: <strong>The city is growing.</strong></li>
+              <li>Planes futuros ya organizados: <strong>We are traveling tomorrow.</strong></li>
+              <li>Situaciones con modales: <strong>He must be waiting.</strong></li>
+            </ul>
+          </div>
+          <div class="rule">
+            <h3>2.6 Ejemplos</h3>
+            <ul>
+              <li>She is calling her mother.</li>
+              <li>They are not swimming in the pool.</li>
+              <li>Is he fixing his computer?</li>
+              <li>You must be adding too much salt.</li>
+              <li>She may be visiting her friends.</li>
+              <li>Can you be holding the bag?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vocabulario">
+      <h2>III. Vocabulario</h2>
+      <p>Palabras usadas en las oraciones. Cada tarjeta incluye traducción, fonética aproximada y audio en inglés.</p>
+      <div class="vocab-tools">
+        <input id="vocabSearch" type="search" placeholder="Buscar palabra o significado..." oninput="renderVocab()" />
+        <button class="ghost-btn" onclick="speakAllVisible()">🔊 Leer visibles</button>
+      </div>
+      <div id="vocabGrid" class="vocab-grid"></div>
+    </section>
+
+    <section id="actividades">
+      <h2>IV. Actividades</h2>
+      <div id="activitiesLock" class="lock-note show">🔒 Las actividades están bloqueadas hasta insertar nombre, carrera y año.</div>
+      <div id="activitiesContent" class="locked">
+        <div class="note-box"><strong>Regla de trabajo:</strong> en cada actividad solo puedes cometer hasta 2 errores. Al llegar a 3 errores, la actividad vuelve a empezar desde la primera pregunta.</div>
+
+        <div id="activity1" class="question-card">
+          <h3>Actividad 1: Reordena las palabras</h3>
+          <p>Instrucciones: Reordena las palabras para formar oraciones gramaticalmente correctas en presente continuo.</p>
+          <div class="status-line">
+            <span id="a1ProgressPill" class="pill">Pregunta 1 de 50</span>
+            <span id="a1MistakesPill" class="pill warn">Errores: 0 / 3</span>
+            <span id="a1ScorePill" class="pill ok">Puntaje: 0</span>
+          </div>
+          <div class="progressbar"><span id="a1Bar"></span></div>
+          <div id="a1Scramble" class="scramble"></div>
+          <div class="answer-row">
+            <input id="a1Answer" type="text" placeholder="Escribe la oración correcta aquí..." onkeydown="if(event.key==='Enter') checkActivity1()" />
+            <button id="a1Check" class="primary-btn" onclick="checkActivity1()">Revisar</button>
+          </div>
+          <div class="footer-actions">
+            <button class="ghost-btn" onclick="showHint(1)">💡 Pista</button>
+            <button class="danger-btn" onclick="resetActivity1(true)">Reiniciar actividad 1</button>
+          </div>
+          <div id="a1Feedback" class="feedback"></div>
+        </div>
+
+        <div id="activity2" class="question-card" style="margin-top:16px">
+          <h3>Actividad 2: Traducción al inglés</h3>
+          <p>Instrucciones: Traduce las siguientes oraciones al inglés usando el presente continuo.</p>
+          <div class="status-line">
+            <span id="a2ProgressPill" class="pill">Pregunta 1 de 50</span>
+            <span id="a2MistakesPill" class="pill warn">Errores: 0 / 3</span>
+            <span id="a2ScorePill" class="pill ok">Puntaje: 0</span>
+          </div>
+          <div class="progressbar"><span id="a2Bar"></span></div>
+          <div id="a2Prompt" class="scramble"></div>
+          <div class="answer-row">
+            <input id="a2Answer" type="text" placeholder="Escribe la traducción correcta aquí..." onkeydown="if(event.key==='Enter') checkActivity2()" />
+            <button id="a2Check" class="primary-btn" onclick="checkActivity2()">Revisar</button>
+          </div>
+          <div class="footer-actions">
+            <button class="ghost-btn" onclick="showHint(2)">💡 Pista</button>
+            <button class="danger-btn" onclick="resetActivity2(true)">Reiniciar actividad 2</button>
+          </div>
+          <div id="a2Feedback" class="feedback"></div>
+        </div>
+
+        <div id="miniQuiz" class="question-card hidden" style="margin-top:16px">
+          <h3>Mini prueba: Presente Continuo</h3>
+          <p>Selecciona la respuesta correcta. Al finalizar, el resultado se agregará al cuadro superior. El puntaje final se calcula con 1 punto por cada oración correcta de las actividades.</p>
+          <div class="status-line">
+            <span id="quizProgress" class="pill">Pregunta 1 de 10</span>
+            <span id="quizScore" class="pill ok">Correctas: 0</span>
+          </div>
+          <div class="progressbar"><span id="quizBar"></span></div>
+          <div id="quizQuestion" class="scramble"></div>
+          <div id="quizOptions" class="quiz-options"></div>
+          <div class="footer-actions">
+            <button id="quizNext" class="primary-btn" onclick="nextQuizQuestion()" disabled>Siguiente</button>
+            <button class="danger-btn" onclick="restartAllActivities()">Volver a actividad 1</button>
+          </div>
+          <div id="quizFeedback" class="feedback"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="quizPromptModal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h2>¿Deseas entrar a la mini prueba?</h2>
+      <p>Ya terminaste las actividades. Puedes entrar a la mini prueba para registrar tu resultado o regresar a la actividad 1 para practicar nuevamente.</p>
+      <div class="modal-actions">
+        <button class="ghost-btn" onclick="declineQuiz()">No, regresar a actividad 1</button>
+        <button class="primary-btn" onclick="acceptQuiz()">Sí, entrar a mini prueba</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      student: { name: '', career: '', year: '' },
+      a1: { index: 0, mistakes: 0, correct: 0, complete: false },
+      a2: { index: 0, mistakes: 0, correct: 0, complete: false },
+      quiz: { index: 0, correct: 0, selected: null, complete: false }
+    };
+
+    const activity1 = [
+      { scrambled: 'reading / is / She / a / book / now / .', answers: ['She is reading a book now.'] },
+      { scrambled: 'not / are / They / playing / today / soccer / .', answers: ['They are not playing soccer today.'] },
+      { scrambled: 'cooking / Is / dinner / he / ?', answers: ['Is he cooking dinner?'] },
+      { scrambled: 'must / I / be / studying / for / exam / the / .', answers: ['I must be studying for the exam.'] },
+      { scrambled: 'may / It / be / raining / afternoon / this / .', answers: ['It may be raining this afternoon.'] },
+      { scrambled: 'can / You / be / helping / me / now / .', answers: ['You can be helping me now.'] },
+      { scrambled: 'not / is / cleaning / He / his / room / .', answers: ['He is not cleaning his room.'] },
+      { scrambled: 'are / We / listening / to / music / .', answers: ['We are listening to music.'] },
+      { scrambled: 'be / must / They / working / hard / .', answers: ['They must be working hard.'] },
+      { scrambled: 'may / She / be / arriving / soon / .', answers: ['She may be arriving soon.'] },
+      { scrambled: 'can / be / driving / I / the / car / .', answers: ['I can be driving the car.'] },
+      { scrambled: 'is / running / She / in / park / the / .', answers: ['She is running in the park.'] },
+      { scrambled: 'not / are / You / paying / attention / .', answers: ['You are not paying attention.'] },
+      { scrambled: 'be / must / He / waiting / for / bus / the / .', answers: ['He must be waiting for the bus.'] },
+      { scrambled: 'may / We / be / traveling / tomorrow / .', answers: ['We may be traveling tomorrow.'] },
+      { scrambled: 'can / be / singing / They / loudly / .', answers: ['They can be singing loudly.'] },
+      { scrambled: 'is / calling / She / mother / her / .', answers: ['She is calling her mother.'] },
+      { scrambled: 'not / am / I / feeling / well / .', answers: ['I am not feeling well.'] },
+      { scrambled: 'be / must / it / snowing / outside / .', answers: ['It must be snowing outside.'] },
+      { scrambled: 'may / He / be / eating / lunch / .', answers: ['He may be eating lunch.'] },
+      { scrambled: 'can / be / writing / you / a / letter / .', answers: ['Can you be writing a letter?', 'You can be writing a letter.'] },
+      { scrambled: 'are / They / talking / about / project / the / .', answers: ['They are talking about the project.'] },
+      { scrambled: 'not / is / dancing / she / tonight / .', answers: ['She is not dancing tonight.'] },
+      { scrambled: 'be / must / I / dreaming / .', answers: ['I must be dreaming.'] },
+      { scrambled: 'may / You / be / needing / some / help / .', answers: ['You may be needing some help.'] },
+      { scrambled: 'can / be / playing / We / a / game / .', answers: ['We can be playing a game.'] },
+      { scrambled: 'is / fixing / He / computer / his / .', answers: ['He is fixing his computer.'] },
+      { scrambled: 'not / are / swimming / They / pool / the / in / .', answers: ['They are not swimming in the pool.'] },
+      { scrambled: 'be / must / she / looking / for / keys / her / .', answers: ['She must be looking for her keys.'] },
+      { scrambled: 'may / I / be / leaving / early / .', answers: ['I may be leaving early.'] },
+      { scrambled: 'can / be / wearing / You / a / jacket / .', answers: ['You can be wearing a jacket.'] },
+      { scrambled: 'are / We / preparing / for / party / the / .', answers: ['We are preparing for the party.'] },
+      { scrambled: 'not / is / shopping / She / today / .', answers: ['She is not shopping today.'] },
+      { scrambled: 'be / must / they / exercising / now / .', answers: ['They must be exercising now.'] },
+      { scrambled: 'may / It / be / causing / problems / .', answers: ['It may be causing problems.'] },
+      { scrambled: 'can / be / opening / I / the / window / .', answers: ['I can be opening the window.'] },
+      { scrambled: 'is / painting / He / house / his / .', answers: ['He is painting his house.'] },
+      { scrambled: 'not / are / watching / You / TV / .', answers: ['You are not watching TV.'] },
+      { scrambled: 'be / must / we / learning / English / .', answers: ['We must be learning English.'] },
+      { scrambled: 'may / She / be / visiting / friends / her / .', answers: ['She may be visiting her friends.'] },
+      { scrambled: 'can / be / checking / They / emails / their / .', answers: ['They can be checking their emails.'] },
+      { scrambled: 'is / drinking / water / She / .', answers: ['She is drinking water.'] },
+      { scrambled: 'not / am / I / wearing / shoes / .', answers: ['I am not wearing shoes.'] },
+      { scrambled: 'be / must / he / talking / to / teacher / the / .', answers: ['He must be talking to the teacher.'] },
+      { scrambled: 'may / We / be / building / a / house / .', answers: ['We may be building a house.'] },
+      { scrambled: 'can / be / holding / you / bag / the / ?', answers: ['Can you be holding the bag?'] },
+      { scrambled: 'are / They / bringing / food / the / .', answers: ['They are bringing the food.'] },
+      { scrambled: 'not / is / breaking / it / He / .', answers: ['He is not breaking it.'] },
+      { scrambled: 'be / must / I / forgetting / something / .', answers: ['I must be forgetting something.'] },
+      { scrambled: 'may / she / be / finishing / task / the / .', answers: ['She may be finishing the task.'] }
+    ];
+
+    const activity2 = [
+      { es: 'Ella está aceptando el nuevo trabajo.', answers: ['She is accepting the new job.'] },
+      { es: 'Nosotros estamos logrando nuestras metas.', answers: ['We are achieving our goals.'] },
+      { es: 'Ellos no están actuando bien hoy.', answers: ['They are not acting well today.'] },
+      { es: 'Debes estar añadiendo demasiada sal a la sopa.', answers: ['You must be adding too much salt to the soup.', 'You have to be adding too much salt to the soup.'] },
+      { es: 'Ella podría estar admirando el paisaje.', answers: ['She could be admiring the landscape.', 'She might be admiring the landscape.', 'She may be admiring the landscape.'] },
+      { es: '¿Puedes estar admitiendo la verdad ahora?', answers: ['Can you be admitting the truth now?'] },
+      { es: 'Él no está aconsejando a nadie en este momento.', answers: ['He is not advising anyone at this moment.', 'He is not advising anybody at this moment.', 'He is not advising anyone right now.'] },
+      { es: 'Estoy permitiendo que ellos jueguen afuera.', answers: ['I am allowing them to play outside.', 'I am letting them play outside.'] },
+      { es: 'Ella está contestando el teléfono rápidamente.', answers: ['She is answering the phone quickly.'] },
+      { es: 'Él está apareciendo en televisión ahora.', answers: ['He is appearing on television now.', 'He is appearing on TV now.'] },
+      { es: 'Debes estar llegando tarde a la reunión.', answers: ['You must be arriving late to the meeting.', 'You must be arriving late for the meeting.'] },
+      { es: 'Ella podría estar preguntando por ti.', answers: ['She could be asking for you.', 'She might be asking for you.', 'She may be asking for you.'] },
+      { es: '¿Puedes estar evitando ese problema?', answers: ['Can you be avoiding that problem?'] },
+      { es: 'Están horneando un pastel delicioso.', answers: ['They are baking a delicious cake.'] },
+      { es: 'El gato está bebiendo leche.', answers: ['The cat is drinking milk.'] },
+      { es: 'Ella no está pidiendo prestado dinero.', answers: ['She is not borrowing money.'] },
+      { es: 'Debes estar rompiendo las reglas.', answers: ['You must be breaking the rules.'] },
+      { es: 'Ella podría estar construyendo un castillo de arena.', answers: ['She could be building a sandcastle.', 'She might be building a sandcastle.', 'She may be building a sandcastle.', 'She could be building a sand castle.'] },
+      { es: '¿Puedes estar comprando comida ahora?', answers: ['Can you be buying food now?'] },
+      { es: 'Él está llamando a su hermano.', answers: ['He is calling his brother.'] },
+      { es: 'No estamos acampando este fin de semana.', answers: ['We are not camping this weekend.'] },
+      { es: 'Ella está cuidando a su mascota.', answers: ['She is taking care of her pet.', 'She is caring for her pet.'] },
+      { es: 'Debes estar causando mucho ruido.', answers: ['You must be causing a lot of noise.', 'You must be causing much noise.'] },
+      { es: 'Ellos podrían estar celebrando su aniversario.', answers: ['They could be celebrating their anniversary.', 'They might be celebrating their anniversary.', 'They may be celebrating their anniversary.'] },
+      { es: '¿Puedes estar cambiando de opinión?', answers: ['Can you be changing your mind?'] },
+      { es: 'Estamos charlando sobre el clima.', answers: ['We are chatting about the weather.'] },
+      { es: 'Ella no está revisando sus mensajes.', answers: ['She is not checking her messages.'] },
+      { es: 'Él está limpiando su auto.', answers: ['He is cleaning his car.'] },
+      { es: 'Debes estar escalando la montaña ahora.', answers: ['You must be climbing the mountain now.'] },
+      { es: 'Ella podría estar cerrando la tienda.', answers: ['She could be closing the store.', 'She might be closing the store.', 'She may be closing the store.'] },
+      { es: '¿Puedes estar recolectando dinero para la caridad?', answers: ['Can you be collecting money for charity?'] },
+      { es: 'Ellos están comparando los precios.', answers: ['They are comparing the prices.', 'They are comparing prices.'] },
+      { es: 'Él no se está quejando del servicio.', answers: ['He is not complaining about the service.'] },
+      { es: 'Estamos completando el formulario.', answers: ['We are completing the form.'] },
+      { es: 'Debes estar cocinando algo delicioso.', answers: ['You must be cooking something delicious.'] },
+      { es: 'Ella podría estar copiando el examen.', answers: ['She could be copying the exam.', 'She might be copying the exam.', 'She may be copying the exam.'] },
+      { es: '¿Puedes estar corrigiendo los errores?', answers: ['Can you be correcting the mistakes?', 'Can you be correcting the errors?'] },
+      { es: 'Ellos están contando una historia divertida.', answers: ['They are telling a funny story.'] },
+      { es: 'Ella está cubriendo sus ojos.', answers: ['She is covering her eyes.'] },
+      { es: 'No estoy creando problemas.', answers: ['I am not creating problems.', 'I am not creating trouble.'] },
+      { es: 'Debes estar llorando por la película.', answers: ['You must be crying because of the movie.', 'You must be crying over the movie.'] },
+      { es: 'Él podría estar cortando el césped.', answers: ['He could be cutting the grass.', 'He might be cutting the grass.', 'He may be cutting the grass.', 'He could be mowing the lawn.'] },
+      { es: '¿Puedes estar dañando el equipo?', answers: ['Can you be damaging the equipment?'] },
+      { es: 'Están bailando en la fiesta.', answers: ['They are dancing at the party.'] },
+      { es: 'Ella está decidiendo qué ponerse.', answers: ['She is deciding what to wear.'] },
+      { es: 'Él no está entregando el paquete a tiempo.', answers: ['He is not delivering the package on time.'] },
+      { es: 'Debes estar diseñando algo único.', answers: ['You must be designing something unique.'] },
+      { es: 'Ella podría estar destruyendo la evidencia.', answers: ['She could be destroying the evidence.', 'She might be destroying the evidence.', 'She may be destroying the evidence.'] },
+      { es: '¿Puedes estar desarrollando una nueva idea?', answers: ['Can you be developing a new idea?'] },
+      { es: 'Estamos descubriendo la verdad.', answers: ['We are discovering the truth.'] }
+    ];
+
+    const quizQuestions = [
+      { q: '¿Cuál es el auxiliar del presente continuo?', options: ['Do / Does', 'Did', 'Verb to be: am / is / are', 'Have / Has'], answer: 2 },
+      { q: '¿Qué se le agrega al verbo principal en presente continuo?', options: ['-ed', '-ing', '-s', 'to + verb'], answer: 1 },
+      { q: '¿Qué pasa con los verbos que terminan en -e, como make?', options: ['Se duplica la e: makeeing', 'Se elimina la e y se agrega -ing: making', 'No cambia: makeing', 'Se cambia e por y: makying'], answer: 1 },
+      { q: '¿Qué pasa con los verbos terminados en -y, como play?', options: ['Se elimina y: plaing', 'Se conserva la y: playing', 'Se cambia por i: plaiing', 'Se agrega -ed: played'], answer: 1 },
+      { q: '¿Qué ocurre con verbos CVC de una sílaba como run?', options: ['Se duplica la última consonante: running', 'Se elimina la vocal: rnning', 'Se agrega -s: runs', 'No cambia nada: runing'], answer: 0 },
+      { q: '¿Cuál es la estructura negativa correcta?', options: ['Subject + do not + verb-ing', 'Subject + am/is/are + not + verb-ing', 'Subject + did not + verb-ing', 'Subject + have not + verb-ing'], answer: 1 },
+      { q: '¿Cuál es la estructura interrogativa correcta?', options: ['Do + subject + verb-ing?', 'Am/Is/Are + subject + verb-ing?', 'Subject + am/is/are + verb-ing?', 'Did + subject + verb-ing?'], answer: 1 },
+      { q: '¿Cuándo se usa el presente continuo?', options: ['Para acciones que suceden ahora, acciones temporales y planes futuros organizados', 'Solo para hábitos diarios', 'Solo para acciones terminadas en el pasado', 'Solo para verdades universales'], answer: 0 },
+      { q: '¿Cuál grupo contiene verbos que normalmente NO se usan en continuo?', options: ['run, jump, swim', 'cook, clean, paint', 'know, want, believe, understand', 'play, listen, study'], answer: 2 },
+      { q: '¿Cuál es la estructura correcta con modales como must, may o can?', options: ['Subject + modal + verb-ing', 'Subject + modal + be + verb-ing', 'Subject + to be + modal + verb-ing', 'Subject + modal + am/is/are + verb-ing'], answer: 1 }
+    ];
+
+    const vocab = [
+      ['accept','/əkˈsept/','aceptar'],['achieve','/əˈtʃiːv/','lograr'],['act','/ækt/','actuar'],['add','/æd/','añadir'],['admire','/ədˈmaɪər/','admirar'],['admit','/ədˈmɪt/','admitir'],['advise','/ədˈvaɪz/','aconsejar'],['allow','/əˈlaʊ/','permitir'],['answer','/ˈæn.sər/','contestar'],['appear','/əˈpɪər/','aparecer'],
+      ['arrive','/əˈraɪv/','llegar'],['ask','/æsk/','preguntar'],['avoid','/əˈvɔɪd/','evitar'],['bake','/beɪk/','hornear'],['book','/bʊk/','libro'],['borrow','/ˈbɑːr.oʊ/','pedir prestado'],['break','/breɪk/','romper'],['bring','/brɪŋ/','traer'],['build','/bɪld/','construir'],['bus','/bʌs/','autobús'],
+      ['buy','/baɪ/','comprar'],['call','/kɔːl/','llamar'],['camp','/kæmp/','acampar'],['care','/ker/','cuidar'],['cause','/kɔːz/','causar'],['celebrate','/ˈsel.ə.breɪt/','celebrar'],['change','/tʃeɪndʒ/','cambiar'],['chat','/tʃæt/','charlar'],['check','/tʃek/','revisar'],['clean','/kliːn/','limpiar'],
+      ['climb','/klaɪm/','escalar'],['close','/kloʊz/','cerrar'],['collect','/kəˈlekt/','recolectar'],['compare','/kəmˈper/','comparar'],['complain','/kəmˈpleɪn/','quejarse'],['complete','/kəmˈpliːt/','completar'],['computer','/kəmˈpjuː.tər/','computadora'],['cook','/kʊk/','cocinar'],['copy','/ˈkɑː.pi/','copiar'],['correct','/kəˈrekt/','corregir'],
+      ['count','/kaʊnt/','contar'],['cover','/ˈkʌv.ər/','cubrir'],['create','/kriˈeɪt/','crear'],['cry','/kraɪ/','llorar'],['cut','/kʌt/','cortar'],['damage','/ˈdæm.ɪdʒ/','dañar'],['dance','/dæns/','bailar'],['decide','/dɪˈsaɪd/','decidir'],['deliver','/dɪˈlɪv.ər/','entregar'],['design','/dɪˈzaɪn/','diseñar'],
+      ['destroy','/dɪˈstrɔɪ/','destruir'],['develop','/dɪˈvel.əp/','desarrollar'],['discover','/dɪˈskʌv.ər/','descubrir'],['drink','/drɪŋk/','beber'],['drive','/draɪv/','manejar'],['eat','/iːt/','comer'],['email','/ˈiː.meɪl/','correo electrónico'],['equipment','/ɪˈkwɪp.mənt/','equipo'],['evidence','/ˈev.ɪ.dəns/','evidencia'],['exam','/ɪɡˈzæm/','examen'],
+      ['exercise','/ˈek.sɚ.saɪz/','hacer ejercicio'],['feel','/fiːl/','sentirse'],['finish','/ˈfɪn.ɪʃ/','terminar'],['fix','/fɪks/','reparar'],['food','/fuːd/','comida'],['forget','/fərˈɡet/','olvidar'],['friend','/frend/','amigo'],['game','/ɡeɪm/','juego'],['grass','/ɡræs/','césped'],['help','/help/','ayuda / ayudar'],
+      ['hold','/hoʊld/','sostener'],['jacket','/ˈdʒæk.ɪt/','chaqueta'],['key','/kiː/','llave'],['landscape','/ˈlænd.skeɪp/','paisaje'],['learn','/lɝːn/','aprender'],['leave','/liːv/','salir / dejar'],['listen','/ˈlɪs.ən/','escuchar'],['look for','/lʊk fɔːr/','buscar'],['loudly','/ˈlaʊd.li/','fuertemente / en voz alta'],['milk','/mɪlk/','leche'],
+      ['mother','/ˈmʌð.ər/','madre'],['music','/ˈmjuː.zɪk/','música'],['need','/niːd/','necesitar'],['open','/ˈoʊ.pən/','abrir'],['paint','/peɪnt/','pintar'],['park','/pɑːrk/','parque'],['party','/ˈpɑːr.ti/','fiesta'],['pay attention','/peɪ əˈten.ʃən/','prestar atención'],['pet','/pet/','mascota'],['play','/pleɪ/','jugar'],
+      ['pool','/puːl/','piscina'],['prepare','/prɪˈper/','preparar'],['project','/ˈprɑː.dʒekt/','proyecto'],['rain','/reɪn/','llover'],['read','/riːd/','leer'],['rule','/ruːl/','regla'],['run','/rʌn/','correr'],['sandcastle','/ˈsændˌkæs.əl/','castillo de arena'],['shop','/ʃɑːp/','comprar / ir de compras'],['sing','/sɪŋ/','cantar'],
+      ['snow','/snoʊ/','nevar'],['soccer','/ˈsɑː.kɚ/','fútbol'],['study','/ˈstʌd.i/','estudiar'],['swim','/swɪm/','nadar'],['talk','/tɔːk/','hablar'],['teacher','/ˈtiː.tʃər/','docente'],['truth','/truːθ/','verdad'],['travel','/ˈtræv.əl/','viajar'],['TV','/ˌtiːˈviː/','televisión'],['visit','/ˈvɪz.ɪt/','visitar'],
+      ['wait','/weɪt/','esperar'],['watch','/wɑːtʃ/','mirar'],['wear','/wer/','usar / vestir'],['window','/ˈwɪn.doʊ/','ventana'],['work','/wɝːk/','trabajar'],['write','/raɪt/','escribir']
+    ].map(([word, ipa, meaning]) => ({word, ipa, meaning}));
+
+    function normalize(text){
+      return String(text || '')
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[’']/g,'')
+        .replace(/[¿?¡!,.;:]/g,'')
+        .replace(/\s+/g,' ')
+        .trim();
+    }
+
+    function speak(text){
+      if(!('speechSynthesis' in window)){
+        alert('Tu navegador no tiene lector de voz disponible. Prueba con Google Chrome.');
+        return;
+      }
+      speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = 0.83;
+      utter.pitch = 1;
+      speechSynthesis.speak(utter);
+    }
+
+    function renderVocab(){
+      const grid = document.getElementById('vocabGrid');
+      const term = normalize(document.getElementById('vocabSearch').value);
+      const filtered = vocab.filter(v => normalize(v.word + ' ' + v.meaning + ' ' + v.ipa).includes(term));
+      grid.innerHTML = filtered.map((v, i) => `
+        <article class="vocab-item">
+          <div class="vocab-word"><span>${v.word}</span><button class="mini-btn" onclick="speak('${escapeQuotes(v.word)}')">🔊</button></div>
+          <div class="ipa">${v.ipa}</div>
+          <div class="meaning">${v.meaning}</div>
+        </article>
+      `).join('') || '<div class="empty">No hay coincidencias.</div>';
+    }
+
+    function escapeQuotes(text){ return String(text).replace(/'/g, "\\'"); }
+
+    function speakAllVisible(){
+      const term = normalize(document.getElementById('vocabSearch').value);
+      const filtered = vocab.filter(v => normalize(v.word + ' ' + v.meaning + ' ' + v.ipa).includes(term)).slice(0, 18);
+      speak(filtered.map(v => v.word).join('. '));
+    }
+
+    function insertName(){
+      const value = document.getElementById('studentName').value.trim();
+      if(!value) return alert('Escribe el nombre completo.');
+      state.student.name = value;
+      document.getElementById('nameDisplay').textContent = '1. Nombre completo: ' + value;
+      checkStudentReady();
+    }
+    function insertCareer(){
+      const value = document.getElementById('careerSelect').value;
+      if(!value) return alert('Selecciona una carrera.');
+      state.student.career = value;
+      document.getElementById('careerDisplay').textContent = '2. Carrera: ' + value;
+      checkStudentReady();
+    }
+    function insertYear(){
+      const value = document.getElementById('yearSelect').value;
+      if(!value) return alert('Selecciona el año que cursa.');
+      state.student.year = value;
+      document.getElementById('yearDisplay').textContent = '3. Año: ' + value;
+      checkStudentReady();
+    }
+
+    function checkStudentReady(){
+      const ready = state.student.name && state.student.career && state.student.year;
+      document.getElementById('studentReady').classList.toggle('show', !ready);
+      document.getElementById('activitiesLock').classList.toggle('show', !ready);
+      document.getElementById('activitiesContent').classList.toggle('locked', !ready);
+      localStorage.setItem('pc_student', JSON.stringify(state.student));
+      return ready;
+    }
+
+    function updateActivity1(){
+      const item = activity1[state.a1.index];
+      document.getElementById('a1Scramble').textContent = item ? item.scrambled : 'Actividad completada.';
+      document.getElementById('a1ProgressPill').textContent = `Pregunta ${Math.min(state.a1.index + 1, activity1.length)} de ${activity1.length}`;
+      document.getElementById('a1MistakesPill').textContent = `Errores: ${state.a1.mistakes} / 3`;
+      document.getElementById('a1ScorePill').textContent = `Puntaje: ${state.a1.correct}`;
+      document.getElementById('a1Bar').style.width = `${(state.a1.correct / activity1.length) * 100}%`;
+    }
+
+    function checkActivity1(){
+      if(!checkStudentReady()) return alert('Primero inserta los datos del estudiante.');
+      if(state.a1.complete) return;
+      const input = document.getElementById('a1Answer');
+      const answer = normalize(input.value);
+      if(!answer) return alert('Escribe tu respuesta.');
+      const item = activity1[state.a1.index];
+      const accepted = item.answers.some(a => normalize(a) === answer);
+      const feedback = document.getElementById('a1Feedback');
+      if(accepted){
+        state.a1.correct++;
+        state.a1.index++;
+        input.value = '';
+        feedback.className = 'feedback good';
+        feedback.textContent = '✅ Correcto. Excelente orden gramatical.';
+        if(state.a1.index >= activity1.length){
+          state.a1.complete = true;
+          document.getElementById('a1Check').disabled = true;
+          input.disabled = true;
+          feedback.textContent = '🏆 Actividad 1 completada. Continúa con la actividad 2.';
+          document.getElementById('activity2').scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      } else {
+        state.a1.mistakes++;
+        feedback.className = 'feedback bad';
+        feedback.textContent = `❌ Revisa la estructura. Recuerda: subject + am/is/are + verb-ing. Respuesta esperada: ${item.answers[0]}`;
+        if(state.a1.mistakes >= 3){
+          setTimeout(() => {
+            alert('Llegaste a 3 errores. La actividad 1 volverá a empezar.');
+            resetActivity1(false);
+          }, 250);
+          return;
+        }
+      }
+      updateActivity1();
+    }
+
+    function resetActivity1(manual){
+      state.a1 = { index: 0, mistakes: 0, correct: 0, complete: false };
+      const input = document.getElementById('a1Answer');
+      input.disabled = false;
+      document.getElementById('a1Check').disabled = false;
+      document.getElementById('a1Feedback').className = 'feedback info';
+      document.getElementById('a1Feedback').textContent = manual ? 'Actividad 1 reiniciada.' : 'Actividad 1 reiniciada por exceso de errores.';
+      updateActivity1();
+    }
+
+    function updateActivity2(){
+      const item = activity2[state.a2.index];
+      document.getElementById('a2Prompt').textContent = item ? item.es : 'Actividad completada.';
+      document.getElementById('a2ProgressPill').textContent = `Pregunta ${Math.min(state.a2.index + 1, activity2.length)} de ${activity2.length}`;
+      document.getElementById('a2MistakesPill').textContent = `Errores: ${state.a2.mistakes} / 3`;
+      document.getElementById('a2ScorePill').textContent = `Puntaje: ${state.a2.correct}`;
+      document.getElementById('a2Bar').style.width = `${(state.a2.correct / activity2.length) * 100}%`;
+    }
+
+    function checkActivity2(){
+      if(!checkStudentReady()) return alert('Primero inserta los datos del estudiante.');
+      if(!state.a1.complete) return alert('Primero completa la actividad 1.');
+      if(state.a2.complete) return;
+      const input = document.getElementById('a2Answer');
+      const answer = normalize(input.value);
+      if(!answer) return alert('Escribe tu traducción.');
+      const item = activity2[state.a2.index];
+      const accepted = item.answers.some(a => normalize(a) === answer);
+      const feedback = document.getElementById('a2Feedback');
+      if(accepted){
+        state.a2.correct++;
+        state.a2.index++;
+        input.value = '';
+        feedback.className = 'feedback good';
+        feedback.textContent = '✅ Correcto. Buena traducción en presente continuo.';
+        if(state.a2.index >= activity2.length){
+          state.a2.complete = true;
+          document.getElementById('a2Check').disabled = true;
+          input.disabled = true;
+          feedback.textContent = '🏆 Actividad 2 completada.';
+          updateActivity2();
+          showQuizPrompt();
+          return;
+        }
+      } else {
+        state.a2.mistakes++;
+        feedback.className = 'feedback bad';
+        feedback.textContent = `❌ Revisa auxiliar, -ing o complemento. Respuesta esperada: ${item.answers[0]}`;
+        if(state.a2.mistakes >= 3){
+          setTimeout(() => {
+            alert('Llegaste a 3 errores. La actividad 2 volverá a empezar.');
+            resetActivity2(false);
+          }, 250);
+          return;
+        }
+      }
+      updateActivity2();
+    }
+
+    function resetActivity2(manual){
+      state.a2 = { index: 0, mistakes: 0, correct: 0, complete: false };
+      const input = document.getElementById('a2Answer');
+      input.disabled = false;
+      document.getElementById('a2Check').disabled = false;
+      document.getElementById('a2Feedback').className = 'feedback info';
+      document.getElementById('a2Feedback').textContent = manual ? 'Actividad 2 reiniciada.' : 'Actividad 2 reiniciada por exceso de errores.';
+      updateActivity2();
+    }
+
+    function showHint(activity){
+      if(activity === 1){
+        const item = activity1[state.a1.index];
+        if(!item) return;
+        speak(item.answers[0]);
+        document.getElementById('a1Feedback').className = 'feedback info';
+        document.getElementById('a1Feedback').textContent = '💡 Escucha la oración correcta y observa la posición del auxiliar.';
+      } else {
+        const item = activity2[state.a2.index];
+        if(!item) return;
+        speak(item.answers[0]);
+        document.getElementById('a2Feedback').className = 'feedback info';
+        document.getElementById('a2Feedback').textContent = '💡 Escucha la traducción correcta. Recuerda usar am/is/are o modal + be.';
+      }
+    }
+
+    function showQuizPrompt(){
+      document.getElementById('quizPromptModal').style.display = 'flex';
+    }
+    function declineQuiz(){
+      document.getElementById('quizPromptModal').style.display = 'none';
+      restartAllActivities();
+      document.getElementById('activity1').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    function acceptQuiz(){
+      document.getElementById('quizPromptModal').style.display = 'none';
+      document.getElementById('miniQuiz').classList.remove('hidden');
+      startQuiz();
+      document.getElementById('miniQuiz').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function startQuiz(){
+      state.quiz = { index: 0, correct: 0, selected: null, complete: false };
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion(){
+      const q = quizQuestions[state.quiz.index];
+      document.getElementById('quizProgress').textContent = `Pregunta ${state.quiz.index + 1} de ${quizQuestions.length}`;
+      document.getElementById('quizScore').textContent = `Correctas: ${state.quiz.correct}`;
+      document.getElementById('quizBar').style.width = `${(state.quiz.index / quizQuestions.length) * 100}%`;
+      document.getElementById('quizQuestion').textContent = q.q;
+      document.getElementById('quizFeedback').textContent = '';
+      document.getElementById('quizNext').disabled = true;
+      document.getElementById('quizOptions').innerHTML = q.options.map((option, i) => `<button onclick="selectQuizOption(${i})">${option}</button>`).join('');
+    }
+
+    function selectQuizOption(index){
+      const q = quizQuestions[state.quiz.index];
+      const buttons = [...document.getElementById('quizOptions').querySelectorAll('button')];
+      buttons.forEach(btn => btn.disabled = true);
+      buttons[index].classList.add(index === q.answer ? 'correct' : 'wrong');
+      buttons[q.answer].classList.add('correct');
+      if(index === q.answer){
+        state.quiz.correct++;
+        document.getElementById('quizFeedback').className = 'feedback good';
+        document.getElementById('quizFeedback').textContent = '✅ Correcto.';
+      } else {
+        document.getElementById('quizFeedback').className = 'feedback bad';
+        document.getElementById('quizFeedback').textContent = '❌ Incorrecto. Observa la opción correcta marcada.';
+      }
+      document.getElementById('quizScore').textContent = `Correctas: ${state.quiz.correct}`;
+      document.getElementById('quizNext').disabled = false;
+    }
+
+    function nextQuizQuestion(){
+      state.quiz.index++;
+      if(state.quiz.index >= quizQuestions.length){
+        finishQuiz();
+      } else {
+        renderQuizQuestion();
+      }
+    }
+
+    function finishQuiz(){
+      state.quiz.complete = true;
+      document.getElementById('quizBar').style.width = '100%';
+      const score = calculateFinalScore();
+      const status = getStatus(score);
+      saveResult(score, status);
+      document.getElementById('quizQuestion').textContent = `Resultado final: ${score} puntos de 100. Estado: ${status}`;
+      document.getElementById('quizOptions').innerHTML = '';
+      document.getElementById('quizNext').disabled = true;
+      document.getElementById('quizFeedback').className = status === 'AI' ? 'feedback bad' : 'feedback good';
+      document.getElementById('quizFeedback').textContent = status === 'AA' ? 'Dominio excelente del presente continuo. Cada oración correcta sumó 1 punto.' : status === 'AS' ? 'Buen dominio. Puedes reforzar reglas y excepciones.' : status === 'AF' ? 'Dominio básico. Conviene repetir explicación y vocabulario.' : 'Necesita reforzamiento. Regresa a la actividad 1 y practica nuevamente.';
+    }
+
+    function calculateFinalScore(){
+      // Puntaje solicitado: 1 punto por cada oración realizada correctamente.
+      // Actividad 1 tiene 50 oraciones y Actividad 2 tiene 50 oraciones: total máximo 100.
+      const a1Points = state.a1.correct;
+      const a2Points = state.a2.correct;
+      return Math.min(activity1.length + activity2.length, a1Points + a2Points);
+    }
+
+    function getStatus(score){
+      if(score >= 90) return 'AA';
+      if(score >= 75) return 'AS';
+      if(score >= 50) return 'AF';
+      return 'AI';
+    }
+
+    function saveResult(score, status){
+      const results = JSON.parse(localStorage.getItem('pc_results') || '[]');
+      const date = new Date().toLocaleString('es-NI', { dateStyle:'medium', timeStyle:'short' });
+      results.unshift({
+        ...state.student,
+        score,
+        a1Score: state.a1.correct,
+        a2Score: state.a2.correct,
+        quizScore: state.quiz.correct,
+        totalSentences: activity1.length + activity2.length,
+        date,
+        status
+      });
+      localStorage.setItem('pc_results', JSON.stringify(results.slice(0, 50)));
+      renderResults();
+      document.getElementById('resultados').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function renderResults(){
+      const results = JSON.parse(localStorage.getItem('pc_results') || '[]');
+      const body = document.getElementById('resultsBody');
+      if(!results.length){
+        body.innerHTML = '<tr><td colspan="6" class="empty">Aún no hay resultados registrados.</td></tr>';
+        return;
+      }
+      body.innerHTML = results.map(r => `
+        <tr>
+          <td>${r.name}</td>
+          <td>${r.career}</td>
+          <td>${r.year}</td>
+          <td><strong>${r.score}</strong> / ${r.totalSentences || 100}<br><small>Act. 1: ${r.a1Score ?? '—'} | Act. 2: ${r.a2Score ?? '—'}</small></td>
+          <td>${r.date}</td>
+          <td><span class="pill ${r.status === 'AI' ? 'bad' : r.status === 'AF' ? 'warn' : 'ok'}">${r.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function clearResults(){
+      if(confirm('¿Deseas borrar todos los resultados guardados en este navegador?')){
+        localStorage.removeItem('pc_results');
+        renderResults();
+      }
+    }
+
+    function restartAllActivities(){
+      resetActivity1(false);
+      resetActivity2(false);
+      document.getElementById('miniQuiz').classList.add('hidden');
+      document.getElementById('quizPromptModal').style.display = 'none';
+    }
+
+    function restoreStudent(){
+      try{
+        const saved = JSON.parse(localStorage.getItem('pc_student') || '{}');
+        if(saved.name){ state.student.name = saved.name; document.getElementById('studentName').value = saved.name; document.getElementById('nameDisplay').textContent = '1. Nombre completo: ' + saved.name; }
+        if(saved.career){ state.student.career = saved.career; document.getElementById('careerSelect').value = saved.career; document.getElementById('careerDisplay').textContent = '2. Carrera: ' + saved.career; }
+        if(saved.year){ state.student.year = saved.year; document.getElementById('yearSelect').value = saved.year; document.getElementById('yearDisplay').textContent = '3. Año: ' + saved.year; }
+      }catch(e){}
+      checkStudentReady();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderVocab();
+      renderResults();
+      updateActivity1();
+      updateActivity2();
+      restoreStudent();
+    });
+  </script>
+</body>
+</html>

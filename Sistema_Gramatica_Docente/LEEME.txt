@@ -1,0 +1,24 @@
+# Sistema de Gramática con Panel Docente
+
+Archivos principales:
+
+- `index.html`: entrada general.
+- `docente.html`: página para seleccionar módulos, asignar tareas y generar enlaces.
+- `estudiante.html`: página que recibe el enlace del docente y muestra solo las actividades asignadas.
+- `control_acceso.js`: controla acceso básico a los módulos y guarda resultados en localStorage.
+
+Uso recomendado:
+
+1. Abre `index.html`.
+2. Entra a `Panel Docente`.
+3. Selecciona las páginas que quieres asignar.
+4. Escribe indicaciones y fecha límite.
+5. Haz clic en `Generar enlace para estudiantes`.
+6. Copia ese enlace y compártelo.
+7. El estudiante abre el enlace, entra a los módulos y completa las actividades.
+8. Si necesitas resultados fuera del mismo equipo, el estudiante genera un reporte desde `Panel Estudiante` y te lo envía.
+9. En `Panel Docente`, pega el reporte en `Importar reporte del estudiante`.
+
+Limitación importante:
+
+Este sistema está hecho para funcionar como página web estática. Sirve para organizar, asignar y bloquear visualmente módulos. Para control real por usuario, contraseña, grupos y resultados automáticos desde distintos dispositivos, se debe conectar con Firebase, Supabase o un servidor.

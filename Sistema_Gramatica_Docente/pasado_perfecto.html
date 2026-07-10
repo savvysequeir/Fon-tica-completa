@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gramática | Pasado Perfecto</title>
+<style>
+:root{--bg:#f3f7fb;--panel:#fff;--ink:#132238;--muted:#5c6b7a;--brand:#7c3aed;--brand2:#0ea5e9;--danger:#e5484d;--warn:#f59e0b;--ok:#16a34a;--line:#dbe4ef;--soft:#f3e8ff;--shadow:0 18px 48px rgba(21,42,79,.12);--radius:22px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#f5f0ff 0%,#f8fbff 42%,#eaf7ff 100%);color:var(--ink)}header{padding:34px 18px 22px;background:linear-gradient(135deg,#2e1065,#7c3aed 58%,#0ea5e9);color:#fff;position:relative;overflow:hidden}header::after{content:"";position:absolute;width:340px;height:340px;right:-120px;top:-130px;border-radius:999px;background:rgba(255,255,255,.15)}.hero{max-width:1180px;margin:auto;position:relative;z-index:1}.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.18);font-weight:800;letter-spacing:.3px}h1{margin:16px 0 8px;font-size:clamp(2rem,5vw,4.5rem);line-height:.96}.subtitle{max-width:850px;font-size:1.12rem;line-height:1.55;color:#eef5ff}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}nav a{color:#fff;text-decoration:none;padding:10px 13px;border-radius:14px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);font-weight:700}main{max-width:1180px;margin:0 auto;padding:22px 16px 70px}section{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-top:18px}h2{font-size:1.65rem;margin:0 0 16px}h3{margin:0 0 10px}p,li{line-height:1.58}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}.soft{background:var(--soft);border-color:#eadcff}.field label{font-weight:800;display:block;margin-bottom:7px}.field input,.field select,.answer-input{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:14px;font-size:1rem;outline:none;background:#fff}.field input:focus,.field select:focus,.answer-input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(124,58,237,.12)}.btn{border:none;border-radius:14px;padding:11px 14px;font-weight:800;cursor:pointer;background:var(--brand);color:#fff;box-shadow:0 8px 18px rgba(124,58,237,.18);transition:.2s}.btn:hover{transform:translateY(-1px)}.btn.secondary{background:#152238}.btn.good{background:var(--ok)}.btn.warn{background:var(--warn)}.btn.danger{background:var(--danger)}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none}.btn:disabled{background:#9ca3af;cursor:not-allowed;transform:none}.inline-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.result-table,.vocab-table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:16px;border:1px solid var(--line)}.result-table th,.result-table td,.vocab-table th,.vocab-table td{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.result-table th,.vocab-table th{background:#f5f7fb;font-size:.92rem;text-transform:uppercase;letter-spacing:.02em}.result-table tr:last-child td,.vocab-table tr:last-child td{border-bottom:none}.pill{display:inline-flex;padding:6px 9px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-weight:800;font-size:.86rem}.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.example{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f172a;color:#dbeafe;border-radius:14px;padding:11px;margin:8px 0}.activity-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.progress{height:12px;background:#edf2f7;border-radius:999px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));width:0}.word-bank{display:flex;flex-wrap:wrap;gap:9px;padding:12px;background:#f8fbff;border:1px dashed var(--line);border-radius:16px;margin:12px 0}.word{border:none;border-radius:12px;padding:10px 12px;background:#fff;border:1px solid #dbe4ef;font-weight:800;cursor:pointer}.word:disabled{opacity:.35}.built{min-height:54px;border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.built span{background:#ede9fe;padding:8px 10px;border-radius:12px;font-weight:800}.feedback{margin-top:10px;font-weight:900}.ok{color:var(--ok)}.bad{color:var(--danger)}.note{color:var(--muted);font-size:.95rem}.locked{opacity:.55;filter:grayscale(.25)}.quiz-question{border:1px solid var(--line);padding:14px;border-radius:16px;margin:12px 0;background:#fff}.quiz-question label{display:block;margin:8px 0;cursor:pointer}.footer-note{text-align:center;color:var(--muted);padding:20px}@media(max-width:850px){.grid-3,.grid-2,.rules{grid-template-columns:1fr}.result-table,.vocab-table{font-size:.9rem}section{padding:16px}nav a{font-size:.9rem}}
+
+/* === Mejoras solicitadas: tema más oscuro, datos visibles y vocabulario en botón === */
+body{background:radial-gradient(circle at top left,#1e1b4b 0,#0b1220 36%,#050816 100%);color:var(--ink)}
+:root{--bg:#050816;--panel:#0f172a;--ink:#f8fafc;--muted:#cbd5e1;--brand:#8b5cf6;--brand2:#38bdf8;--danger:#fb7185;--warn:#fbbf24;--ok:#22c55e;--line:#334155;--soft:#1e1b4b;--shadow:0 22px 55px rgba(0,0,0,.35)}
+header{background:linear-gradient(135deg,#020617,#312e81 58%,#0f766e);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+section,.card,.quiz-question{background:linear-gradient(180deg,#111c31 0%,#0f172a 100%);border-color:#334155;color:#f8fafc;box-shadow:var(--shadow)}
+.soft{background:linear-gradient(180deg,#26194d,#161b33);border-color:#5145a4}.note,.footer-note{color:#cbd5e1}
+.field input,.field select,.answer-input{background:#07111f;color:#f8fafc;border-color:#475569}.field input::placeholder,.answer-input::placeholder{color:#94a3b8}.field input:focus,.field select:focus,.answer-input:focus{border-color:#a78bfa;box-shadow:0 0 0 4px rgba(167,139,250,.18)}
+.result-table,.vocab-table{border-color:#334155;background:#0b1220}.result-table th,.vocab-table th{background:#020617;color:#dbeafe}.result-table td,.vocab-table td{border-bottom-color:#334155;color:#f8fafc}.pill{background:#172554;color:#bfdbfe;border:1px solid #1d4ed8}
+.example{background:#020617;color:#e0f2fe;border:1px solid #1e293b}.word-bank{background:#07111f;border-color:#475569}.word{background:#162238;color:#f8fafc;border-color:#475569}.word:hover{background:#233654}.built{background:#07111f;border-color:#475569}.built span{background:#312e81;color:#f8fafc}.progress{background:#1e293b}.bar{background:linear-gradient(90deg,#8b5cf6,#38bdf8)}
+.btn.ghost{background:#0b1220;color:#f8fafc;border-color:#475569}.btn.secondary{background:#020617;border:1px solid #475569}.btn:hover{filter:brightness(1.08)}
+.student-chip{margin-top:12px;padding:11px 13px;border-radius:14px;background:#020617;border:1px dashed #64748b;color:#cbd5e1;font-weight:800}.student-chip.filled{background:#0f2a1d;border-color:#22c55e;color:#bbf7d0}
+.vocab-button-wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}.vocab-toggle{font-size:1.05rem;padding:13px 18px}.vocab-panel{margin-top:14px;animation:fadeIn .25s ease}.vocab-panel[hidden]{display:none}@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+</style>
+<script src="control_acceso.js"></script>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <div class="eyebrow">📘 Gramática interactiva</div>
+    <h1>Pasado Perfecto</h1>
+    <p class="subtitle">Aprende, practica y evalúa el uso de <b>had + participio pasado</b> para expresar una acción que ocurrió antes de otra acción pasada.</p>
+    <nav>
+      <a href="#resultados">Resultados</a><a href="#identificacion">Identificación</a><a href="#explicacion">Explicación</a><a href="#vocabulario">Vocabulario</a><a href="#actividad1">Actividad 1</a><a href="#actividad2">Actividad 2</a><a href="#mini">Mini prueba</a>
+    </nav>
+  </div>
+</header>
+<main>
+<section id="resultados">
+  <h2>Resultados</h2>
+  <div class="progress" title="Progreso total"><div class="bar" id="globalProgress"></div></div><br>
+  <table class="result-table">
+    <thead><tr><th>Nombre</th><th>Carrera</th><th>Año</th><th>Act. 1</th><th>Act. 2</th><th>Mini prueba</th><th>Total</th><th>Fecha</th><th>Estado</th></tr></thead>
+    <tbody><tr><td id="rName">Pendiente</td><td id="rCareer">Pendiente</td><td id="rYear">Pendiente</td><td id="rA1">0 / 50</td><td id="rA2">0 / 50</td><td id="rQuiz">Pendiente</td><td id="rTotal">0 / 100</td><td id="rDate"></td><td><span class="pill" id="rState">AI</span></td></tr></tbody>
+  </table>
+  <p class="note">Cada oración correcta vale <b>1 punto</b>. Actividad 1: 50 puntos. Actividad 2: 50 puntos. Total: 100 puntos.</p>
+</section>
+<section id="identificacion">
+  <h2>I. Identificación del estudiante</h2>
+  <p class="note">Inserta cada dato para que aparezca guardado debajo de su casilla y también en el cuadro de resultados.</p>
+  <div class="grid-3">
+    <div class="field card"><label for="nameInput">1.1 Nombre completo</label><input id="nameInput" placeholder="Escribe el nombre completo" autocomplete="name"><div class="inline-actions"><button class="btn" id="insertName">Insertar</button></div><div id="nameDisplay" class="student-chip">1. Nombre completo: —</div></div>
+    <div class="field card"><label for="careerSelect">1.2 Carrera</label><select id="careerSelect"><option value="">Selecciona una carrera</option></select><div class="inline-actions"><button class="btn" id="insertCareer">Insertar</button></div><div id="careerDisplay" class="student-chip">2. Carrera: —</div></div>
+    <div class="field card"><label for="yearSelect">1.3 Año que cursa</label><select id="yearSelect"><option value="">Selecciona el año</option></select><div class="inline-actions"><button class="btn" id="insertYear">Insertar</button></div><div id="yearDisplay" class="student-chip">3. Año: —</div></div>
+  </div>
+</section>
+<section id="explicacion">
+  <h2>II. Explicación</h2>
+  <div class="grid-2">
+    <div class="card soft"><h3>2.1 Estructura general</h3><p>El pasado perfecto se forma con <b>had + participio pasado</b>. El auxiliar <b>had</b> se usa con todos los sujetos: I, you, he, she, it, we y they.</p><div class="example">Subject + had + past participle + complement.</div></div>
+    <div class="card"><h3>2.2 Positiva</h3><p>Se coloca <b>had</b> después del sujeto y luego el verbo en <b>participio pasado</b>. Los verbos regulares usan <b>-ed</b>; los irregulares usan su tercera columna.</p><div class="example">She had finished the task.<br>They had arrived early.</div></div>
+    <div class="card"><h3>2.3 Negativa</h3><p>Se agrega <b>not</b> después de <b>had</b>. También puede contraerse como <b>hadn't</b>.</p><div class="example">I had not seen that movie.<br>He hadn't completed the report.</div></div>
+    <div class="card"><h3>2.4 Interrogativa</h3><p>Para hacer preguntas, <b>had</b> pasa al inicio.</p><div class="example">Had you eaten before class?<br>Had she chosen the answer?</div></div>
+  </div>
+  <div class="rules" style="margin-top:12px">
+    <div class="card"><h3>2.5 Usos</h3><ul><li>Acción anterior a otra acción pasada: <b>She had left before I arrived.</b></li><li>Explicar causas pasadas: <b>He was tired because he had worked all day.</b></li><li>Mostrar secuencia clara en el pasado: <b>By the time we arrived, they had started.</b></li><li>Hablar de experiencias anteriores a un momento pasado.</li></ul></div>
+    <div class="card"><h3>2.6 Ejemplos y marcadores</h3><p><b>Before</b>: antes. <b>After</b>: después. <b>Already</b>: ya. <b>By the time</b>: para cuando. <b>When</b>: cuando.</p><div class="example">I had studied before the exam.<br>They had already left.<br>By the time he called, she had gone.</div></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>Regla clave</h3><p>El pasado perfecto no usa <b>was / were</b> como auxiliar principal ni usa <b>-ing</b>. Su fórmula central es: <b>had + participio pasado</b>.</p></div>
+</section>
+<section id="vocabulario">
+  <h2>III. Vocabulario</h2>
+  <p class="note">El vocabulario está en un botón. Incluye phrasal verbs y verbos normales usados en las actividades: forma base, participio pasado, fonética, traducción y audio.</p>
+  <div class="vocab-button-wrap"><button class="btn secondary vocab-toggle" id="toggleVocab" aria-expanded="false">📚 Vocabulario</button><span class="note">Presiona para mostrar u ocultar la tabla.</span></div>
+  <div id="vocabPanel" class="vocab-panel" hidden>
+    <table class="vocab-table"><thead><tr><th>Verbo / Phrasal verb</th><th>Participio pasado</th><th>Fonética</th><th>Traducción</th><th>Audio</th></tr></thead><tbody id="vocabBody"></tbody></table>
+  </div>
+</section>
+<section id="actividad1">
+  <div class="activity-head"><h2>IV. Actividad 1: ordenar oraciones</h2><span class="pill">Puntaje: <b id="a1Score">0</b> / 50 · Errores: <b id="a1Errors">0</b> / 3</span></div>
+  <p><b>Instrucciones:</b> Reordena las palabras para formar oraciones gramaticalmente correctas en pasado perfecto usando phrasal verbs. Si te equivocas 3 veces, la actividad vuelve a empezar.</p>
+  <div class="progress"><div class="bar" id="a1Bar"></div></div><p class="note" id="a1ProgressText"></p>
+  <div class="card"><h3 id="a1Prompt"></h3><div class="word-bank" id="wordBank"></div><div class="built" id="builtSentence"></div><div class="inline-actions"><button class="btn good" id="checkA1">Comprobar</button><button class="btn ghost" id="resetBuilt">Limpiar intento</button><button class="btn danger" id="restartA1">Reiniciar actividad</button></div><div id="a1Feedback" class="feedback"></div></div>
+</section>
+<section id="actividad2">
+  <div class="activity-head"><h2>Actividad 2: traducir</h2><span class="pill">Puntaje: <b id="a2Score">0</b> / 50 · Errores: <b id="a2Errors">0</b> / 3</span></div>
+  <p><b>Instrucciones:</b> Traduce las oraciones al inglés usando pasado perfecto. Si cometes 3 errores, la actividad vuelve a empezar.</p>
+  <div class="progress"><div class="bar" id="a2Bar"></div></div><p class="note" id="a2ProgressText"></p>
+  <div class="card"><h3 id="a2Prompt"></h3><input class="answer-input" id="translationInput" placeholder="Escribe tu traducción en inglés"><div class="inline-actions"><button class="btn good" id="checkA2">Comprobar</button><button class="btn danger" id="restartA2">Reiniciar actividad</button></div><div id="a2Feedback" class="feedback"></div></div>
+</section>
+<section id="mini">
+  <h2>Mini prueba final</h2>
+  <div id="miniGate" class="card locked"><p id="miniMsg">La mini prueba se desbloquea al terminar la Actividad 1 y la Actividad 2.</p><p><b>¿Deseas entrar a la mini prueba?</b></p><div class="inline-actions"><button class="btn good" id="miniYes" disabled>Sí</button><button class="btn warn" id="miniNo" disabled>No, volver a la actividad 1</button></div></div>
+</section>
+<section id="quizSection" style="display:none">
+  <h2>Mini prueba: Pasado Perfecto</h2>
+  <div id="quizWrap"></div>
+  <button class="btn good" id="submitQuiz">Enviar mini prueba</button>
+  <div id="quizResult" class="feedback"></div>
+</section>
+</main>
+<div class="footer-note">Página creada para práctica autónoma de gramática inglesa.</div>
+<script>
+const careers = ["Odontología", "Medicina", "Química Farmacéutica", "Enfermería", "Mecánica Dental", "Veterinaria", "Zootecnia", "Agronomía", "Agrícola", "Ingeniería Forestal", "Ingeniería en Agroindustria de los Alimentos", "Agronegocios", "Inglés"];
+const vocabulary = [["wake up", "woken up", "/weɪk ʌp/", "despertarse"], ["get up", "gotten up", "/ɡet ʌp/", "levantarse"], ["go to bed", "gone to bed", "/ɡoʊ tə bed/", "irse a la cama"], ["put on", "put on", "/pʊt ɑːn/", "ponerse"], ["take off", "taken off", "/teɪk ɔːf/", "quitarse / despegar"], ["wash up", "washed up", "/wɑːʃ ʌp/", "lavar / lavarse"], ["clean up", "cleaned up", "/kliːn ʌp/", "limpiar"], ["tidy up", "tidied up", "/ˈtaɪdi ʌp/", "ordenar"], ["dress up", "dressed up", "/dres ʌp/", "vestirse elegante"], ["turn on", "turned on", "/tɜːrn ɑːn/", "encender"], ["turn off", "turned off", "/tɜːrn ɔːf/", "apagar"], ["switch on", "switched on", "/swɪtʃ ɑːn/", "encender"], ["switch off", "switched off", "/swɪtʃ ɔːf/", "apagar"], ["plug in", "plugged in", "/plʌɡ ɪn/", "conectar"], ["blow out", "blown out", "/bloʊ aʊt/", "soplar / apagar soplando"], ["sit down", "sat down", "/sɪt daʊn/", "sentarse"], ["stand up", "stood up", "/stænd ʌp/", "ponerse de pie"], ["look at", "looked at", "/lʊk æt/", "mirar"], ["listen to", "listened to", "/ˈlɪsən tuː/", "escuchar"], ["write down", "written down", "/raɪt daʊn/", "anotar"], ["copy down", "copied down", "/ˈkɑːpi daʊn/", "copiar"], ["pick up", "picked up", "/pɪk ʌp/", "recoger"], ["put down", "put down", "/pʊt daʊn/", "poner abajo"], ["open up", "opened up", "/ˈoʊpən ʌp/", "abrir"], ["close up", "closed up", "/kloʊz ʌp/", "cerrar"], ["hand in", "handed in", "/hænd ɪn/", "entregar"], ["hand out", "handed out", "/hænd aʊt/", "repartir"], ["cross out", "crossed out", "/krɔːs aʊt/", "tachar"], ["rub out", "rubbed out", "/rʌb aʊt/", "borrar"], ["fill in", "filled in", "/fɪl ɪn/", "llenar espacios"], ["fill out", "filled out", "/fɪl aʊt/", "llenar formulario"], ["find out", "found out", "/faɪnd aʊt/", "descubrir / averiguar"], ["go over", "gone over", "/ɡoʊ ˈoʊvər/", "repasar"], ["look up", "looked up", "/lʊk ʌp/", "buscar"], ["think about", "thought about", "/θɪŋk əˈbaʊt/", "pensar en"], ["go in", "gone in", "/ɡoʊ ɪn/", "entrar"], ["go out", "gone out", "/ɡoʊ aʊt/", "salir"], ["come in", "come in", "/kʌm ɪn/", "entrar"], ["come out", "come out", "/kʌm aʊt/", "salir / aparecer"], ["get in", "gotten in", "/ɡet ɪn/", "entrar"], ["get out", "gotten out", "/ɡet aʊt/", "salir"], ["get on", "gotten on", "/ɡet ɑːn/", "subirse"], ["get off", "gotten off", "/ɡet ɔːf/", "bajarse"], ["go away", "gone away", "/ɡoʊ əˈweɪ/", "irse"], ["come back", "come back", "/kʌm bæk/", "regresar"], ["go back", "gone back", "/ɡoʊ bæk/", "volver"], ["hurry up", "hurried up", "/ˈhɜːri ʌp/", "apresurarse"], ["slow down", "slowed down", "/sloʊ daʊn/", "reducir la velocidad"], ["speed up", "sped up", "/spiːd ʌp/", "acelerar"], ["run away", "run away", "/rʌn əˈweɪ/", "huir"], ["accept", "accepted", "/əkˈsept/", "aceptar"], ["achieve", "achieved", "/əˈtʃiːv/", "lograr"], ["act", "acted", "/ækt/", "actuar"], ["add", "added", "/æd/", "añadir"], ["admire", "admired", "/ədˈmaɪər/", "admirar"], ["admit", "admitted", "/ədˈmɪt/", "admitir"], ["advise", "advised", "/ədˈvaɪz/", "aconsejar"], ["allow", "allowed", "/əˈlaʊ/", "permitir"], ["answer", "answered", "/ˈæn.sər/", "contestar"], ["appear", "appeared", "/əˈpɪr/", "aparecer"], ["arrive", "arrived", "/əˈraɪv/", "llegar"], ["ask", "asked", "/æsk/", "preguntar / pedir"], ["avoid", "avoided", "/əˈvɔɪd/", "evitar"], ["bake", "baked", "/beɪk/", "hornear"], ["beat", "beaten", "/biːt/", "vencer / golpear"], ["become", "become", "/bɪˈkʌm/", "convertirse en"], ["begin", "begun", "/bɪˈɡɪn/", "empezar"], ["believe", "believed", "/bɪˈliːv/", "creer"], ["belong", "belonged", "/bɪˈlɔːŋ/", "pertenecer"], ["bite", "bitten", "/baɪt/", "morder"], ["blame", "blamed", "/bleɪm/", "culpar"], ["bleed", "bled", "/bliːd/", "sangrar"], ["blow", "blown", "/bloʊ/", "soplar"], ["borrow", "borrowed", "/ˈbɑː.roʊ/", "pedir prestado"], ["break", "broken", "/breɪk/", "romper"], ["breathe", "breathed", "/briːð/", "respirar"], ["bring", "brought", "/brɪŋ/", "traer"], ["brush", "brushed", "/brʌʃ/", "cepillar"], ["build", "built", "/bɪld/", "construir"], ["burn", "burned", "/bɜːrn/", "quemar"], ["buy", "bought", "/baɪ/", "comprar"], ["call", "called", "/kɔːl/", "llamar"], ["camp", "camped", "/kæmp/", "acampar"], ["care", "cared", "/ker/", "cuidar / importar"], ["carry", "carried", "/ˈkær.i/", "cargar / llevar"], ["catch", "caught", "/kætʃ/", "atrapar / tomar"], ["cause", "caused", "/kɔːz/", "causar"], ["celebrate", "celebrated", "/ˈsel.ə.breɪt/", "celebrar"], ["change", "changed", "/tʃeɪndʒ/", "cambiar"], ["chat", "chatted", "/tʃæt/", "charlar"], ["check", "checked", "/tʃek/", "revisar"], ["choose", "chosen", "/tʃuːz/", "escoger"], ["clean", "cleaned", "/kliːn/", "limpiar"], ["clear", "cleared", "/klɪr/", "aclarar / despejar"], ["climb", "climbed", "/klaɪm/", "escalar"], ["close", "closed", "/kloʊz/", "cerrar"], ["collect", "collected", "/kəˈlekt/", "recolectar"], ["come", "come", "/kʌm/", "venir"], ["compare", "compared", "/kəmˈper/", "comparar"], ["complain", "complained", "/kəmˈpleɪn/", "quejarse"]];
+const activity1 = [{"words": "early / woken / She / . / up / had", "answer": "She had woken up early."}, {"words": "gotten / up / had / not / They / before / seven / .", "answer": "They had not gotten up before seven."}, {"words": "bed / gone / Had / he / late / ? / to", "answer": "Had he gone to bed late?"}, {"words": "I / on / . / had / put / coat / my", "answer": "I had put on my coat."}, {"words": "shoes / her / had / taken / off / . / She", "answer": "She had taken off her shoes."}, {"words": "dinner / after / up / had / . / washed / We", "answer": "We had washed up after dinner."}, {"words": "the / . / They / up / classroom / cleaned / had", "answer": "They had cleaned up the classroom."}, {"words": "up / . / tidied / I / had / my / desk", "answer": "I had tidied up my desk."}, {"words": "the / dressed / . / up / for / party / They / had", "answer": "They had dressed up for the party."}, {"words": "turned / you / the / Had / on / TV / ?", "answer": "Had you turned on the TV?"}, {"words": "had / off / He / . / turned / the / light", "answer": "He had turned off the light."}, {"words": "radio / She / . / had / on / switched / the", "answer": "She had switched on the radio."}, {"words": "had / our / phones / We / off / . / switched", "answer": "We had switched off our phones."}, {"words": "charger / plugged / . / had / in / the / I", "answer": "I had plugged in the charger."}, {"words": "the / They / candles / blown / had / out / .", "answer": "They had blown out the candles."}, {"words": "? / you / class / Had / down / sat / before", "answer": "Had you sat down before class?"}, {"words": "up / students / quickly / stood / had / . / The", "answer": "The students had stood up quickly."}, {"words": "the / . / She / looked / had / at / board", "answer": "She had looked at the board."}, {"words": "listened / . / to / the / We / had / teacher", "answer": "We had listened to the teacher."}, {"words": ". / words / He / had / the / down / written", "answer": "He had written down the words."}, {"words": "down / . / homework / copied / I / the / had", "answer": "I had copied down the homework."}, {"words": "pen / had / . / picked / up / She / the", "answer": "She had picked up the pen."}, {"words": "put / had / He / the / pencil / down / .", "answer": "He had put down the pencil."}, {"words": "they / opened / books / up / ? / Had / the", "answer": "Had they opened up the books?"}, {"words": "notebooks / up / closed / We / had / . / the", "answer": "We had closed up the notebooks."}, {"words": "handed / assignment / . / the / She / had / in", "answer": "She had handed in the assignment."}, {"words": "the / exams / out / teacher / had / The / handed / .", "answer": "The teacher had handed out the exams."}, {"words": ". / answer / the / wrong / He / had / out / crossed", "answer": "He had crossed out the wrong answer."}, {"words": "mistake / . / rubbed / out / I / had / the", "answer": "I had rubbed out the mistake."}, {"words": "They / blanks / the / had / filled / . / in", "answer": "They had filled in the blanks."}, {"words": "filled / . / out / the / form / had / She", "answer": "She had filled out the form."}, {"words": "out / they / answer / the / Had / ? / found", "answer": "Had they found out the answer?"}, {"words": "We / had / . / over / lesson / the / gone", "answer": "We had gone over the lesson."}, {"words": ". / He / the / looked / word / had / up", "answer": "He had looked up the word."}, {"words": "about / Had / thought / question / ? / you / the", "answer": "Had you thought about the question?"}, {"words": "gone / students / . / quietly / in / had / The", "answer": "The students had gone in quietly."}, {"words": ". / friends / They / with / had / gone / out", "answer": "They had gone out with friends."}, {"words": "? / yet / she / in / come / Had", "answer": "Had she come in yet?"}, {"words": ". / The / come / out / had / sun", "answer": "The sun had come out."}, {"words": "car / had / in / . / I / gotten / the", "answer": "I had gotten in the car."}, {"words": "He / had / out / of / taxi / gotten / . / the", "answer": "He had gotten out of the taxi."}, {"words": "gotten / They / the / bus / on / . / had", "answer": "They had gotten on the bus."}, {"words": "at / off / you / Had / the / station / ? / gotten", "answer": "Had you gotten off at the station?"}, {"words": "for / gone / week / . / away / She / a / had", "answer": "She had gone away for a week."}, {"words": ". / home / come / back / had / He", "answer": "He had come back home."}, {"words": "class / back / gone / . / We / to / had", "answer": "We had gone back to class."}, {"words": "They / hurried / had / today / up / .", "answer": "They had hurried up today."}, {"words": "The / had / down / driver / slowed / .", "answer": "The driver had slowed down."}, {"words": "The / had / . / up / car / sped", "answer": "The car had sped up."}, {"words": ". / child / The / run / away / had", "answer": "The child had run away."}].map(x => ({...x, words: x.words.split('/').map(w => w.trim()).filter(Boolean)}));
+const activity2 = [{"prompt": "Ella había aceptado el nuevo contrato.", "answer": "She had accepted the new contract."}, {"prompt": "Nosotros no habíamos logrado los resultados.", "answer": "We had not achieved the results."}, {"prompt": "¿Él había actuado de forma extraña?", "answer": "Had he acted strangely?"}, {"prompt": "Yo había añadido azúcar al café.", "answer": "I had added sugar to the coffee."}, {"prompt": "Ella había admirado el paisaje.", "answer": "She had admired the landscape."}, {"prompt": "¿Habías admitido tu responsabilidad?", "answer": "Had you admitted your responsibility?"}, {"prompt": "Él había aconsejado a su hermano.", "answer": "He had advised his brother."}, {"prompt": "No habíamos permitido las entradas.", "answer": "We had not allowed the tickets."}, {"prompt": "Ella había contestado el correo electrónico.", "answer": "She had answered the email."}, {"prompt": "¿Él había aparecido en el escenario?", "answer": "Had he appeared on the stage?"}, {"prompt": "Ellos habían llegado a la oficina.", "answer": "They had arrived at the office."}, {"prompt": "Yo no había pedido ayuda.", "answer": "I had not asked for help."}, {"prompt": "¿Habías evitado la pregunta?", "answer": "Had you avoided the question?"}, {"prompt": "Ellos habían horneado galletas.", "answer": "They had baked cookies."}, {"prompt": "El equipo había vencido al campeón.", "answer": "The team had beaten the champion."}, {"prompt": "Ella no se había convertido en doctora todavía.", "answer": "She had not become a doctor yet."}, {"prompt": "¿Habías empezado el proyecto?", "answer": "Had you begun the project?"}, {"prompt": "Él había creído la historia.", "answer": "He had believed the story."}, {"prompt": "Este libro había pertenecido a mi padre.", "answer": "This book had belonged to my father."}, {"prompt": "¿El perro había mordido a alguien?", "answer": "Had the dog bitten anyone?"}, {"prompt": "Ella había culpado a su hermano.", "answer": "She had blamed her brother."}, {"prompt": "Él no había sangrado mucho.", "answer": "He had not bled much."}, {"prompt": "¿El viento había soplado fuerte?", "answer": "Had the wind blown hard?"}, {"prompt": "Yo había pedido prestado tu lápiz.", "answer": "I had borrowed your pencil."}, {"prompt": "Ellos habían roto la ventana.", "answer": "They had broken the window."}, {"prompt": "Ella había respirado calmadamente.", "answer": "She had breathed calmly."}, {"prompt": "¿Habías traído los documentos?", "answer": "Had you brought the documents?"}, {"prompt": "Él se había cepillado los dientes.", "answer": "He had brushed his teeth."}, {"prompt": "Nosotros habíamos construido un aula nueva.", "answer": "We had built a new classroom."}, {"prompt": "Ellos no habían quemado los papeles.", "answer": "They had not burned the papers."}, {"prompt": "¿Habías comprado los boletos?", "answer": "Had you bought the tickets?"}, {"prompt": "Ella había llamado a su madre.", "answer": "She had called her mother."}, {"prompt": "No habíamos acampado cerca del río.", "answer": "We had not camped near the river."}, {"prompt": "¿Él había cuidado al paciente?", "answer": "Had he cared for the patient?"}, {"prompt": "Ellos habían cargado las cajas.", "answer": "They had carried the boxes."}, {"prompt": "Yo había tomado el autobús.", "answer": "I had caught the bus."}, {"prompt": "¿Habías causado algún problema?", "answer": "Had you caused any problems?"}, {"prompt": "Ellos habían celebrado la victoria.", "answer": "They had celebrated the victory."}, {"prompt": "Ella había cambiado su decisión.", "answer": "She had changed her decision."}, {"prompt": "Nosotros habíamos charlado por dos horas.", "answer": "We had chatted for two hours."}, {"prompt": "Ella no había revisado su correo.", "answer": "She had not checked her email."}, {"prompt": "¿Habías escogido la respuesta?", "answer": "Had you chosen the answer?"}, {"prompt": "Él había limpiado la cocina.", "answer": "He had cleaned the kitchen."}, {"prompt": "El cielo se había despejado.", "answer": "The sky had cleared up."}, {"prompt": "¿Habías escalado la montaña?", "answer": "Had you climbed the mountain?"}, {"prompt": "Ella había cerrado la puerta.", "answer": "She had closed the door."}, {"prompt": "Ellos no habían recolectado el dinero.", "answer": "They had not collected the money."}, {"prompt": "¿Él había venido a clase?", "answer": "Had he come to class?"}, {"prompt": "Nosotros habíamos comparado los precios.", "answer": "We had compared the prices."}, {"prompt": "Él se había quejado del ruido.", "answer": "He had complained about the noise."}];
+const quiz = [{"q": "¿Cuál es el auxiliar del pasado perfecto?", "options": ["have / has", "had", "was / were", "did"], "answer": 1}, {"q": "¿Qué forma del verbo principal se usa en pasado perfecto?", "options": ["verbo base", "verbo con -ing", "participio pasado", "pasado simple"], "answer": 2}, {"q": "¿Cuál estructura positiva es correcta?", "options": ["Subject + had + past participle", "Subject + have + past participle", "Subject + was + ing", "Subject + did + verb"], "answer": 0}, {"q": "¿Cómo se forma la negativa?", "options": ["subject + had + no + verb", "subject + had not + past participle", "subject + did not + participle", "subject + not had + verb"], "answer": 1}, {"q": "¿Cómo se forma una pregunta?", "options": ["Past participle + subject + had?", "Had + subject + past participle?", "Did + subject + had?", "Subject + had + ?"], "answer": 1}, {"q": "¿Cuál oración está correcta?", "options": ["She had finished.", "She have finished.", "She had finish.", "She was finished had."], "answer": 0}, {"q": "¿Para qué se usa el pasado perfecto?", "options": ["Para una acción que ocurrirá mañana", "Para una acción anterior a otra acción pasada", "Para una rutina presente", "Para una acción que sucede ahora"], "answer": 1}, {"q": "¿Qué conector suele combinarse con pasado perfecto?", "options": ["by the time", "right now", "tomorrow", "every day"], "answer": 0}, {"q": "¿Cuál participio es irregular?", "options": ["accepted", "cleaned", "broken", "answered"], "answer": 2}, {"q": "¿Cuál es la diferencia básica entre pasado perfecto y pasado continuo?", "options": ["El pasado perfecto usa had + participio; el pasado continuo usa was/were + -ing.", "No existe diferencia.", "El pasado perfecto siempre usa will.", "El pasado continuo usa had."], "answer": 0}];
+let student = {name:'', career:'', year:''};
+let scores = {a1:0, a2:0, quiz:null};
+let idx1=0, idx2=0, errors1=0, errors2=0, selected=[];
+const $ = id => document.getElementById(id);
+function normalize(s){
+  return (s||'').toLowerCase()
+    .replace(/hadn't/g,'had not').replace(/[¿?¡!.;,:'’]/g,'')
+    .replace(/\s+/g,' ').trim();
+}
+function stateName(total){ if(total>=90) return 'AA'; if(total>=75) return 'AS'; if(total>=50) return 'AF'; return 'AI'; }
+function today(){ return new Date().toLocaleDateString('es-NI', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'}); }
+function speak(text){
+  if(!('speechSynthesis' in window)){ alert('Tu navegador no permite audio de lectura. Abre la página en Google Chrome.'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=.86; window.speechSynthesis.speak(u);
+}
+function setStudentChip(id,prefix,value){ const el=$(id); el.textContent=prefix+(value||'—'); el.classList.toggle('filled',!!value); }
+function setupIdentity(){
+  const careerSelect = $('careerSelect'); careers.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; careerSelect.appendChild(o); });
+  const yearSelect = $('yearSelect'); ['I año','II año','III año','IV año','V año','VI año'].forEach(y=>{ const o=document.createElement('option'); o.value=y; o.textContent=y; yearSelect.appendChild(o); });
+  $('insertName').onclick=()=>{ const value=$('nameInput').value.trim(); student.name=value; setStudentChip('nameDisplay','1. Nombre completo: ',value); updateResults(); };
+  $('insertCareer').onclick=()=>{ const value=$('careerSelect').value; student.career=value; setStudentChip('careerDisplay','2. Carrera: ',value); updateResults(); };
+  $('insertYear').onclick=()=>{ const value=$('yearSelect').value; student.year=value; setStudentChip('yearDisplay','3. Año: ',value); updateResults(); };
+}
+function updateResults(){
+  const total=scores.a1+scores.a2;
+  $('rName').textContent=student.name||'Pendiente';
+  $('rCareer').textContent=student.career||'Pendiente';
+  $('rYear').textContent=student.year||'Pendiente';
+  $('rA1').textContent=scores.a1+' / 50';
+  $('rA2').textContent=scores.a2+' / 50';
+  $('rQuiz').textContent=scores.quiz===null?'Pendiente':scores.quiz+' / 10';
+  $('rTotal').textContent=total+' / 100';
+  $('rDate').textContent=today();
+  $('rState').textContent=stateName(total);
+  $('globalProgress').style.width=total+'%';
+}
+function renderVocab(){
+  const body=$('vocabBody'); body.innerHTML='';
+  vocabulary.forEach(([base,part,ipa,es])=>{
+    const tr=document.createElement('tr');
+    const tdBase=document.createElement('td'); tdBase.innerHTML='<b>'+base+'</b>';
+    const tdPart=document.createElement('td'); tdPart.textContent=part;
+    const tdIpa=document.createElement('td'); tdIpa.textContent=ipa;
+    const tdEs=document.createElement('td'); tdEs.textContent=es;
+    const tdAudio=document.createElement('td');
+    const btn=document.createElement('button'); btn.className='btn ghost'; btn.textContent='🔊 Escuchar'; btn.onclick=()=>speak(base + ', ' + part);
+    tdAudio.appendChild(btn);
+    tr.append(tdBase,tdPart,tdIpa,tdEs,tdAudio);
+    body.appendChild(tr);
+  });
+}
+function renderAct1(){
+  selected=[];
+  $('a1Score').textContent=scores.a1; $('a1Errors').textContent=errors1;
+  $('a1ProgressText').textContent=(idx1+1)+' / '+activity1.length;
+  $('a1Bar').style.width=(idx1/activity1.length*100)+'%';
+  $('a1Feedback').textContent=''; $('a1Feedback').className='feedback';
+  if(idx1>=activity1.length){
+    $('a1Prompt').textContent='Actividad 1 completada.'; $('wordBank').innerHTML=''; $('builtSentence').innerHTML='✅ Excelente. Has terminado las 50 oraciones.'; $('checkA1').disabled=true; $('resetBuilt').disabled=true; maybeUnlockMini(); return;
+  }
+  $('checkA1').disabled=false; $('resetBuilt').disabled=false;
+  $('a1Prompt').textContent='Ordena las palabras para formar una oración correcta en pasado perfecto.';
+  const bank=$('wordBank'); bank.innerHTML=''; $('builtSentence').innerHTML='';
+  activity1[idx1].words.forEach((w,i)=>{ const b=document.createElement('button'); b.className='word'; b.textContent=w; b.dataset.i=i; b.onclick=()=>{ selected.push(w); b.disabled=true; const s=document.createElement('span'); s.textContent=w; $('builtSentence').appendChild(s); }; bank.appendChild(b); });
+}
+function resetAct1(full=false){ idx1=0; errors1=0; selected=[]; if(full) scores.a1=0; $('checkA1').disabled=false; $('resetBuilt').disabled=false; renderAct1(); updateResults(); }
+function checkAct1(){
+  const attempt=selected.join(' '), answer=activity1[idx1].answer;
+  if(normalize(attempt)===normalize(answer)){ scores.a1++; idx1++; $('a1Feedback').textContent='Correcto: '+answer; $('a1Feedback').className='feedback ok'; updateResults(); setTimeout(renderAct1,650); }
+  else{ errors1++; $('a1Errors').textContent=errors1; $('a1Feedback').textContent='Incorrecto. Intenta de nuevo. Errores: '+errors1+' / 3'; $('a1Feedback').className='feedback bad'; if(errors1>=3){ alert('Llegaste a 3 errores. La actividad 1 volverá a empezar.'); resetAct1(true); } }
+}
+function renderAct2(){
+  $('a2Score').textContent=scores.a2; $('a2Errors').textContent=errors2; $('a2ProgressText').textContent=(idx2+1)+' / '+activity2.length; $('a2Bar').style.width=(idx2/activity2.length*100)+'%';
+  $('a2Feedback').textContent=''; $('a2Feedback').className='feedback'; $('translationInput').value='';
+  if(idx2>=activity2.length){ $('a2Prompt').textContent='Actividad 2 completada.'; $('translationInput').disabled=true; $('checkA2').disabled=true; maybeUnlockMini(); return; }
+  $('translationInput').disabled=false; $('checkA2').disabled=false; $('a2Prompt').textContent=activity2[idx2].prompt;
+}
+function resetAct2(full=false){ idx2=0; errors2=0; if(full) scores.a2=0; $('translationInput').disabled=false; $('checkA2').disabled=false; renderAct2(); updateResults(); }
+function checkAct2(){
+  const attempt=$('translationInput').value, answer=activity2[idx2].answer;
+  if(normalize(attempt)===normalize(answer)){ scores.a2++; idx2++; $('a2Feedback').textContent='Correcto: '+answer; $('a2Feedback').className='feedback ok'; updateResults(); setTimeout(renderAct2,650); }
+  else{ errors2++; $('a2Errors').textContent=errors2; $('a2Feedback').textContent='Incorrecto. Respuesta esperada: '+answer+'. Errores: '+errors2+' / 3'; $('a2Feedback').className='feedback bad'; if(errors2>=3){ alert('Llegaste a 3 errores. La actividad 2 volverá a empezar.'); resetAct2(true); } }
+}
+function maybeUnlockMini(){ if(idx1>=activity1.length && idx2>=activity2.length){ $('miniGate').classList.remove('locked'); $('miniYes').disabled=false; $('miniNo').disabled=false; $('miniMsg').textContent='Actividades completadas. Puedes entrar a la mini prueba.'; } }
+function renderQuiz(){
+  const wrap=$('quizWrap'); wrap.innerHTML='';
+  quiz.forEach((q,qi)=>{ const d=document.createElement('div'); d.className='quiz-question'; d.innerHTML=`<b>${qi+1}. ${q.q}</b>` + q.options.map((op,oi)=>`<label><input type="radio" name="q${qi}" value="${oi}"> ${op}</label>`).join(''); wrap.appendChild(d); });
+}
+function submitQuiz(){ let score=0; quiz.forEach((q,qi)=>{ const checked=document.querySelector(`input[name="q${qi}"]:checked`); if(checked && Number(checked.value)===q.answer) score++; }); scores.quiz=score; $('quizResult').textContent='Resultado de mini prueba: '+score+' / '+quiz.length; $('quizResult').className='feedback '+(score>=7?'ok':'bad'); updateResults(); }
+window.addEventListener('DOMContentLoaded',()=>{
+  setupIdentity(); renderVocab(); renderAct1(); renderAct2(); renderQuiz(); updateResults();
+  $('checkA1').onclick=checkAct1; $('resetBuilt').onclick=renderAct1; $('restartA1').onclick=()=>resetAct1(true);
+  $('checkA2').onclick=checkAct2; $('restartA2').onclick=()=>resetAct2(true);
+  $('miniYes').onclick=()=>{ $('quizSection').style.display='block'; $('quizSection').scrollIntoView({behavior:'smooth'}); };
+  $('miniNo').onclick=()=>{ resetAct1(true); $('actividad1').scrollIntoView({behavior:'smooth'}); };
+  $('submitQuiz').onclick=submitQuiz;
+  $('toggleVocab').onclick=()=>{ const panel=$('vocabPanel'); const hidden=panel.hasAttribute('hidden'); if(hidden){ panel.removeAttribute('hidden'); $('toggleVocab').setAttribute('aria-expanded','true'); $('toggleVocab').textContent='📚 Ocultar vocabulario'; } else { panel.setAttribute('hidden',''); $('toggleVocab').setAttribute('aria-expanded','false'); $('toggleVocab').textContent='📚 Vocabulario'; } };
+});
+</script>
+</body>
+</html>

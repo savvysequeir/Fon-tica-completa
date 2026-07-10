@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Estudiante - Sistema de Gramática</title>
+<style>
+:root{--bg:#07111f;--card:#0f172a;--card2:#111827;--line:rgba(148,163,184,.22);--text:#e5e7eb;--muted:#94a3b8;--accent:#38bdf8;--accent2:#a78bfa;--good:#22c55e;--bad:#ef4444;--warn:#f59e0b}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top left,#1e3a8a 0,#07111f 32%,#020617 100%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh} a{color:inherit}.wrap{max-width:1180px;margin:auto;padding:28px}.hero{background:linear-gradient(135deg,rgba(56,189,248,.17),rgba(167,139,250,.14));border:1px solid var(--line);border-radius:26px;padding:28px;box-shadow:0 18px 60px rgba(0,0,0,.35)}h1{font-size:clamp(30px,4vw,52px);margin:0 0 10px}.subtitle{color:#cbd5e1;line-height:1.65}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:18px}.card{background:rgba(15,23,42,.88);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.24)}.card h3{margin:0 0 8px}.muted{color:var(--muted)}.btn,button{border:0;border-radius:14px;padding:11px 14px;background:var(--accent);color:#031522;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}.btn.secondary,button.secondary{background:#1f2937;color:#e5e7eb;border:1px solid var(--line)}.btn.purple{background:var(--accent2);color:#12091f}.btn.danger{background:#ef4444;color:white}.btn.good{background:#22c55e;color:#052e16}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}label{font-weight:700;color:#cbd5e1}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#020617;color:#e5e7eb;padding:12px;font-size:15px}textarea{min-height:110px;resize:vertical}.module-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.module{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:rgba(2,6,23,.5);border-radius:16px;padding:12px}.module input{width:auto;margin-top:4px}.pill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:#cbd5e1;background:rgba(15,23,42,.75);font-size:12px}.notice{border-left:5px solid var(--accent);background:rgba(56,189,248,.10);padding:14px;border-radius:14px;line-height:1.55}.warn{border-left-color:var(--warn);background:rgba(245,158,11,.11)}.dangerbox{border-left:5px solid var(--bad);background:rgba(239,68,68,.10);padding:14px;border-radius:14px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;background:rgba(15,23,42,.72)}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:#f8fafc;background:rgba(30,41,59,.8)}.code{font-family:Consolas,monospace;background:#020617;border:1px solid var(--line);border-radius:14px;padding:12px;white-space:pre-wrap;word-break:break-word}.locked{opacity:.45;filter:saturate(.6)}
+</style>
+
+</head>
+<body>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>🧑‍🎓 Panel Estudiante</h1>
+    <p class="subtitle" id="studentSubtitle">Entra desde el enlace que te compartió tu docente para ver las actividades asignadas.</p>
+    <div class="toolbar"><a class="btn secondary" href="index.html">← Inicio</a><button class="purple" onclick="loadFromLink()">Cargar tarea del enlace</button><button class="secondary" onclick="resetStudent()">Borrar tarea local</button></div>
+    <div id="assignmentInfo" class="notice"></div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h3>Módulos asignados</h3>
+    <div id="assignedModules" class="grid"></div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h3>Reporte para el docente</h3>
+    <p class="muted">Cuando termines, genera este reporte y envíaselo al docente si él necesita revisar resultados fuera de tu computadora.</p>
+    <div class="toolbar"><button onclick="renderResults()">Ver mis resultados</button><button class="purple" onclick="generateReport()">Generar reporte</button></div>
+    <div id="studentResults" class="table-wrap"></div>
+    <div class="field"><label>Código de reporte</label><textarea id="reportCode" readonly placeholder="Aquí aparecerá el reporte..."></textarea></div>
+  </section>
+</div>
+<script>
+const modules = [{"file": "presente_continuo.html", "title": "Presente Continuo", "category": "Tiempos continuos"}, {"file": "pasado_continuo.html", "title": "Pasado Continuo", "category": "Tiempos continuos"}, {"file": "futuro_continuo.html", "title": "Futuro Continuo", "category": "Tiempos continuos"}, {"file": "presente_perfecto.html", "title": "Presente Perfecto", "category": "Tiempos perfectos"}, {"file": "pasado_perfecto.html", "title": "Pasado Perfecto", "category": "Tiempos perfectos"}, {"file": "futuro_perfecto.html", "title": "Futuro Perfecto", "category": "Tiempos perfectos"}, {"file": "presente_perfecto_continuo.html", "title": "Presente Perfecto Continuo", "category": "Tiempos perfectos continuos"}, {"file": "pasado_perfecto_continuo.html", "title": "Pasado Perfecto Continuo", "category": "Tiempos perfectos continuos"}, {"file": "futuro_perfecto_continuo.html", "title": "Futuro Perfecto Continuo", "category": "Tiempos perfectos continuos"}, {"file": "condicional_cero_primero.html", "title": "Condicional Cero y Primero", "category": "Condicionales"}, {"file": "segundo_condicional.html", "title": "Segundo Condicional", "category": "Condicionales"}, {"file": "tercer_condicional.html", "title": "Tercer Condicional", "category": "Condicionales"}, {"file": "condicional_wish.html", "title": "Condicional Wish", "category": "Condicionales"}, {"file": "mixed_condicional_1_2.html", "title": "Mixed Conditional 1 y 2", "category": "Condicionales"}, {"file": "comparaciones_superlativos.html", "title": "Comparaciones y Superlativos", "category": "Comparaciones"}, {"file": "used_to_be_used_to_get_used_to.html", "title": "Used to / Be used to / Get used to", "category": "Expresiones gramaticales"}, {"file": "modal_expressions.html", "title": "Be about to / Be willing to / Be a must to / Be able to / Would like to / Would rather", "category": "Expresiones gramaticales"}];
+function b64Encode(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
+function b64Decode(str){ return JSON.parse(decodeURIComponent(escape(atob(str)))); }
+function readJSON(k,f){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}}
+function saveJSON(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function loadFromLink(silent=false){
+  const data=new URLSearchParams(location.search).get('data');
+  if(!data){ if(!silent) alert('No hay datos de tarea en este enlace. Pide al docente el enlace generado desde el panel docente.'); return; }
+  try{ const cfg=b64Decode(data); saveJSON('grammarAssignmentConfig', cfg); history.replaceState(null,'','estudiante.html'); renderAssignment(); alert('Tarea cargada.'); }
+  catch(e){ alert('El enlace de tarea está incompleto o dañado.'); }
+}
+function isExpired(cfg){ if(!cfg?.dueDate) return false; return Date.now() > new Date(cfg.dueDate+'T23:59:59').getTime(); }
+function renderAssignment(){
+  const cfg=readJSON('grammarAssignmentConfig', null); const info=document.getElementById('assignmentInfo'); const box=document.getElementById('assignedModules'); box.innerHTML='';
+  if(!cfg){ info.className='dangerbox'; info.innerHTML='<b>No hay tarea cargada.</b> Abre el enlace que te compartió tu docente.'; return; }
+  info.className=isExpired(cfg)?'dangerbox':'notice';
+  info.innerHTML=`<b>${cfg.title||'Tarea de gramática'}</b><br>Grupo: ${cfg.group||'—'}<br>Docente: ${cfg.teacher||'—'}<br>Fecha límite: ${cfg.dueDate||'Sin fecha'}<br><br>${cfg.instructions||''}`;
+  const allowed=new Set(cfg.modules||[]);
+  modules.filter(m=>allowed.has(m.file)).forEach(m=>{
+    const card=document.createElement('article'); card.className='card';
+    const locked=isExpired(cfg);
+    card.innerHTML=`<span class="pill">${m.category}</span><h3>${m.title}</h3><p class="muted">${locked?'Vencido':'Disponible'}</p><a class="btn ${locked?'secondary':''}" href="${locked?'#':m.file}">${locked?'Bloqueado':'Abrir actividad'}</a>`;
+    box.appendChild(card);
+  });
+  if(!allowed.size) box.innerHTML='<div class="notice warn">El docente todavía no ha seleccionado módulos para esta tarea.</div>';
+}
+function renderResults(){
+  const cfg=readJSON('grammarAssignmentConfig', null); const data=readJSON('grammarResults', {}); let rows=Object.values(data);
+  if(cfg?.id) rows=rows.filter(r=>r.assignmentId===cfg.id);
+  const box=document.getElementById('studentResults');
+  if(!rows.length){box.innerHTML='<div class="notice">Aún no hay resultados guardados en este navegador. Abre un módulo y completa actividades.</div>'; return;}
+  box.innerHTML='<table><thead><tr><th>Módulo</th><th>Total</th><th>Estado</th><th>Actualizado</th></tr></thead><tbody>'+rows.map(r=>`<tr><td>${r.moduleTitle}</td><td><b>${r.total||''}</b></td><td>${r.state||''}</td><td>${(r.updatedAt||'').slice(0,19).replace('T',' ')}</td></tr>`).join('')+'</tbody></table>';
+}
+function generateReport(){
+  const cfg=readJSON('grammarAssignmentConfig', null); const data=readJSON('grammarResults', {}); let rows=Object.values(data); if(cfg?.id) rows=rows.filter(r=>r.assignmentId===cfg.id);
+  const report={assignment:cfg, results:rows, exportedAt:new Date().toISOString()};
+  document.getElementById('reportCode').value=b64Encode(report);
+  renderResults();
+}
+function resetStudent(){ if(confirm('¿Borrar la tarea cargada en este navegador?')){ localStorage.removeItem('grammarAssignmentConfig'); renderAssignment(); } }
+loadFromLink(true); renderAssignment(); renderResults();
+</script>
+
+</body>
+</html>
