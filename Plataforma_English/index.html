@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Skills Platform</title>
+<style>
+:root{--navy:#10233f;--blue:#2456a6;--light:#eef4ff;--ink:#1f2937;--muted:#64748b;--green:#198754;--red:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,var(--navy),var(--blue));color:white}
+main{width:min(1200px,92%);margin:auto;padding:50px 0;text-align:center}
+h1{margin:0 0 10px;font-size:clamp(38px,6vw,68px)}
+.subtitle{margin:0 auto 30px;max-width:760px;font-size:19px;line-height:1.6;opacity:.92}
+.top-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+button{border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer}
+.add-btn{background:white;color:var(--blue)}
+.manage-btn{background:#dce8ff;color:var(--navy)}
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px}
+.skill{position:relative;display:block;background:white;color:var(--navy);text-decoration:none;border-radius:22px;padding:34px 24px;min-height:220px;box-shadow:0 16px 34px rgba(0,0,0,.25);transition:.22s}
+.skill:hover{transform:translateY(-7px)}
+.icon{font-size:48px;margin-bottom:12px}
+.skill h2{margin:0 0 12px;font-size:31px}
+.skill p{margin:0;color:#4b5563;font-size:16px;line-height:1.55}
+.custom-badge{position:absolute;top:12px;right:12px;background:#e8eef9;color:var(--blue);border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700}
+.delete-card{position:absolute;top:12px;left:12px;background:#ffe8e5;color:var(--red);border-radius:50%;width:32px;height:32px;padding:0;display:none}
+.manage-mode .delete-card{display:block}
+footer{margin-top:42px;font-size:18px;font-weight:bold}
+.modal{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:18px;z-index:100}
+.hidden{display:none!important}
+.modal-box{width:min(620px,100%);background:white;color:var(--ink);border-radius:20px;padding:24px;text-align:left;box-shadow:0 20px 50px #0005}
+.modal-box h2{margin-top:0}.field{margin-bottom:16px}
+label{display:block;font-weight:700;margin-bottom:7px}
+input,textarea,select{width:100%;border:1px solid #b8c6da;border-radius:10px;padding:11px;font:inherit}
+textarea{min-height:95px;resize:vertical}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.save{background:var(--green);color:white}.cancel{background:#e5e7eb;color:#111827}
+.tip{background:var(--light);border-left:4px solid var(--blue);border-radius:10px;padding:12px;margin-bottom:16px;color:#334155}
+</style>
+</head>
+<body>
+<main id="mainPanel">
+  <h1>English Skills Platform</h1>
+  <p class="subtitle">Selecciona una habilidad o añade nuevas actividades a la plataforma.</p>
+  <div class="top-actions">
+    <button class="add-btn" onclick="openActivityModal()">➕ Añadir actividad nueva</button>
+    <button class="manage-btn" onclick="toggleManageMode()">⚙️ Administrar actividades</button>
+  </div>
+  <section id="skillsGrid" class="skills">
+    <a class="skill" href="lecturas.html"><div class="icon">📖</div><h2>READING</h2><p>Lecturas, pronunciación, IPA, vocabulario y traducción.</p></a>
+    <a class="skill" href="writing.html"><div class="icon">✍️</div><h2>WRITING</h2><p>Artículos de opinión, ensayos, conectores y revisión.</p></a>
+    <a class="skill" href="listening.html"><div class="icon">🎧</div><h2>LISTENING</h2><p>Dictados, audios, completar párrafos y resultados.</p></a>
+    <a class="skill" href="speaking.html"><div class="icon">🎤</div><h2>SPEAKING</h2><p>Verbos flotantes, tiempos verbales, preguntas, voz y grabación.</p></a>
+  <a class="skill" href="resultados.html"><div class="icon">📊</div><h2>RESULTADOS</h2><p>Consulta el historial de todas las habilidades.</p></a></section>
+  <footer>Wascar Enrique Sequeira Hurtado</footer>
+</main>
+<div id="activityModal" class="modal hidden">
+  <div class="modal-box">
+    <h2>Añadir actividad nueva</h2>
+    <div class="tip">Puedes enlazar otra página HTML de la misma carpeta, una actividad de GitHub Pages, Wordwall, Google Drive u otro sitio web.</div>
+    <div class="field"><label for="activityName">Nombre de la actividad</label><input id="activityName" placeholder="Ejemplo: Grammar Practice"></div>
+    <div class="field"><label for="activityDescription">Descripción</label><textarea id="activityDescription" placeholder="Describe brevemente qué practicará el estudiante."></textarea></div>
+    <div class="field"><label for="activityLink">Enlace o nombre del archivo</label><input id="activityLink" placeholder="Ejemplo: grammar.html o https://..."></div>
+    <div class="field"><label for="activityIcon">Icono</label><select id="activityIcon"><option value="🧩">🧩 Actividad</option><option value="📚">📚 Gramática</option><option value="🔤">🔤 Vocabulario</option><option value="🗣️">🗣️ Pronunciación</option><option value="🎮">🎮 Juego</option><option value="📝">📝 Examen</option><option value="🎓">🎓 Curso</option><option value="🌐">🌐 Recurso web</option></select></div>
+    <div class="modal-actions"><button class="cancel" onclick="closeActivityModal()">Cancelar</button><button class="save" onclick="saveActivity()">Guardar actividad</button></div>
+  </div>
+</div>
+<script>
+const STORAGE_KEY='englishPlatformCustomActivities';
+let manageMode=false;
+function getActivities(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[]}catch(e){return[]}}
+function setActivities(items){localStorage.setItem(STORAGE_KEY,JSON.stringify(items))}
+function renderActivities(){
+  document.querySelectorAll('.custom-activity').forEach(el=>el.remove());
+  const grid=document.getElementById('skillsGrid');
+  getActivities().forEach((item,index)=>{
+    const card=document.createElement('a');
+    card.className='skill custom-activity';
+    card.href=item.link;
+    card.target=item.link.startsWith('http')?'_blank':'_self';
+    card.innerHTML=`<button class="delete-card" type="button" title="Eliminar actividad">✕</button><span class="custom-badge">NUEVA</span><div class="icon">${escapeHtml(item.icon)}</div><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.description)}</p>`;
+    card.querySelector('.delete-card').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();deleteActivity(index)});
+    grid.appendChild(card);
+  });
+  document.getElementById('mainPanel').classList.toggle('manage-mode',manageMode);
+}
+function openActivityModal(){document.getElementById('activityModal').classList.remove('hidden');document.getElementById('activityName').focus()}
+function closeActivityModal(){document.getElementById('activityModal').classList.add('hidden')}
+function saveActivity(){
+  const name=document.getElementById('activityName').value.trim();
+  const description=document.getElementById('activityDescription').value.trim();
+  const link=document.getElementById('activityLink').value.trim();
+  const icon=document.getElementById('activityIcon').value;
+  if(!name||!description||!link){alert('Completa el nombre, la descripción y el enlace.');return}
+  const activities=getActivities();activities.push({name,description,link,icon});setActivities(activities);
+  document.getElementById('activityName').value='';document.getElementById('activityDescription').value='';document.getElementById('activityLink').value='';document.getElementById('activityIcon').value='🧩';
+  closeActivityModal();renderActivities();
+}
+function deleteActivity(index){const activities=getActivities();const item=activities[index];if(!item)return;if(confirm(`¿Eliminar la actividad "${item.name}" del menú?`)){activities.splice(index,1);setActivities(activities);renderActivities()}}
+function toggleManageMode(){manageMode=!manageMode;renderActivities();if(manageMode)alert('Modo de administración activado. Usa la ✕ para eliminar actividades añadidas.')}
+function escapeHtml(value){return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+window.addEventListener('click',e=>{if(e.target.id==='activityModal')closeActivityModal()});
+renderActivities();
+</script>
+</body>
+</html>

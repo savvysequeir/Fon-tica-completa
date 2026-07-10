@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Resultados | English Skills Platform</title>
+<style>
+:root{--navy:#10233f;--blue:#2456a6;--red:#c0392b;--light:#eef4ff;--ink:#1f2937}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:var(--ink)}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;padding:28px 20px}.wrap{max-width:1200px;margin:auto}
+h1{margin:0 0 8px;font-size:42px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button,a.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.white{background:white;color:var(--blue)}.red{background:var(--red);color:white}
+main{max-width:1200px;margin:22px auto;padding:0 16px 50px}.card{background:white;border:1px solid #dce5f3;border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 6px 18px #10233f12}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}select,input{width:100%;padding:11px;border:1px solid #b8c6da;border-radius:10px;font:inherit}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.metric{background:#f6f8fb;border-radius:12px;padding:15px;text-align:center}.metric b{display:block;font-size:24px;color:var(--blue)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px;border:1px solid #d5deeb;text-align:left;vertical-align:top}th{background:var(--blue);color:white}
+.empty{background:var(--light);padding:18px;border-radius:12px;text-align:center}.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#e8eef9;color:var(--navy);font-weight:700}
+footer{text-align:center;padding:24px;font-weight:bold}@media(max-width:760px){table{display:block;overflow-x:auto}h1{font-size:34px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Resultados generales</h1><p>Consulta los resultados guardados de Reading, Writing, Listening y Speaking.</p>
+<div class="actions"><a class="btn white" href="index.html">Menú principal</a><button class="white" onclick="window.print()">Imprimir</button><button class="red" onclick="clearResults()">Borrar resultados</button></div>
+</div></header>
+<main>
+<section class="card"><div class="filters">
+<div><label>Habilidad</label><select id="skillFilter" onchange="render()"><option value="">Todas</option><option>Reading</option><option>Writing</option><option>Listening</option><option>Speaking</option></select></div>
+<div><label>Estudiante</label><input id="studentFilter" placeholder="Buscar por nombre" oninput="render()"></div>
+<div><label>Orden</label><select id="orderFilter" onchange="render()"><option value="new">Más recientes</option><option value="old">Más antiguos</option><option value="high">Mayor puntaje</option></select></div>
+</div></section>
+<section class="card"><div id="metrics" class="metrics"></div></section>
+<section class="card"><div id="empty" class="empty" style="display:none">Todavía no hay resultados guardados. Finaliza una actividad en cualquiera de las habilidades.</div><div id="tableWrap"></div></section>
+</main><footer>Wascar Enrique Sequeira Hurtado</footer>
+<script>
+const KEY='englishSkillResults';
+function getResults(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
+function render(){
+ let items=getResults(),skill=skillFilter.value,name=studentFilter.value.toLowerCase().trim(),order=orderFilter.value;
+ if(skill)items=items.filter(x=>x.skill===skill);if(name)items=items.filter(x=>(x.student||'').toLowerCase().includes(name));
+ items.sort((a,b)=>order==='old'?new Date(a.date)-new Date(b.date):order==='high'?(Number(b.score)||0)-(Number(a.score)||0):new Date(b.date)-new Date(a.date));
+ const all=getResults(),avg=all.length?Math.round(all.reduce((s,x)=>s+(Number(x.score)||0),0)/all.length):0;
+ metrics.innerHTML=`<div class="metric"><b>${all.length}</b>Resultados</div><div class="metric"><b>${new Set(all.map(x=>x.student).filter(Boolean)).size}</b>Estudiantes</div><div class="metric"><b>${avg}</b>Promedio</div><div class="metric"><b>${new Set(all.map(x=>x.skill)).size}</b>Habilidades</div>`;
+ empty.style.display=items.length?'none':'block';
+ tableWrap.innerHTML=items.length?`<table><thead><tr><th>Fecha</th><th>Estudiante</th><th>Habilidad</th><th>Actividad</th><th>Puntaje</th><th>Detalles</th></tr></thead><tbody>${items.map(x=>`<tr><td>${esc(new Date(x.date).toLocaleString())}</td><td><b>${esc(x.student||'Sin nombre')}</b><br><small>${esc(x.career||'')} ${esc(x.year||'')}</small></td><td><span class="badge">${esc(x.skill)}</span></td><td>${esc(x.activity||'')}</td><td><b>${esc(String(x.score??0))}</b>${x.maxScore?` / ${esc(String(x.maxScore))}`:''}</td><td>${esc(x.details||'')}</td></tr>`).join('')}</tbody></table>`:'';
+}
+function clearResults(){if(confirm('¿Deseas borrar todos los resultados guardados en este navegador?')){localStorage.removeItem(KEY);render()}}
+function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;")}
+render();
+</script>
+</body></html>

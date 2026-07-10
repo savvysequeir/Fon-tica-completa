@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WRITING | Plataforma de escritura argumentativa</title>
+<style>
+:root{
+  --navy:#10233f;--blue:#2456a6;--light:#eef4ff;--green:#198754;
+  --red:#c0392b;--gold:#d59b16;--ink:#1f2937;--muted:#667085;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f7fb;color:var(--ink)}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;padding:28px 22px;position:sticky;top:0;z-index:10;box-shadow:0 3px 12px #0002}
+.header-wrap{max-width:1300px;margin:auto;display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(28px,5vw,48px);letter-spacing:.5px}
+.subtitle{margin:6px 0 0;max-width:780px;opacity:.92}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;transition:.2s}
+button:hover{transform:translateY(-1px)}
+.btn-primary{background:#fff;color:var(--blue)}
+.btn-dark{background:var(--navy);color:white}
+.btn-green{background:var(--green);color:white}
+.btn-red{background:var(--red);color:white}
+.btn-soft{background:#e8eef9;color:var(--navy)}
+main{max-width:1300px;margin:24px auto;padding:0 18px 50px}
+.card{background:white;border-radius:16px;padding:22px;box-shadow:0 6px 20px #10233f12;margin-bottom:20px;border:1px solid #dce5f3}
+.hidden{display:none!important}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.info-box{background:var(--light);border-left:5px solid var(--blue);padding:18px;border-radius:12px}
+.student-badge{padding:12px 14px;background:#f8fafc;border:1px dashed #9ab1d4;border-radius:10px}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.topic-card{border:1px solid #d8e1ee;border-radius:14px;padding:16px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:175px}
+.topic-card h3{font-size:16px;line-height:1.4;margin:0 0 14px}
+.topic-number{display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--blue);color:white;align-items:center;justify-content:center;margin-bottom:10px}
+.stance-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stance{border:2px solid #d8e1ee;border-radius:14px;padding:18px;cursor:pointer}
+.stance:hover{border-color:var(--blue)}
+.stance.pro{background:#eefaf3}
+.stance.con{background:#fff2f0}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.type-card{border:2px solid #d8e1ee;border-radius:14px;padding:18px;cursor:pointer}
+.type-card:hover{border-color:var(--blue);background:#f7faff}
+.connector-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.connector-panel{display:flex;flex-wrap:wrap;gap:8px;max-height:180px;overflow:auto;padding:10px;background:#f7f9fd;border-radius:12px}
+.connector{background:white;border:1px solid #b9c8df;border-radius:999px;padding:7px 11px;font-size:13px;cursor:pointer}
+.connector:hover{background:var(--blue);color:white}
+.editor-layout{display:grid;grid-template-columns:300px 1fr;gap:18px}
+.outline{position:sticky;top:150px;align-self:start}
+.outline button{width:100%;margin:5px 0;text-align:left}
+.field{margin-bottom:18px}
+label{font-weight:800;display:block;margin-bottom:7px}
+input,select,textarea{width:100%;border:1px solid #b8c6da;border-radius:10px;padding:12px;font:inherit;background:white}
+textarea{min-height:150px;resize:vertical;line-height:1.55}
+textarea:focus,input:focus,select:focus{outline:3px solid #2456a622;border-color:var(--blue)}
+.counter-bar{height:12px;background:#dfe6ef;border-radius:999px;overflow:hidden}
+.counter-fill{height:100%;width:0;background:var(--gold);transition:.25s}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.metric{background:#f6f8fb;border-radius:10px;padding:12px;text-align:center}
+.metric strong{display:block;font-size:22px;color:var(--blue)}
+.feedback{border-radius:12px;padding:14px;margin-top:12px}
+.ok{background:#eaf8ef;color:#146c43}
+.warn{background:#fff7dd;color:#7a5900}
+.bad{background:#ffeded;color:#9f1f15}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.result-item{background:#f6f8fb;border-radius:12px;padding:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px;border:1px solid #d5deeb;text-align:left}
+th{background:var(--blue);color:white}
+.modal{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:18px;z-index:100}
+.modal-content{max-width:680px;width:100%;max-height:90vh;overflow:auto;background:white;border-radius:18px;padding:24px}
+.close{float:right;background:#eceff4;color:#333}
+footer{text-align:center;padding:24px;font-size:18px;font-weight:700;color:var(--navy)}
+@media(max-width:850px){
+  .hero-grid,.editor-layout,.stance-grid,.type-grid{grid-template-columns:1fr}
+  .outline{position:static}
+}
+</style>
+</head>
+<body>
+<header>
+<div class="header-wrap">
+  <div>
+    <h1>WRITING</h1>
+    <p class="subtitle">Desarrolla puntos de vista, argumentos y refutaciones usando conectores para producir textos fluidos, coherentes y persuasivos.</p>
+  </div>
+  <div class="actions">
+    <button class="btn-primary" onclick="openIdentification()">Identificación</button>
+    <button class="btn-primary" onclick="openExplanation()">Cómo redactar</button>
+    <button class="btn-primary" onclick="showTopics()">Temas de escritura</button><a href="resultados.html"><button class="btn-primary" type="button">Resultados</button></a>
+  </div>
+</div>
+</header>
+
+<main>
+<section class="hero-grid">
+  <div class="card">
+    <h2>Propósito de la habilidad</h2>
+    <p>Esta plataforma guía al estudiante para redactar un artículo de opinión o un ensayo argumentativo, formular una tesis, desarrollar argumentos, reconocer una postura contraria, refutarla y concluir con claridad.</p>
+    <div class="info-box"><b>Meta mínima:</b> 400 palabras. El trabajo no podrá finalizarse antes de alcanzar ese mínimo y completar la estructura seleccionada.</div>
+  </div>
+  <div class="card">
+    <h2>Estudiante</h2>
+    <div id="studentBadge" class="student-badge">Aún no se ha registrado la identificación.</div>
+  </div>
+</section>
+
+<section id="topicsSection" class="card">
+  <div class="section-title">
+    <div><h2>Temas de escritura</h2><p>Selecciona una pregunta para comenzar.</p></div>
+    <input id="topicSearch" style="max-width:320px" placeholder="Buscar un tema..." oninput="renderTopics(this.value)">
+  </div>
+  <div id="topicGrid" class="topic-grid"></div>
+</section>
+
+<section id="stanceSection" class="card hidden">
+  <h2 id="selectedQuestion"></h2>
+  <p>Escoge la postura que defenderás.</p>
+  <div class="stance-grid">
+    <div class="stance pro" onclick="chooseStance('pro')">
+      <h3>✅ A favor</h3><p id="proStatement"></p>
+    </div>
+    <div class="stance con" onclick="chooseStance('con')">
+      <h3>❌ En contra</h3><p id="conStatement"></p>
+    </div>
+  </div>
+</section>
+
+<section id="typeSection" class="card hidden">
+  <h2>Escoge el tipo de texto</h2>
+  <div class="type-grid">
+    <div class="type-card" onclick="chooseType('opinion')">
+      <h3>Artículo de Opinión</h3>
+      <p>Texto que analiza un tema de actualidad para influir en la opinión pública mediante una tesis, argumentos, refutación y cierre.</p>
+    </div>
+    <div class="type-card" onclick="chooseType('essay')">
+      <h3>Ensayo Argumentativo</h3>
+      <p>Texto formal que busca convencer mediante lógica, evidencia, retórica, antítesis y una conclusión apelativa.</p>
+    </div>
+  </div>
+</section>
+
+<section id="editorSection" class="hidden">
+  <div class="card">
+    <div class="section-title">
+      <div><h2>Conectores de apoyo</h2><p>Haz clic sobre un conector para insertarlo en el campo activo.</p></div>
+    </div>
+    <div class="connector-tabs">
+      <button class="btn-soft" onclick="renderConnectors(0)">Tabla 1 · Básicos</button>
+      <button class="btn-soft" onclick="renderConnectors(1)">Tabla 2 · Intermedios</button>
+      <button class="btn-soft" onclick="renderConnectors(2)">Tabla 3 · Formales</button>
+    </div>
+    <div id="connectorPanel" class="connector-panel"></div>
+  </div>
+
+  <div class="editor-layout">
+    <aside class="card outline">
+      <h3>Control de escritura</h3>
+      <div class="metrics">
+        <div class="metric"><strong id="wordCount">0</strong>palabras</div>
+        <div class="metric"><strong id="timeCount">00:00</strong>tiempo</div>
+      </div>
+      <div class="counter-bar"><div id="counterFill" class="counter-fill"></div></div>
+      <p id="minimumMessage" class="warn feedback">Faltan 400 palabras.</p>
+      <button class="btn-soft" onclick="scrollToField('titleField')">Título</button>
+      <button class="btn-soft" onclick="scrollToField('introField')">Introducción</button>
+      <button class="btn-soft" onclick="scrollToField('arg1Field')">Argumento 1</button>
+      <button class="btn-soft" onclick="scrollToField('arg2Field')">Argumento 2</button>
+      <button class="btn-soft" onclick="scrollToField('refutationField')">Refutación</button>
+      <button class="btn-soft" onclick="scrollToField('conclusionField')">Conclusión</button>
+      <button class="btn-green" onclick="reviewWriting()">Revisar escrito</button>
+      <button class="btn-dark" onclick="finishWriting()">Resultado final</button>
+    </aside>
+
+    <article class="card">
+      <div id="assignmentSummary" class="info-box"></div>
+      <div class="field">
+        <label for="titleField">Título</label>
+        <input id="titleField" class="writing-input" spellcheck="true" placeholder="Escribe un título breve y sugerente">
+      </div>
+      <div class="field">
+        <label id="introLabel" for="introField">Introducción</label>
+        <textarea id="introField" class="writing-input" spellcheck="true"></textarea>
+      </div>
+      <div class="field">
+        <label id="arg1Label" for="arg1Field">Argumento 1</label>
+        <textarea id="arg1Field" class="writing-input" spellcheck="true"></textarea>
+      </div>
+      <div class="field">
+        <label id="arg2Label" for="arg2Field">Argumento 2</label>
+        <textarea id="arg2Field" class="writing-input" spellcheck="true"></textarea>
+      </div>
+      <div class="field">
+        <label id="refutationLabel" for="refutationField">Refutación</label>
+        <textarea id="refutationField" class="writing-input" spellcheck="true"></textarea>
+      </div>
+      <div class="field">
+        <label id="conclusionLabel" for="conclusionField">Conclusión</label>
+        <textarea id="conclusionField" class="writing-input" spellcheck="true"></textarea>
+      </div>
+      <div id="reviewFeedback"></div>
+    </article>
+  </div>
+</section>
+
+<section id="resultSection" class="card hidden">
+  <h2>Resultado</h2>
+  <div id="resultGrid" class="result-grid"></div>
+  <div id="finalFeedback" class="feedback"></div>
+  <div class="actions" style="margin-top:16px">
+    <button class="btn-dark" onclick="window.print()">Imprimir resultado</button>
+    <button class="btn-soft" onclick="startOver()">Nueva actividad</button>
+  </div>
+</section>
+</main>
+
+<footer>Wascar Enrique Sequeira Hurtado</footer>
+
+<div id="identificationModal" class="modal hidden">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal('identificationModal')">✕</button>
+    <h2>Identificación del estudiante</h2>
+    <div class="field"><label>Nombre completo</label><input id="studentName"></div>
+    <div class="field"><label>Carrera</label><select id="studentCareer"></select></div>
+    <div class="field"><label>Año que cursa</label>
+      <select id="studentYear"><option value="">Selecciona</option><option>Primer año</option><option>Segundo año</option><option>Tercer año</option><option>Cuarto año</option><option>Quinto año</option><option>Sexto año</option></select>
+    </div>
+    <button class="btn-green" onclick="saveIdentification()">Guardar identificación</button>
+  </div>
+</div>
+
+<div id="explanationModal" class="modal hidden">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal('explanationModal')">✕</button>
+    <h2>Cómo redactar</h2>
+    <h3>Artículo de Opinión</h3>
+    <ol>
+      <li><b>Título:</b> breve, sugerente y relacionado con la tesis.</li>
+      <li><b>Introducción:</b> inicia con un gancho y presenta tu postura.</li>
+      <li><b>Cuerpo:</b> desarrolla dos argumentos y apóyalos con razones o experiencias.</li>
+      <li><b>Refutación:</b> menciona una postura contraria y explica por qué es insuficiente.</li>
+      <li><b>Conclusión:</b> reafirma la tesis bajo una nueva luz.</li>
+    </ol>
+    <h3>Ensayo Argumentativo</h3>
+    <ol>
+      <li><b>Exordio:</b> presenta el tema con solemnidad, urgencia o relevancia.</li>
+      <li><b>Tesis:</b> declara lo que vas a demostrar.</li>
+      <li><b>Premisa:</b> presenta bases teóricas, legales o conceptuales.</li>
+      <li><b>Demostración:</b> aporta evidencia, ejemplos o experiencia.</li>
+      <li><b>Antítesis y refutación:</b> reconoce la posición contraria y demuestra por qué la tuya es más sólida.</li>
+      <li><b>Conclusión:</b> recapitula, apela a la audiencia y cierra con fuerza retórica.</li>
+    </ol>
+    <h3>Signos de puntuación</h3>
+    <p><b>Punto:</b> cierra una idea completa. <b>Coma:</b> separa elementos, conectores o incisos. <b>Punto y coma:</b> relaciona ideas cercanas. <b>Dos puntos:</b> introducen una explicación o enumeración. <b>Comillas:</b> delimitan citas o expresiones destacadas.</p>
+  </div>
+</div>
+
+<script>
+const topics=[{"question": "¿La pobreza es responsabilidad individual o consecuencia del sistema?", "pro": "La pobreza no es falta de esfuerzo, es el resultado de un sistema que fabrica desigualdad.", "con": "La pobreza se mantiene cuando las personas normalizan la dependencia y abandonan la responsabilidad personal."}, {"question": "¿La educación actual forma personas libres o empleados obedientes?", "pro": "La educación debe formar pensamiento crítico, no empleados obedientes para el mercado.", "con": "La educación debe preparar para producir, trabajar y sobrevivir en el mundo real, no solo para cuestionarlo todo."}, {"question": "¿Debe existir la pena de muerte?", "pro": "La pena de muerte es una respuesta legítima contra criminales que destruyen vidas de forma irreversible.", "con": "La pena de muerte convierte al Estado en asesino y hace imposible corregir errores judiciales."}, {"question": "¿La religión une más de lo que divide?", "pro": "La religión le da sentido, orden moral y esperanza a millones de personas.", "con": "La religión ha sido usada para manipular, dividir y justificar abusos de poder."}, {"question": "¿Dios es necesario para que exista la moral?", "pro": "Sin Dios, la moral pierde fundamento absoluto y se vuelve opinión humana.", "con": "La moral no necesita de Dios; una persona puede ser justa por conciencia, empatía y razón."}, {"question": "¿La libertad de expresión debe tener límites?", "pro": "Una sociedad libre debe permitir incluso ideas incómodas, ofensivas o impopulares.", "con": "La libertad de expresión no puede proteger discursos que humillan, deshumanizan o incitan al daño."}, {"question": "¿Las redes sociales están destruyendo la empatía?", "pro": "Las redes sociales democratizaron la voz pública y rompieron el monopolio de la información.", "con": "Las redes sociales están convirtiendo la atención humana en mercancía y destruyendo la salud mental."}, {"question": "¿La inteligencia artificial reemplazará al ser humano o lo potenciará?", "pro": "La inteligencia artificial será la herramienta más poderosa para expandir el conocimiento humano.", "con": "La inteligencia artificial puede volver inútiles a millones de trabajadores y concentrar más poder en pocas manos."}, {"question": "¿La democracia realmente representa al pueblo?", "pro": "La democracia es el único sistema donde el pueblo puede cambiar el poder sin violencia.", "con": "La democracia muchas veces solo maquilla el dominio de élites que manipulan al pueblo con propaganda y es injusto que los votos valgan lo mismo."}, {"question": "¿El aborto debe ser un derecho o un delito? ¿debe el hombre intervenir?", "pro": "Obligar a una mujer a continuar un embarazo es una forma de control sobre su cuerpo, no puede decidir ni el papá del bebe sobre el cuerpo de ella.", "con": "El aborto no es libertad, es la eliminación de una vida humana en desarrollo, y en igualdad el hombre también puede decidir quedarse o no."}, {"question": "¿La familia tradicional sigue siendo la base de la sociedad?", "pro": "La familia tradicional sigue siendo la estructura más estable para formar ciudadanos emocionalmente seguros.", "con": "La familia tradicional no siempre garantiza amor, estabilidad ni salud emocional."}, {"question": "¿El matrimonio es una institución necesaria?", "pro": "El matrimonio protege el compromiso, la familia y la responsabilidad afectiva y benefia al hombre.", "con": "El matrimonio muchas veces convierte el amor en contrato, presión social y dependencia emocional, donde el hombre pierde más."}, {"question": "¿Quién practica más la infidelidad el hombre o la mujer?, ¿puede ser una falla moral o una consecuencia emocional?", "pro": "La infidelidad revela una falla de carácter, falta de autocontrol y ausencia de lealtad.", "con": "La infidelidad es culpa de ambos, por no saber elegir y por quedarse."}, {"question": "¿El ser humano nace bueno o malo?", "pro": "El ser humano nace con capacidad de bondad, pero la sociedad lo corrompe.", "con": "El ser humano tiene impulsos egoístas desde el origen y necesita límites para no destruirse."}, {"question": "¿El poder corrompe o revela lo que una persona ya era?", "pro": "El poder no corrompe: revela la verdadera naturaleza de quien lo posee.", "con": "El poder corrompe porque coloca a la persona por encima de las consecuencias."}, {"question": "¿La religión debe influir en las leyes del Estado?", "pro": "Las leyes deben respetar los valores espirituales de la mayoría de la sociedad.", "con": "El Estado debe ser laico porque ninguna religión debe gobernar la conciencia de todos."}, {"question": "¿Debe permitirse la eutanasia?", "pro": "Nadie debería ser obligado a vivir sufriendo cuando la vida ya se volvió tortura.", "con": "Permitir la eutanasia puede convertir la muerte en solución fácil ante el abandono, la enfermedad o la pobreza."}, {"question": "¿El capitalismo genera progreso o desigualdad?", "pro": "El capitalismo ha sacado a millones de personas de la pobreza mediante innovación, competencia y trabajo.", "con": "El capitalismo convierte la vida humana en mercancía y premia la acumulación por encima de la dignidad."}, {"question": "¿El socialismo busca justicia o controla la libertad?", "pro": "El socialismo busca corregir desigualdades que el mercado jamás resolverá por sí solo.", "con": "El socialismo promete justicia, pero muchas veces termina concentrando poder y destruyendo libertades."}, {"question": "¿La felicidad depende de la mente o de las condiciones materiales?", "pro": "La felicidad depende más de la mente que de las circunstancias externas.", "con": "Nadie puede hablar de felicidad real cuando vive con hambre, miedo o pobreza extrema."}, {"question": "¿Los jóvenes de hoy son más frágiles emocionalmente?", "pro": "Los jóvenes de hoy son más conscientes de su salud mental que las generaciones anteriores.", "con": "Muchos jóvenes han confundido sensibilidad con fragilidad y frustración con trauma."}, {"question": "¿La disciplina vale más que la motivación y la obsesión?", "pro": "La disciplina vence a la motivación porque actúa incluso cuando no hay ganas, pero la obsesión destruye mas de lo que ayuda.", "con": "Una disciplina sin propósito solo produce personas rígidas, obedientes y emocionalmente reprimidas, y la motivación siempre es externa pero la obsesión es el camino difícil del maestro."}, {"question": "¿La escuela debería enseñar inteligencia emocional?", "pro": "Enseñar inteligencia emocional es tan importante como enseñar matemáticas o lenguaje.", "con": "La escuela no puede reemplazar la responsabilidad emocional que corresponde a la familia."}, {"question": "¿La universidad garantiza éxito profesional?", "pro": "La universidad sigue siendo una herramienta poderosa para ascender social y profesionalmente.", "con": "La universidad ya no garantiza éxito; muchas veces produce títulos sin competencias reales."}, {"question": "¿El amor es una decisión, una emoción o una necesidad biológica?", "pro": "El amor verdadero no es solo emoción: es decisión, cuidado y permanencia.", "con": "El amor no puede reducirse a decisión; sin deseo, admiración y conexión, se vuelve obligación."}, {"question": "¿Las personas cambian realmente o solo se adaptan?", "pro": "Las personas sí cambian cuando el dolor, la conciencia o el amor las obliga a transformarse.", "con": "La mayoría de las personas no cambian: solo aprenden a esconder mejor sus patrones."}, {"question": "¿La culpa religiosa ayuda a vivir mejor o reprime al individuo?", "pro": "La culpa religiosa puede servir como freno moral ante conductas destructivas.", "con": "La culpa religiosa puede destruir la autoestima y convertir el deseo humano en pecado permanente."}, {"question": "¿El perdón siempre es necesario?", "pro": "Perdonar libera a la víctima del poder emocional del agresor.", "con": "No todo merece perdón; a veces sanar exige recordar, alejarse y no justificar."}, {"question": "¿La venganza puede ser una forma de justicia?", "pro": "La venganza nace cuando la justicia institucional fracasa.", "con": "La venganza no repara el daño; solo convierte a la víctima en prisionera del agresor."}, {"question": "¿La corrupción política nace del sistema o de la cultura?", "pro": "La corrupción política es una traición directa al pueblo y debería castigarse con máxima severidad.", "con": "La corrupción no nace solo en los políticos; también vive en una cultura que tolera el favor, la trampa y el silencio."}, {"question": "¿Debe limitarse la riqueza extrema?", "pro": "La riqueza extrema debe limitarse cuando existe pobreza extrema en la misma sociedad.", "con": "Limitar la riqueza castiga el éxito, la innovación y el esfuerzo de quienes producen más."}, {"question": "¿La pobreza espiritual es peor que la pobreza material?", "pro": "Una persona sin propósito puede estar más vacía que una persona sin dinero.", "con": "Hablar de pobreza espiritual frente al hambre material puede ser una forma cómoda de ignorar la injusticia."}, {"question": "¿El feminismo busca igualdad o privilegio?", "pro": "El feminismo ha sido necesario para denunciar abusos históricos contra las mujeres.", "con": "El nuevo feminismo ha pasado de buscar igualdad a promover resentimiento contra los hombres."}, {"question": "¿La masculinidad tradicional está en crisis?", "pro": "La masculinidad necesita reconstruirse sin violencia, sin abuso y sin miedo a sentir.", "con": "Atacar la masculinidad tradicional ha debilitado la figura del hombre responsable, protector y disciplinado."}, {"question": "¿La libertad sexual ha mejorado o dañado las relaciones?", "pro": "La libertad sexual permitió que las personas dejaran de vivir bajo hipocresía y represión.", "con": "La libertad sexual sin responsabilidad ha convertido los cuerpos en consumo y las relaciones en algo desechable."}, {"question": "¿La soledad moderna es culpa de la tecnología?", "pro": "La tecnología nos conectó más, pero nos hizo emocionalmente más solos.", "con": "La tecnología no crea soledad; solo revela la incapacidad humana de construir vínculos profundos."}, {"question": "¿El ser humano necesita creer en algo para vivir?", "pro": "El ser humano necesita creer en algo superior para soportar el dolor de existir y echarle sus imperfecciones a una entidad.", "con": "Creer no siempre libera; a veces impide pensar, cuestionar y madurar,"}, {"question": "¿La verdad existe o depende del punto de vista?", "pro": "La verdad existe, aunque incomode, aunque duela y aunque la mayoría la niegue.", "con": "Muchas verdades son construcciones sociales que cambian según la cultura, el poder y la época."}, {"question": "¿Es mejor ser justo o ser bueno?", "pro": "Ser justo es más importante que ser bueno, porque la bondad sin justicia permite abusos.", "con": "Ser bueno es superior a ser justo, porque la justicia sin compasión puede volverse crueldad legal."}, {"question": "¿La ley siempre representa la justicia?", "pro": "La ley es el instrumento más importante para ordenar la justicia en una sociedad.", "con": "La ley no siempre representa justicia; muchas veces legaliza los intereses del poder."}, {"question": "¿La obediencia a la autoridad puede ser peligrosa?", "pro": "Obedecer a la autoridad es necesario para mantener orden social.", "con": "Obedecer sin pensar ha permitido algunas de las peores injusticias de la historia."}, {"question": "¿La religión debe adaptarse a los tiempos modernos?", "pro": "La religión debe adaptarse a los tiempos para seguir hablando al corazón humano.", "con": "Una religión que se adapta demasiado al mundo pierde su fuerza espiritual y moral."}, {"question": "¿La ciencia puede responder todas las preguntas humanas?", "pro": "La ciencia es el método más confiable para conocer la realidad.", "con": "La ciencia explica cómo funciona el mundo, pero no responde por sí sola para qué vivir."}, {"question": "¿El sufrimiento tiene sentido?", "pro": "El sufrimiento puede formar carácter, profundidad y sabiduría.", "con": "No todo sufrimiento enseña; algunos dolores solo destruyen, traumatizan y empobrecen el alma."}, {"question": "¿La muerte le da valor a la vida?", "pro": "La muerte le da urgencia, valor y belleza a la vida.", "con": "La muerte no da sentido; solo evidencia la fragilidad y absurdo de la existencia humana."}, {"question": "¿La ansiedad es una enfermedad moderna o siempre existió?", "pro": "La ansiedad moderna es consecuencia de una sociedad acelerada, competitiva y emocionalmente agotadora.", "con": "La ansiedad no es nueva; lo nuevo es que hoy se habla más de ella y se diagnostica mejor."}, {"question": "¿El éxito personal depende más del talento o del entorno?", "pro": "El éxito depende principalmente de la disciplina, la mentalidad y la capacidad de resistir.", "con": "El éxito depende más del entorno, los contactos y las oportunidades que del talento individual."}, {"question": "¿La educación sexual debe enseñarse desde edades tempranas?", "pro": "La educación sexual temprana protege a los jóvenes de abusos, embarazos no deseados e ignorancia peligrosa.", "con": "Una educación sexual mal orientada puede exponer demasiado pronto a los niños a temas que no comprenden emocionalmente."}, {"question": "¿El ser humano busca amor o busca validación?", "pro": "Muchas personas no buscan amor, buscan validación para llenar heridas emocionales.", "con": "El deseo de validación no niega el amor; solo demuestra que todos necesitamos ser vistos y elegidos."}, {"question": "¿Es posible una sociedad verdaderamente justa?", "pro": "Una sociedad verdaderamente justa es posible si las instituciones limitan el abuso de poder.", "con": "Una sociedad completamente justa es imposible porque el ser humano siempre mezcla intereses, egoísmo y ambición."}];
+const connectorTables=[[{"en": "And", "es": "y", "use": "Añadir información"}, {"en": "But", "es": "pero", "use": "Contrastar ideas"}, {"en": "Or", "es": "o", "use": "Dar opciones"}, {"en": "Because", "es": "porque", "use": "Dar razón"}, {"en": "So", "es": "entonces / así que", "use": "Consecuencia"}, {"en": "Also", "es": "también", "use": "Añadir información"}, {"en": "Too", "es": "también", "use": "Añadir al final"}, {"en": "Then", "es": "luego / después", "use": "Secuencia"}, {"en": "First", "es": "primero", "use": "Orden"}, {"en": "Next", "es": "después / siguiente", "use": "Orden"}, {"en": "Finally", "es": "finalmente", "use": "Cierre"}, {"en": "With", "es": "con", "use": "Acompañamiento"}, {"en": "Without", "es": "sin", "use": "Ausencia"}, {"en": "In", "es": "en / dentro de", "use": "Lugar o tiempo"}, {"en": "On", "es": "en / sobre", "use": "Lugar o fecha"}, {"en": "At", "es": "en / a", "use": "Lugar o tiempo específico"}, {"en": "For", "es": "para / por", "use": "Propósito"}, {"en": "From", "es": "de / desde", "use": "Origen"}, {"en": "To", "es": "a / hacia", "use": "Dirección"}, {"en": "After", "es": "después de", "use": "Tiempo"}], [{"en": "However", "es": "sin embargo", "use": "Contraste"}, {"en": "Although", "es": "Aunque", "use": "Contraste"}, {"en": "When", "es": "Cuando", "use": "Tiempo"}, {"en": "While", "es": "Mientras", "use": "Tiempo / contraste"}, {"en": "Before", "es": "antes de", "use": "Tiempo"}, {"en": "After That", "es": "después de eso", "use": "Secuencia"}, {"en": "Later", "es": "más tarde", "use": "Secuencia"}, {"en": "Suddenly", "es": "de repente", "use": "Narración"}, {"en": "For Example", "es": "por ejemplo", "use": "Ejemplo"}, {"en": "Such As", "es": "tal como / tales como", "use": "Ejemplo"}, {"en": "In Addition", "es": "además", "use": "Añadir información"}, {"en": "Also", "es": "también", "use": "Añadir"}, {"en": "Because Of", "es": "debido a", "use": "Causa"}, {"en": "That’s Why", "es": "por eso", "use": "Consecuencia"}, {"en": "So That", "es": "para que", "use": "Propósito"}, {"en": "If", "es": "si", "use": "Condición"}, {"en": "Even If", "es": "incluso si", "use": "Condición"}, {"en": "Instead", "es": "en lugar de eso", "use": "Contraste"}, {"en": "Then", "es": "entonces", "use": "Consecuencia / secuencia"}, {"en": "As Well", "es": "también", "use": "Añadir al final"}], [{"en": "Therefore", "es": "por lo tanto", "use": "Consecuencia formal"}, {"en": "As A Result", "es": "como resultado", "use": "Consecuencia"}, {"en": "Consequently", "es": "en consecuencia", "use": "Consecuencia"}, {"en": "Nevertheless", "es": "no obstante", "use": "Contraste"}, {"en": "On The Other Hand", "es": "por otro lado", "use": "Contraste"}, {"en": "Despite", "es": "a pesar de", "use": "Contraste"}, {"en": "In Spite Of", "es": "a pesar de", "use": "Contraste"}, {"en": "Even Though", "es": "aunque / incluso aunque", "use": "Contraste fuerte"}, {"en": "Whereas", "es": "mientras que", "use": "Comparación / contraste"}, {"en": "Since", "es": "ya que / desde que", "use": "Causa o tiempo"}, {"en": "Due To", "es": "debido a", "use": "Causa"}, {"en": "Owing To", "es": "debido a", "use": "Causa formal"}, {"en": "In Order To", "es": "con el fin de", "use": "Propósito"}, {"en": "So As To", "es": "para / con el fin de", "use": "Propósito"}, {"en": "Unless", "es": "a menos que", "use": "Condición"}, {"en": "As Long As", "es": "siempre que", "use": "Condición"}, {"en": "Provided That", "es": "siempre que / con tal de que", "use": "Condición formal"}, {"en": "In Fact", "es": "de hecho", "use": "Énfasis"}, {"en": "Actually", "es": "en realidad", "use": "Aclaración"}, {"en": "In Other Words", "es": "en otras palabras", "use": "Explicación"}, {"en": "That Is To Say", "es": "es decir", "use": "Explicación"}, {"en": "For Instance", "es": "por ejemplo", "use": "Ejemplo"}, {"en": "Moreover", "es": "además", "use": "Añadir información formal"}, {"en": "Furthermore", "es": "además / es más", "use": "Añadir información formal"}, {"en": "Besides", "es": "además / aparte de eso", "use": "Añadir información"}, {"en": "In Conclusion", "es": "en conclusión", "use": "Cierre"}, {"en": "To Sum Up", "es": "para resumir", "use": "Resumen"}, {"en": "Overall", "es": "en general", "use": "Cierre / visión general"}, {"en": "According To", "es": "según", "use": "Referencia"}, {"en": "As Far As I Know", "es": "hasta donde sé", "use": "Opinión limitada"}]];
+const careers=["Odontología", "Medicina", "Química Farmacéutica", "Enfermería", "Mecánica Dental", "Veterinaria", "Zootecnia", "Agronomía", "Ingeniería Agrícola", "Ingeniería Forestal", "Ingeniería en Agroindustria de los Alimentos", "Agronegocios", "Inglés"];
+
+let selectedTopic=null, selectedStance='', selectedType='', activeField=null;
+let startTime=null, timerId=null, elapsedSeconds=0;
+
+function init(){
+  const careerSelect=document.getElementById('studentCareer');
+  careerSelect.innerHTML='<option value="">Selecciona una carrera</option>'+careers.map(c=>`<option>${c}</option>`).join('');
+  renderTopics();
+  renderConnectors(0);
+  document.querySelectorAll('.writing-input').forEach(el=>{
+    el.addEventListener('focus',()=>activeField=el);
+    el.addEventListener('input',updateMetrics);
+  });
+  restoreStudent();
+}
+function renderTopics(filter=''){
+  const term=filter.toLowerCase();
+  const list=topics.map((t,i)=>({...t,index:i})).filter(t=>t.question.toLowerCase().includes(term));
+  document.getElementById('topicGrid').innerHTML=list.map(t=>`
+    <div class="topic-card">
+      <div><span class="topic-number">${t.index+1}</span><h3>${t.question}</h3></div>
+      <button class="btn-dark" onclick="selectTopic(${t.index})">Seleccionar tema</button>
+    </div>`).join('');
+}
+function selectTopic(index){
+  selectedTopic=topics[index];
+  document.getElementById('selectedQuestion').textContent=selectedTopic.question;
+  document.getElementById('proStatement').textContent=selectedTopic.pro;
+  document.getElementById('conStatement').textContent=selectedTopic.con;
+  document.getElementById('stanceSection').classList.remove('hidden');
+  document.getElementById('typeSection').classList.add('hidden');
+  document.getElementById('editorSection').classList.add('hidden');
+  document.getElementById('stanceSection').scrollIntoView({behavior:'smooth'});
+}
+function chooseStance(stance){
+  selectedStance=stance;
+  document.getElementById('typeSection').classList.remove('hidden');
+  document.getElementById('typeSection').scrollIntoView({behavior:'smooth'});
+}
+function chooseType(type){
+  if(!getStudent().name){openIdentification();alert('Completa tu identificación antes de escribir.');return;}
+  selectedType=type;
+  configureEditor();
+  document.getElementById('editorSection').classList.remove('hidden');
+  document.getElementById('resultSection').classList.add('hidden');
+  startTimer();
+  document.getElementById('editorSection').scrollIntoView({behavior:'smooth'});
+}
+function configureEditor(){
+  const stanceText=selectedStance==='pro'?selectedTopic.pro:selectedTopic.con;
+  const typeName=selectedType==='opinion'?'Artículo de Opinión':'Ensayo Argumentativo';
+  document.getElementById('assignmentSummary').innerHTML=`<b>Tema:</b> ${selectedTopic.question}<br><b>Postura:</b> ${selectedStance==='pro'?'A favor':'En contra'} — ${stanceText}<br><b>Tipo:</b> ${typeName}`;
+  if(selectedType==='opinion'){
+    setLabels('Introducción: gancho y tesis','Argumento principal','Argumento secundario o experiencia','Postura contraria y refutación','Síntesis y reafirmación de la tesis');
+  } else {
+    setLabels('Exordio y tesis','Premisa: bases teóricas o legales','Demostración: evidencia práctica','Antítesis y refutación','Recapitulación, apelación y cierre retórico');
+  }
+}
+function setLabels(a,b,c,d,e){
+  document.getElementById('introLabel').textContent=a;
+  document.getElementById('arg1Label').textContent=b;
+  document.getElementById('arg2Label').textContent=c;
+  document.getElementById('refutationLabel').textContent=d;
+  document.getElementById('conclusionLabel').textContent=e;
+}
+function renderConnectors(tableIndex){
+  document.getElementById('connectorPanel').innerHTML=connectorTables[tableIndex].map(c=>
+    `<button class="connector" title="${c.es} · ${c.use}" onclick="insertConnector('${c.en.replaceAll("'","\\'")}')">${c.en} · ${c.es}</button>`
+  ).join('');
+}
+function insertConnector(text){
+  if(!activeField){alert('Primero coloca el cursor en un campo de escritura.');return;}
+  const start=activeField.selectionStart, end=activeField.selectionEnd;
+  const before=activeField.value.slice(0,start), after=activeField.value.slice(end);
+  const prefix=before && !before.endsWith(' ')?' ':'';
+  activeField.value=before+prefix+text+', '+after;
+  activeField.focus();
+  activeField.selectionStart=activeField.selectionEnd=(before+prefix+text+', ').length;
+  updateMetrics();
+}
+function fullText(){
+  return [...document.querySelectorAll('.writing-input')].map(e=>e.value.trim()).join(' ').trim();
+}
+function words(){
+  return fullText().match(/\b[\wÀ-ÿ'-]+\b/g)||[];
+}
+function updateMetrics(){
+  const count=words().length;
+  document.getElementById('wordCount').textContent=count;
+  const pct=Math.min(100,count/400*100);
+  const fill=document.getElementById('counterFill');
+  fill.style.width=pct+'%';
+  fill.style.background=count>=400?'#198754':'#d59b16';
+  const msg=document.getElementById('minimumMessage');
+  if(count>=400){msg.className='ok feedback';msg.textContent='Mínimo alcanzado: '+count+' palabras.';}
+  else{msg.className='warn feedback';msg.textContent='Faltan '+(400-count)+' palabras.';}
+  saveDraft();
+}
+function reviewWriting(){
+  const fields=['titleField','introField','arg1Field','arg2Field','refutationField','conclusionField'];
+  const labels=['título','introducción','argumento 1','argumento 2','refutación','conclusión'];
+  const missing=fields.filter(id=>!document.getElementById(id).value.trim()).map((id,i)=>labels[fields.indexOf(id)]);
+  const text=fullText();
+  const sentenceCount=(text.match(/[.!?]+/g)||[]).length;
+  const paragraphCount=[...document.querySelectorAll('textarea')].filter(e=>e.value.trim()).length;
+  const connectorCount=countConnectors(text);
+  let messages=[];
+  if(missing.length)messages.push('Faltan: '+missing.join(', ')+'.');
+  if(words().length<400)messages.push('El escrito todavía no alcanza 400 palabras.');
+  if(sentenceCount<8)messages.push('Incluye más oraciones completas y usa puntos para separar ideas.');
+  if(connectorCount<5)messages.push('Utiliza al menos cinco conectores para mejorar la fluidez.');
+  if(paragraphCount<5)messages.push('Completa todos los apartados de la estructura.');
+  const box=document.getElementById('reviewFeedback');
+  if(!messages.length){box.className='ok feedback';box.innerHTML='✅ La estructura básica está completa. Revisa manualmente ortografía, coherencia y precisión de los argumentos.';}
+  else{box.className='warn feedback';box.innerHTML='<b>Revisión:</b><br>'+messages.map(m=>'• '+m).join('<br>');}
+}
+function countConnectors(text){
+  const lower=text.toLowerCase();
+  const all=connectorTables.flat().map(c=>c.en.toLowerCase());
+  return all.filter(c=>new RegExp('\\b'+c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i').test(lower)).length;
+}
+function punctuationScore(text){
+  const punctuation=(text.match(/[.,;:!?]/g)||[]).length;
+  const malformed=(text.match(/\s+[.,;:!?]/g)||[]).length;
+  return Math.max(0,punctuation-malformed);
+}
+function argumentLevel(){
+  const text=fullText();
+  let score=1;
+  const wc=words().length;
+  if(wc>=400)score+=2;
+  if(wc>=550)score+=1;
+  if(countConnectors(text)>=5)score+=2;
+  if(countConnectors(text)>=10)score+=1;
+  if(document.getElementById('refutationField').value.trim().split(/\s+/).length>=60)score+=1;
+  if((text.match(/[.!?]+/g)||[]).length>=12)score+=1;
+  if([...document.querySelectorAll('textarea')].every(e=>e.value.trim().length>60))score+=1;
+  return Math.min(10,score);
+}
+function finishWriting(){
+  reviewWriting();
+  const count=words().length;
+  const fields=[...document.querySelectorAll('.writing-input')];
+  if(count<400){alert('No puedes finalizar: debes escribir al menos 400 palabras.');return;}
+  if(fields.some(f=>!f.value.trim())){alert('No puedes finalizar: completa todos los apartados.');return;}
+  stopTimer();
+  const student=getStudent();
+  const punct=punctuationScore(fullText());
+  const connectors=countConnectors(fullText());
+  const structureHits=fields.filter(f=>f.value.trim()).length;
+  const totalScore=count+punct;
+  const result=[
+    ['Estudiante',student.name],['Carrera',student.career],['Año',student.year],
+    ['Tema',selectedTopic.question],['Postura',selectedStance==='pro'?'A favor':'En contra'],
+    ['Tipo de texto',selectedType==='opinion'?'Artículo de Opinión':'Ensayo Argumentativo'],
+    ['Palabras',count],['Puntuación total',totalScore+' puntos'],
+    ['Tiempo',formatTime(elapsedSeconds)],['Aciertos estructurales',structureHits+' de 6'],
+    ['Conectores utilizados',connectors],['Nivel de argumentación',argumentLevel()+' / 10']
+  ];
+  saveSkillResult({skill:'Writing',student:student.name,career:student.career,year:student.year,activity:(selectedType==='opinion'?'Artículo de Opinión':'Ensayo Argumentativo')+' — '+selectedTopic.question,score:totalScore,maxScore:null,details:count+' palabras; '+connectors+' conectores; nivel '+argumentLevel()+'/10'});
+  document.getElementById('resultGrid').innerHTML=result.map(r=>`<div class="result-item"><small>${r[0]}</small><strong style="display:block;margin-top:6px">${r[1]}</strong></div>`).join('');
+  const ff=document.getElementById('finalFeedback');
+  ff.className='ok feedback';
+  ff.innerHTML='Actividad completada. El puntaje automático valora cantidad de palabras, signos de puntuación, estructura y conectores; la calidad profunda de los argumentos debe ser revisada por el docente.';
+  document.getElementById('resultSection').classList.remove('hidden');
+  document.getElementById('resultSection').scrollIntoView({behavior:'smooth'});
+}
+function startTimer(){
+  if(startTime)return;
+  startTime=Date.now()-elapsedSeconds*1000;
+  timerId=setInterval(()=>{
+    elapsedSeconds=Math.floor((Date.now()-startTime)/1000);
+    document.getElementById('timeCount').textContent=formatTime(elapsedSeconds);
+  },1000);
+}
+function stopTimer(){clearInterval(timerId);timerId=null;}
+function formatTime(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');}
+function openIdentification(){document.getElementById('identificationModal').classList.remove('hidden')}
+function openExplanation(){document.getElementById('explanationModal').classList.remove('hidden')}
+function closeModal(id){document.getElementById(id).classList.add('hidden')}
+function saveIdentification(){
+  const student={name:document.getElementById('studentName').value.trim(),career:document.getElementById('studentCareer').value,year:document.getElementById('studentYear').value};
+  if(!student.name||!student.career||!student.year){alert('Completa todos los datos.');return;}
+  localStorage.setItem('writingStudent',JSON.stringify(student));
+  displayStudent(student);closeModal('identificationModal');
+}
+function getStudent(){try{return JSON.parse(localStorage.getItem('writingStudent'))||{}}catch(e){return {}}}
+function restoreStudent(){
+  const s=getStudent();if(s.name){displayStudent(s);document.getElementById('studentName').value=s.name;document.getElementById('studentCareer').value=s.career;document.getElementById('studentYear').value=s.year;}
+}
+function displayStudent(s){document.getElementById('studentBadge').innerHTML=`<b>${s.name}</b><br>${s.career} · ${s.year}`;}
+function saveDraft(){
+  const data={selectedTopic,selectedStance,selectedType,elapsedSeconds,fields:{}};
+  document.querySelectorAll('.writing-input').forEach(e=>data.fields[e.id]=e.value);
+  localStorage.setItem('writingDraft',JSON.stringify(data));
+}
+function scrollToField(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'center'});document.getElementById(id).focus();}
+function showTopics(){document.getElementById('topicsSection').scrollIntoView({behavior:'smooth'})}
+function startOver(){
+  if(!confirm('¿Deseas comenzar una actividad nueva?'))return;
+  document.querySelectorAll('.writing-input').forEach(e=>e.value='');
+  localStorage.removeItem('writingDraft');
+  selectedTopic=null;selectedStance='';selectedType='';elapsedSeconds=0;startTime=null;stopTimer();
+  document.getElementById('editorSection').classList.add('hidden');
+  document.getElementById('stanceSection').classList.add('hidden');
+  document.getElementById('typeSection').classList.add('hidden');
+  document.getElementById('resultSection').classList.add('hidden');
+  updateMetrics();showTopics();
+}
+window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.add('hidden')});
+init();
+
+
+function saveSkillResult(record){
+ const key='englishSkillResults';let items=[];
+ try{items=JSON.parse(localStorage.getItem(key))||[]}catch(e){items=[]}
+ record.id=Date.now()+'-'+Math.random().toString(36).slice(2);record.date=new Date().toISOString();
+ items.push(record);localStorage.setItem(key,JSON.stringify(items.slice(-500)));
+}
+
+</script>
+</body>
+</html>
