@@ -322,7 +322,21 @@ function inicializarAsignaciones() {
       }
     });
   };
-  
+  document.getElementById('applyBulk').onclick = () => {
+    document.querySelectorAll('#activityRows tr').forEach(tr => {
+        if(tr.querySelector('.act-enabled').checked){
+            let o = document.getElementById('bulkOpen').value,
+                c = document.getElementById('bulkClose').value,
+                t = document.getElementById('bulkTimer').value;
+            if(o) tr.querySelector('.act-open').value = o;
+            if(c) tr.querySelector('.act-close').value = c;
+            if(t !== '') tr.querySelector('.act-timer').value = t;
+        }
+    });
+    // Justo aquí es donde agregas la llamada para guardar automáticamente
+    window.saveConfig(); 
+    alert('Configuración masiva aplicada y guardada.'); 
+};
   // 1 y 7. Guardar configuración
   document.getElementById('saveConfig').onclick = window.saveConfig; 
   document.getElementById('saveAllTop').onclick = window.saveConfig;
@@ -365,18 +379,7 @@ let chequeoBotones = setInterval(() => {
 }, 100);
 
 // Código para el botón de guardar configuración
-    document.getElementById('saveConfig').addEventListener('click', function() {
-        const config = {
-            inicio: document.getElementById('bulkOpen').value,
-            cierre: document.getElementById('bulkClose').value,
-            cronometro: document.getElementById('bulkTimer').value,
-            filtro: document.getElementById('activityFilter').value
-        };
-        localStorage.setItem('configuracionDocente', JSON.stringify(config));
-        alert('Configuración guardada para los estudiantes.');
-    });
 
-    setInterval(window.renderResults, 4000);
 </script>
 </body>
 </html>
