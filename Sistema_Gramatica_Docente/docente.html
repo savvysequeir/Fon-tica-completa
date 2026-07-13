@@ -1,6 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <style id="bloqueoDocente">
+  body {
+    display: none;
+  }
+</style>
+
+<script>
+(function protegerPanelDocente() {
+  const CONTRASENA_DOCENTE = "estoico";
+
+  function mostrarPanel() {
+    document.addEventListener("DOMContentLoaded", function () {
+      document.body.style.display = "block";
+      const bloqueo = document.getElementById("bloqueoDocente");
+      if (bloqueo) bloqueo.remove();
+    });
+  }
+
+  const acceso = sessionStorage.getItem("panel_docente_abierto");
+
+  if (acceso === "si") {
+    mostrarPanel();
+    return;
+  }
+
+  const clave = prompt("🔐 Ingrese la contraseña para abrir el Panel Docente:");
+
+  if (clave === CONTRASENA_DOCENTE) {
+    sessionStorage.setItem("panel_docente_abierto", "si");
+    mostrarPanel();
+  } else {
+    alert("Contraseña incorrecta. El Panel Docente se cerrará.");
+    window.location.href = "index.html";
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Docente - Sistema de Gramática</title>
@@ -16,7 +52,11 @@
   <section class="hero">
     <h1>👨‍🏫 Panel Docente</h1>
     <p class="subtitle">Desde aquí puedes seleccionar qué páginas estarán disponibles, escribir indicaciones y generar un enlace de tarea para tus estudiantes.</p>
-    <div class="toolbar"><a class="btn secondary" href="index.html">← Inicio</a><a class="btn purple" href="estudiante.html">Ver panel estudiante</a></div>
+    <div class="toolbar">
+  <a class="btn secondary" href="index.html">← Inicio</a>
+  <a class="btn purple" href="estudiante.html">Ver panel estudiante</a>
+  <button class="btn danger" onclick="cerrarPanelDocente()">🔒 Cerrar Panel Docente</button>
+</div>
   </section>
 
   <section class="grid">
@@ -124,6 +164,12 @@ function importResults(){
 }
 renderModules(); renderResults();
 </script>
-
+<script>
+function cerrarPanelDocente() {
+  sessionStorage.removeItem("panel_docente_abierto");
+  alert("Panel docente cerrado.");
+  window.location.href = "index.html";
+}
+</script>
 </body>
 </html>
