@@ -53,6 +53,7 @@
       <div class="toolbar">
         <button onclick="selectAll(true)">Seleccionar todo</button>
         <button class="secondary" onclick="selectAll(false)">Bloquear todo</button>
+        <button class="purple" onclick="updateAssignments()">🔄 Actualizar asignaciones</button>
       </div>
     </article>
     <article class="card">
@@ -61,8 +62,10 @@
       <div class="toolbar">
         <button class="good" onclick="saveLocal()">Guardar en este navegador</button>
         <button onclick="generateLink()">Generar enlace para estudiantes</button>
+        <button class="purple" onclick="updateAssignments()">🔄 Actualizar actividades</button>
         <button class="danger" onclick="clearConfig()">Borrar configuración local</button>
       </div>
+      <div id="assignmentStatus" class="notice" style="display:none"></div>
       <div class="field"><label>Enlace generado</label><textarea id="generatedLink" readonly placeholder="Aquí aparecerá el enlace..."></textarea></div>
       <div class="toolbar"><button class="purple" onclick="copyLink()">Copiar enlace</button></div>
       <div class="notice warn"><b>Límite técnico:</b> si subes esto a GitHub Pages, cada estudiante debe entrar por el enlace generado. Sin Firebase, el docente no puede ver automáticamente los resultados de todos desde otro dispositivo.</div>
@@ -109,19 +112,54 @@ function renderModules(){
 }
 function selectedModules(){return [...document.querySelectorAll('.moduleCheck:checked')].map(x=>x.value)}
 function getConfig(){
+  const previous = readJSON('grammarAssignmentConfig', {});
   return {
-    id: readJSON('grammarAssignmentConfig', {}).id || uid(),
+    id: previous.id || uid(),
     title: document.getElementById('taskTitle').value.trim() || 'Tarea de gramática',
     group: document.getElementById('taskGroup').value.trim(),
     teacher: document.getElementById('teacherName').value.trim(),
     dueDate: document.getElementById('dueDate').value,
     instructions: document.getElementById('instructions').value.trim(),
     modules: selectedModules(),
-    createdAt: new Date().toISOString()
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 }
-function saveLocal(){ const cfg=getConfig(); if(!cfg.modules.length) return alert('Selecciona al menos un módulo.'); saveJSON('grammarAssignmentConfig', cfg); alert('Configuración guardada en este navegador.'); }
-function generateLink(){ const cfg=getConfig(); if(!cfg.modules.length) return alert('Selecciona al menos un módulo.'); const url=new URL('estudiante.html', location.href); url.searchParams.set('data', b64Encode(cfg)); document.getElementById('generatedLink').value=url.href; saveJSON('grammarAssignmentConfig', cfg); }
+function setAssignmentStatus(msg, tipo='ok'){
+  const box=document.getElementById('assignmentStatus');
+  if(!box) return;
+  box.style.display='block';
+  box.className = tipo==='warn' ? 'notice warn' : 'notice';
+  box.innerHTML = msg;
+}
+function buildStudentLink(cfg){
+  const url=new URL('estudiante.html', location.href);
+  url.searchParams.set('data', b64Encode(cfg));
+  return url.href;
+}
+function saveLocal(){
+  const cfg=getConfig();
+  if(!cfg.modules.length) return alert('Selecciona al menos un módulo.');
+  saveJSON('grammarAssignmentConfig', cfg);
+  setAssignmentStatus('✅ Configuración guardada. Módulos asignados: <b>'+cfg.modules.length+'</b>.');
+  alert('Configuración guardada en este navegador.');
+}
+function generateLink(){
+  const cfg=getConfig();
+  if(!cfg.modules.length) return alert('Selecciona al menos un módulo.');
+  saveJSON('grammarAssignmentConfig', cfg);
+  document.getElementById('generatedLink').value=buildStudentLink(cfg);
+  setAssignmentStatus('✅ Enlace generado con <b>'+cfg.modules.length+'</b> actividades asignadas. Copia y envía este enlace a tus estudiantes.');
+}
+function updateAssignments(){
+  const cfg=getConfig();
+  if(!cfg.modules.length) return alert('Selecciona al menos un módulo.');
+  saveJSON('grammarAssignmentConfig', cfg);
+  document.getElementById('generatedLink').value=buildStudentLink(cfg);
+  renderModules();
+  setAssignmentStatus('🔄 Actividades actualizadas y guardadas. Ahora hay <b>'+cfg.modules.length+'</b> módulos asignados. <br><b>Importante:</b> si ya habías enviado un enlace anterior, copia y envía el nuevo enlace generado para que los estudiantes reciban los cambios.','warn');
+  alert('Asignaciones actualizadas. Copia el nuevo enlace y compártelo con tus estudiantes.');
+}
 function copyLink(){ const txt=document.getElementById('generatedLink'); if(!txt.value) generateLink(); txt.select(); document.execCommand('copy'); alert('Enlace copiado.'); }
 function selectAll(v){document.querySelectorAll('.moduleCheck').forEach(c=>c.checked=v)}
 function clearConfig(){ if(confirm('¿Borrar configuración local?')){localStorage.removeItem('grammarAssignmentConfig'); location.reload();} }
