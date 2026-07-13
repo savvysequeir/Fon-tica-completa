@@ -151,7 +151,7 @@ const careers=["Odontología", "Medicina", "Química Farmacéutica", "Enfermerí
 
 let verbMode='normal', selectedVerb=null, selectedTarget='', selectedForm='';
 let currentClass=null, answered=0, good=0, attempts=0, timerId=null, startedAt=null;
-let mediaRecorder=null, audioChunks=[], currentAudioTarget='sentence';
+let mediaRecorder=null, audioChunks=[], currentAudioTarget='sentence', currentStream=null, activeRecognition=null;
 
 function init(){
  const c=document.getElementById('studentCareer');
@@ -207,36 +207,108 @@ function speakModel(){
  if(!text){alert('Primero escribe tu oración.');return;}
  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u);
 }
-function startRecognition(target){
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!SR){alert('El navegador no admite reconocimiento de voz. Usa Google Chrome.');return;}
- const r=new SR();r.lang='en-US';r.interimResults=false;r.maxAlternatives=1;
+function micMessage(target,msg,type='warn'){
+ const el = target==='sentence' ? document.getElementById('sentenceFeedback') : document.getElementById('qStatus-'+target);
+ if(el){el.className='status '+type;el.textContent=msg;}
+ else alert(msg);
+}
+function resetMicButton(target){
  const btn=target==='sentence'?document.getElementById('speechBtn'):document.getElementById('qSpeechBtn-'+target);
- btn.classList.add('recording');btn.textContent='🎤 Escuchando...';
- r.onresult=e=>{
-  const transcript=e.results[0][0].transcript;
-  if(target==='sentence')document.getElementById('sentenceTranscript').value=transcript;
-  else document.getElementById('qTranscript-'+target).value=transcript;
+ if(btn){btn.classList.remove('recording');btn.textContent='🎤 Reconocer voz';btn.disabled=false;}
+}
+function isSecureMicContext(){
+ return window.isSecureContext || location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1';
+}
+function explainMicError(error){
+ const name=(error && error.name) ? error.name : String(error || 'Error');
+ const messages={
+  NotAllowedError:'El navegador bloqueó el micrófono. Toca el candado del sitio y permite el micrófono.',
+  PermissionDeniedError:'Permiso de micrófono denegado. Permite el micrófono en Chrome.',
+  NotFoundError:'No se encontró ningún micrófono conectado.',
+  NotReadableError:'El micrófono está siendo usado por otra aplicación.',
+  OverconstrainedError:'El micrófono no cumple la configuración solicitada.',
+  SecurityError:'La página debe abrirse con HTTPS o localhost para usar el micrófono.',
+  AbortError:'El navegador interrumpió el acceso al micrófono.'
  };
- r.onerror=()=>alert('No fue posible reconocer la voz.');
- r.onend=()=>{btn.classList.remove('recording');btn.textContent='🎤 Reconocer voz';};
- r.start();
+ return messages[name] || ('Error de micrófono: '+name);
+}
+async function ensureMicrophone(target){
+ if(!isSecureMicContext()){
+  micMessage(target,'Abre esta página desde GitHub Pages con https://. El micrófono no funciona bien con file:// o enlaces no seguros.','bad');
+  throw new Error('insecure-context');
+ }
+ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+  micMessage(target,'Este navegador no permite grabar audio. Usa Google Chrome o Microsoft Edge actualizado.','bad');
+  throw new Error('getUserMedia-unavailable');
+ }
+ const testStream=await navigator.mediaDevices.getUserMedia({audio:true});
+ testStream.getTracks().forEach(t=>t.stop());
+}
+async function startRecognition(target){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ const btn=target==='sentence'?document.getElementById('speechBtn'):document.getElementById('qSpeechBtn-'+target);
+ if(!SR){micMessage(target,'Tu navegador no admite reconocimiento de voz. Usa Google Chrome o Microsoft Edge.','bad');return;}
+ try{
+  if(activeRecognition){try{activeRecognition.stop();}catch(e){} activeRecognition=null;}
+  if(btn){btn.disabled=true;btn.classList.add('recording');btn.textContent='🎤 Preparando...';}
+  await ensureMicrophone(target);
+  const r=new SR();activeRecognition=r;
+  r.lang='en-US';r.interimResults=false;r.continuous=false;r.maxAlternatives=1;
+  r.onstart=()=>{if(btn){btn.disabled=false;btn.classList.add('recording');btn.textContent='🎤 Escuchando...';} micMessage(target,'Escuchando... habla claro en inglés.','warn');};
+  r.onresult=e=>{
+   const transcript=e.results[0][0].transcript;
+   if(target==='sentence')document.getElementById('sentenceTranscript').value=transcript;
+   else document.getElementById('qTranscript-'+target).value=transcript;
+   micMessage(target,'✅ Voz reconocida: '+transcript,'ok');
+  };
+  r.onerror=e=>{
+   const error=e.error||'desconocido';
+   let msg='No fue posible reconocer la voz: '+error+'. ';
+   if(error==='no-speech') msg+='No se detectó voz. Acércate al micrófono y habla después de presionar el botón.';
+   else if(error==='not-allowed') msg+='Permite el micrófono desde el candado del navegador.';
+   else if(error==='network') msg+='Revisa tu conexión a internet; el reconocimiento de voz de Chrome puede necesitar conexión.';
+   else msg+='Intenta de nuevo en Google Chrome.';
+   micMessage(target,msg,'bad');
+  };
+  r.onend=()=>{resetMicButton(target);activeRecognition=null;};
+  r.start();
+ }catch(e){
+  resetMicButton(target);
+  micMessage(target,explainMicError(e),'bad');
+ }
 }
 async function startRecording(target){
  try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  audioChunks=[];mediaRecorder=new MediaRecorder(stream);currentAudioTarget=target;
-  mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+  if(!window.MediaRecorder){micMessage(target,'Este navegador no soporta grabación con MediaRecorder. Usa Chrome o Edge.','bad');return;}
+  if(!isSecureMicContext()){micMessage(target,'Abre esta página con https:// desde GitHub Pages. La grabación no funciona correctamente con file://.','bad');return;}
+  if(mediaRecorder && mediaRecorder.state!=='inactive'){mediaRecorder.stop();}
+  currentStream=await navigator.mediaDevices.getUserMedia({audio:true});
+  audioChunks=[];currentAudioTarget=target;
+  const preferred=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'];
+  const mime=preferred.find(t=>MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t));
+  mediaRecorder=mime ? new MediaRecorder(currentStream,{mimeType:mime}) : new MediaRecorder(currentStream);
+  mediaRecorder.ondataavailable=e=>{if(e.data && e.data.size>0)audioChunks.push(e.data);};
+  mediaRecorder.onstart=()=>micMessage(target,'⏺ Grabando... presiona Detener cuando termines.','warn');
+  mediaRecorder.onerror=e=>micMessage(target,'Error durante la grabación: '+(e.error?.name||'desconocido'),'bad');
   mediaRecorder.onstop=()=>{
-   const blob=new Blob(audioChunks,{type:'audio/webm'});
+   const type=mediaRecorder.mimeType || mime || 'audio/webm';
+   const blob=new Blob(audioChunks,{type});
    const url=URL.createObjectURL(blob);
    const audio=target==='sentence'?document.getElementById('sentenceAudio'):document.getElementById('qAudio-'+target);
-   audio.src=url;audio.classList.remove('hidden');stream.getTracks().forEach(t=>t.stop());
+   if(audio){audio.src=url;audio.classList.remove('hidden');}
+   if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
+   micMessage(target,'✅ Grabación lista. Puedes reproducir el audio.','ok');
   };
   mediaRecorder.start();
- }catch(e){alert('No se pudo acceder al micrófono.');}
+ }catch(e){
+  if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
+  micMessage(target,explainMicError(e),'bad');
+ }
 }
-function stopRecording(){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop()}
+function stopRecording(){
+ if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
+ else micMessage(currentAudioTarget,'No hay una grabación activa.','warn');
+}
 function startQuestionClass(n){
  if(!getStudent().name){openModal('idModal');alert('Registra tu identificación primero.');return;}
  currentClass=n;answered=0;good=0;attempts=0;
