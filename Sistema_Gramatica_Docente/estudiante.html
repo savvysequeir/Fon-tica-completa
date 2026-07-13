@@ -3,21 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Estudiante - Sistema de Gramática</title>
+<title>Panel Estudiante - Entrega de Resultados</title>
 <style>
 :root{--bg:#07111f;--card:#0f172a;--card2:#111827;--line:rgba(148,163,184,.22);--text:#e5e7eb;--muted:#94a3b8;--accent:#38bdf8;--accent2:#a78bfa;--good:#22c55e;--bad:#ef4444;--warn:#f59e0b}
-*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top left,#1e3a8a 0,#07111f 32%,#020617 100%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh} a{color:inherit}.wrap{max-width:1180px;margin:auto;padding:28px}.hero{background:linear-gradient(135deg,rgba(56,189,248,.17),rgba(167,139,250,.14));border:1px solid var(--line);border-radius:26px;padding:28px;box-shadow:0 18px 60px rgba(0,0,0,.35)}h1{font-size:clamp(30px,4vw,52px);margin:0 0 10px}.subtitle{color:#cbd5e1;line-height:1.65}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:18px}.card{background:rgba(15,23,42,.88);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.24)}.card h3{margin:0 0 8px}.muted{color:var(--muted)}.btn,button{border:0;border-radius:14px;padding:11px 14px;background:var(--accent);color:#031522;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}.btn.secondary,button.secondary{background:#1f2937;color:#e5e7eb;border:1px solid var(--line)}.btn.purple{background:var(--accent2);color:#12091f}.btn.danger{background:#ef4444;color:white}.btn.good{background:#22c55e;color:#052e16}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}label{font-weight:700;color:#cbd5e1}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#020617;color:#e5e7eb;padding:12px;font-size:15px}textarea{min-height:110px;resize:vertical}.module-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.module{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:rgba(2,6,23,.5);border-radius:16px;padding:12px}.module input{width:auto;margin-top:4px}.pill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:#cbd5e1;background:rgba(15,23,42,.75);font-size:12px}.notice{border-left:5px solid var(--accent);background:rgba(56,189,248,.10);padding:14px;border-radius:14px;line-height:1.55}.warn{border-left-color:var(--warn);background:rgba(245,158,11,.11)}.dangerbox{border-left:5px solid var(--bad);background:rgba(239,68,68,.10);padding:14px;border-radius:14px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;background:rgba(15,23,42,.72)}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:#f8fafc;background:rgba(30,41,59,.8)}.code{font-family:Consolas,monospace;background:#020617;border:1px solid var(--line);border-radius:14px;padding:12px;white-space:pre-wrap;word-break:break-word}.locked{opacity:.45;filter:saturate(.6)}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top left,#1e3a8a 0,#07111f 32%,#020617 100%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh} a{color:inherit}.wrap{max-width:1180px;margin:auto;padding:28px}.hero{background:linear-gradient(135deg,rgba(56,189,248,.17),rgba(167,139,250,.14));border:1px solid var(--line);border-radius:26px;padding:28px;box-shadow:0 18px 60px rgba(0,0,0,.35)}h1{font-size:clamp(30px,4vw,52px);margin:0 0 10px}h2,h3{margin-top:0}.subtitle{color:#cbd5e1;line-height:1.65}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:18px}.card{background:rgba(15,23,42,.88);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.24)}.card h3{margin:0 0 8px}.muted{color:var(--muted)}.btn,button{border:0;border-radius:14px;padding:11px 14px;background:var(--accent);color:#031522;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}.btn.secondary,button.secondary{background:#1f2937;color:#e5e7eb;border:1px solid var(--line)}.btn.purple,button.purple{background:var(--accent2);color:#12091f}.btn.danger,button.danger{background:#ef4444;color:white}.btn.good,button.good{background:#22c55e;color:#052e16}.btn.warn,button.warn{background:#f59e0b;color:#111827}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}label{font-weight:700;color:#cbd5e1}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#020617;color:#e5e7eb;padding:12px;font-size:15px}textarea{min-height:110px;resize:vertical}.module-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.module{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:rgba(2,6,23,.5);border-radius:16px;padding:12px}.module input{width:auto;margin-top:4px}.pill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:#cbd5e1;background:rgba(15,23,42,.75);font-size:12px}.notice{border-left:5px solid var(--accent);background:rgba(56,189,248,.10);padding:14px;border-radius:14px;line-height:1.55}.warnbox{border-left:5px solid var(--warn);background:rgba(245,158,11,.11);padding:14px;border-radius:14px;line-height:1.55}.dangerbox{border-left:5px solid var(--bad);background:rgba(239,68,68,.10);padding:14px;border-radius:14px;line-height:1.55}.goodbox{border-left:5px solid var(--good);background:rgba(34,197,94,.11);padding:14px;border-radius:14px;line-height:1.55}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;margin-top:12px}table{width:100%;border-collapse:collapse;background:rgba(15,23,42,.72);min-width:900px}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:#f8fafc;background:rgba(30,41,59,.8)}.code{font-family:Consolas,monospace;background:#020617;border:1px solid var(--line);border-radius:14px;padding:12px;white-space:pre-wrap;word-break:break-word}.locked{opacity:.45;filter:saturate(.6)}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px}.stat{border:1px solid var(--line);border-radius:18px;padding:14px;background:rgba(2,6,23,.45)}.stat b{display:block;font-size:1.6rem;color:#7dd3fc}.small{font-size:.9rem;color:#94a3b8}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:780px){.wrap{padding:14px}.hero,.card{border-radius:18px;padding:16px}.two{grid-template-columns:1fr}.btn,button{width:100%;justify-content:center}}
 </style>
-
 </head>
 <body>
-
 <div class="wrap">
   <section class="hero">
     <h1>🧑‍🎓 Panel Estudiante</h1>
-    <p class="subtitle" id="studentSubtitle">Entra desde el enlace que te compartió tu docente para ver las actividades asignadas.</p>
-    <div class="toolbar"><a class="btn secondary" href="index.html">← Inicio</a><button class="purple" onclick="loadFromLink()">Cargar tarea del enlace</button><button class="secondary" onclick="resetStudent()">Borrar tarea local</button></div>
+    <p class="subtitle" id="studentSubtitle">Carga la tarea que te compartió tu docente, realiza las actividades y usa la sección <b>Entrega de resultados</b> para generar un reporte listo para enviar.</p>
+    <div class="toolbar">
+      <a class="btn secondary" href="index.html">← Inicio</a>
+      <button class="purple" onclick="loadFromLink()">Cargar tarea del enlace</button>
+      <button class="secondary" onclick="resetStudent()">Borrar tarea local</button>
+    </div>
     <div id="assignmentInfo" class="notice"></div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h3>Datos para la entrega</h3>
+    <p class="muted">Estos datos se usarán en el reporte final. El panel también intentará leer los datos que insertaste dentro de las actividades.</p>
+    <div class="grid">
+      <div class="field"><label>Nombre completo</label><input id="deliveryName" placeholder="Nombres y apellidos"></div>
+      <div class="field"><label>Carrera</label><input id="deliveryCareer" placeholder="Carrera"></div>
+      <div class="field"><label>Año</label><input id="deliveryYear" placeholder="Año que cursa"></div>
+      <div class="field"><label>Sección / grupo</label><input id="deliveryGroup" placeholder="Ejemplo: A2+ Odontología"></div>
+    </div>
+    <div class="toolbar"><button class="good" onclick="saveDeliveryProfile()">Guardar mis datos</button><button class="secondary" onclick="autoFillProfile()">Autocompletar desde actividades</button></div>
   </section>
 
   <section class="card" style="margin-top:18px">
@@ -26,11 +40,42 @@
   </section>
 
   <section class="card" style="margin-top:18px">
-    <h3>Reporte para el docente</h3>
-    <p class="muted">Cuando termines, genera este reporte y envíaselo al docente si él necesita revisar resultados fuera de tu computadora.</p>
-    <div class="toolbar"><button onclick="renderResults()">Ver mis resultados</button><button class="purple" onclick="generateReport()">Generar reporte</button></div>
+    <h3>Registrar resultado manual</h3>
+    <p class="muted">Úsalo cuando una actividad no aparezca automáticamente en el reporte. Copia el puntaje que aparece en la tabla de resultados de la actividad y regístralo aquí.</p>
+    <div class="grid">
+      <div class="field"><label>Módulo</label><select id="manualModule"></select></div>
+      <div class="field"><label>Puntaje obtenido</label><input id="manualScore" type="number" min="0" placeholder="Ejemplo: 85"></div>
+      <div class="field"><label>Puntaje máximo</label><input id="manualMax" type="number" min="1" value="100"></div>
+      <div class="field"><label>Estado</label><select id="manualState"><option>AA</option><option>AS</option><option>AF</option><option>AI</option><option>Completado</option></select></div>
+    </div>
+    <div class="field"><label>Observación opcional</label><input id="manualNote" placeholder="Ejemplo: completé actividad 1, 2 y mini prueba"></div>
+    <div class="toolbar"><button onclick="addManualResult()">➕ Agregar resultado</button><button class="secondary" onclick="clearManualResults()">Borrar resultados manuales</button></div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h3>Entrega de resultados</h3>
+    <p class="muted">Primero presiona <b>Actualizar mis resultados</b>. Luego genera el reporte y envíale al docente el código o el archivo descargado.</p>
+    <div class="toolbar">
+      <button onclick="renderResults()">🔄 Actualizar mis resultados</button>
+      <button class="purple" onclick="generateReport()">📦 Preparar entrega</button>
+      <button class="good" onclick="copyReportCode()">📋 Copiar código</button>
+      <button class="secondary" onclick="downloadJSON()">⬇️ Descargar JSON</button>
+      <button class="secondary" onclick="downloadCSV()">📊 Descargar Excel/CSV</button>
+      <button class="secondary" onclick="downloadTXT()">📝 Descargar resumen</button>
+      <button class="warn" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="small">Resultados detectados</span><b id="statTotal">0</b></div>
+      <div class="stat"><span class="small">Promedio</span><b id="statAvg">0%</b></div>
+      <div class="stat"><span class="small">Mejor estado</span><b id="statBest">—</b></div>
+      <div class="stat"><span class="small">Entrega</span><b id="statReady">—</b></div>
+    </div>
     <div id="studentResults" class="table-wrap"></div>
-    <div class="field"><label>Código de reporte</label><textarea id="reportCode" readonly placeholder="Aquí aparecerá el reporte..."></textarea></div>
+    <div class="two" style="margin-top:14px">
+      <div class="field"><label>Código de reporte para pegar en el panel docente</label><textarea id="reportCode" readonly placeholder="Aquí aparecerá el código de entrega..."></textarea></div>
+      <div class="field"><label>Resumen legible para WhatsApp, correo o Classroom</label><textarea id="reportSummary" readonly placeholder="Aquí aparecerá el resumen..."></textarea></div>
+    </div>
+    <div id="deliveryMessage" class="notice" style="display:none;margin-top:12px"></div>
   </section>
 </div>
 <script>
@@ -39,43 +84,188 @@ function b64Encode(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(
 function b64Decode(str){ return JSON.parse(decodeURIComponent(escape(atob(str)))); }
 function readJSON(k,f){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}}
 function saveJSON(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function esc(s){return String(s==null?'':s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function pct(score,max){max=Number(max)||0; return max?Math.round((Number(score)||0)*100/max):0;}
+function statusFromPercent(p){ if(p>=90) return 'AA'; if(p>=75) return 'AS'; if(p>=50) return 'AF'; return 'AI'; }
+function fileBase(file){return (file||'').split('/').pop();}
+function moduleByFile(file){const f=fileBase(file); return modules.find(m=>fileBase(m.file)===f || m.file===file);}
+function nowISO(){return new Date().toISOString();}
 function loadFromLink(silent=false){
   const data=new URLSearchParams(location.search).get('data');
   if(!data){ if(!silent) alert('No hay datos de tarea en este enlace. Pide al docente el enlace generado desde el panel docente.'); return; }
-  try{ const cfg=b64Decode(data); saveJSON('grammarAssignmentConfig', cfg); history.replaceState(null,'','estudiante.html'); renderAssignment(); alert('Tarea cargada.'); }
+  try{ const cfg=b64Decode(data); saveJSON('grammarAssignmentConfig', cfg); history.replaceState(null,'','estudiante.html'); renderAssignment(); fillManualModules(); if(!silent) alert('Tarea cargada.'); }
   catch(e){ alert('El enlace de tarea está incompleto o dañado.'); }
 }
 function isExpired(cfg){ if(!cfg?.dueDate) return false; return Date.now() > new Date(cfg.dueDate+'T23:59:59').getTime(); }
 function renderAssignment(){
   const cfg=readJSON('grammarAssignmentConfig', null); const info=document.getElementById('assignmentInfo'); const box=document.getElementById('assignedModules'); box.innerHTML='';
-  if(!cfg){ info.className='dangerbox'; info.innerHTML='<b>No hay tarea cargada.</b> Abre el enlace que te compartió tu docente.'; return; }
+  if(!cfg){ info.className='dangerbox'; info.innerHTML='<b>No hay tarea cargada.</b> Abre el enlace que te compartió tu docente.'; fillManualModules(); return; }
   info.className=isExpired(cfg)?'dangerbox':'notice';
-  info.innerHTML=`<b>${cfg.title||'Tarea de gramática'}</b><br>Grupo: ${cfg.group||'—'}<br>Docente: ${cfg.teacher||'—'}<br>Fecha límite: ${cfg.dueDate||'Sin fecha'}<br><br>${cfg.instructions||''}`;
+  info.innerHTML=`<b>${esc(cfg.title||'Tarea de gramática')}</b><br>Grupo: ${esc(cfg.group||'—')}<br>Docente: ${esc(cfg.teacher||'—')}<br>Fecha límite: ${esc(cfg.dueDate||'Sin fecha')}<br><br>${esc(cfg.instructions||'')}`;
   const allowed=new Set(cfg.modules||[]);
   modules.filter(m=>allowed.has(m.file)).forEach(m=>{
     const card=document.createElement('article'); card.className='card';
     const locked=isExpired(cfg);
-    card.innerHTML=`<span class="pill">${m.category}</span><h3>${m.title}</h3><p class="muted">${locked?'Vencido':'Disponible'}</p><a class="btn ${locked?'secondary':''}" href="${locked?'#':m.file}">${locked?'Bloqueado':'Abrir actividad'}</a>`;
+    card.innerHTML=`<span class="pill">${esc(m.category)}</span><h3>${esc(m.title)}</h3><p class="muted">${locked?'Vencido':'Disponible'}</p><a class="btn ${locked?'secondary':''}" href="${locked?'#':m.file}">${locked?'Bloqueado':'Abrir actividad'}</a>`;
     box.appendChild(card);
   });
-  if(!allowed.size) box.innerHTML='<div class="notice warn">El docente todavía no ha seleccionado módulos para esta tarea.</div>';
+  if(!allowed.size) box.innerHTML='<div class="warnbox">El docente todavía no ha seleccionado módulos para esta tarea.</div>';
+  fillManualModules();
+}
+function saveDeliveryProfile(){
+  const profile={name:deliveryName.value.trim(), career:deliveryCareer.value.trim(), year:deliveryYear.value.trim(), group:deliveryGroup.value.trim()};
+  saveJSON('studentDeliveryProfile', profile); alert('Datos guardados para la entrega.');
+}
+function loadDeliveryProfile(){
+  const p=readJSON('studentDeliveryProfile', {});
+  if(p.name) deliveryName.value=p.name; if(p.career) deliveryCareer.value=p.career; if(p.year) deliveryYear.value=p.year; if(p.group) deliveryGroup.value=p.group;
+  if(!p.name) autoFillProfile(false);
+}
+function autoFillProfile(show=true){
+  const candidates=[];
+  try{ const s=JSON.parse(localStorage.getItem('pc_student')||'{}'); if(s.name)candidates.push(s); }catch(e){}
+  try{ const s=JSON.parse(localStorage.getItem('past_continuous_student')||'{}'); if(s.name)candidates.push(s); }catch(e){}
+  try{ const raw=localStorage.getItem('fonetica_student_full_name'); if(raw){const parts=raw.split('||'); candidates.push({name:parts[0],career:parts[1],year:parts[2]});} }catch(e){}
+  for(const key of ['pc_results','past_continuous_results','futureContinuousGrammarResults_v1']){
+    const arr=readJSON(key, []); if(Array.isArray(arr) && arr.length) candidates.push(arr[0]);
+  }
+  const r=candidates.find(x=>x && (x.name||x.student||x.estudiante));
+  if(r){
+    if(!deliveryName.value) deliveryName.value=r.name||r.student||r.estudiante||'';
+    if(!deliveryCareer.value) deliveryCareer.value=r.career||r.carrera||'';
+    if(!deliveryYear.value) deliveryYear.value=r.year||r.anio||r.año||'';
+    if(show) alert('Datos detectados y colocados en el formulario.');
+  } else if(show) alert('No encontré datos previos. Escríbelos manualmente.');
+}
+function fillManualModules(){
+  const cfg=readJSON('grammarAssignmentConfig', null); const allowed=new Set(cfg?.modules||[]);
+  const list=(cfg?.modules?.length?modules.filter(m=>allowed.has(m.file)):modules);
+  manualModule.innerHTML=list.map(m=>`<option value="${esc(m.file)}">${esc(m.title)}</option>`).join('');
+}
+function normalizeRow(r, sourceKey, fallbackModule){
+  const mod=moduleByFile(r.moduleFile||r.file||fallbackModule)||{title:r.moduleTitle||r.activityTitle||r.module||'Actividad',file:fallbackModule||'',category:''};
+  const score=Number(r.total ?? r.score ?? r.puntaje ?? r.puntajeObtenido ?? r.a1Score ?? 0);
+  const max=Number(r.max ?? r.totalSentences ?? r.maxScore ?? r.maximoPuntajePosible ?? 100) || 100;
+  const p=pct(score,max);
+  return {
+    id:(r.id||sourceKey||'result')+'-'+(r.updatedAt||r.date||Date.now())+'-'+Math.random().toString(36).slice(2,6),
+    assignmentId:r.assignmentId||readJSON('grammarAssignmentConfig',{}).id||'',
+    moduleFile:mod.file||fallbackModule||'',
+    moduleTitle:r.moduleTitle||r.activityTitle||mod.title||'Actividad',
+    category:mod.category||'',
+    name:r.name||r.student||r.estudiante||deliveryName.value.trim()||'—',
+    career:r.career||r.carrera||deliveryCareer.value.trim()||'—',
+    year:r.year||r.anio||r.año||deliveryYear.value.trim()||'—',
+    total:score,
+    max:max,
+    percent:p,
+    state:r.state||r.status||r.estado||statusFromPercent(p),
+    date:r.date||r.fechaRegistro||'',
+    time:r.time||r.horaRegistro||'',
+    updatedAt:r.updatedAt||r.dateISO||r.timestamp||nowISO(),
+    source:sourceKey||'manual',
+    details:r.details||r.note||r.observation||'',
+    raw:r
+  };
+}
+function collectStoredResults(){
+  const out=[];
+  const addArray=(key, arr, fallbackModule)=>{ if(Array.isArray(arr)) arr.forEach(r=>out.push(normalizeRow(r,key,fallbackModule))); };
+  addArray('pc_results', readJSON('pc_results', []), 'presente_continuo.html');
+  addArray('past_continuous_results', readJSON('past_continuous_results', []), 'pasado_continuo.html');
+  addArray('futureContinuousGrammarResults_v1', readJSON('futureContinuousGrammarResults_v1', []), 'futuro_continuo.html');
+  const grammar=readJSON('grammarResults', {});
+  if(Array.isArray(grammar)) grammar.forEach(r=>out.push(normalizeRow(r,'grammarResults',r.moduleFile)));
+  else if(grammar && typeof grammar==='object') Object.values(grammar).forEach(r=>out.push(normalizeRow(r,'grammarResults',r.moduleFile)));
+  const manual=readJSON('studentManualResults', []); addArray('studentManualResults', manual, '');
+  // Búsqueda amplia: cualquier clave local con "result" puede contener resultados de otras páginas.
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i); if(!key || !/result/i.test(key)) continue;
+    if(['pc_results','past_continuous_results','futureContinuousGrammarResults_v1','grammarResults','studentManualResults'].includes(key)) continue;
+    try{ const val=JSON.parse(localStorage.getItem(key)); if(Array.isArray(val)) addArray(key,val,''); else if(val && typeof val==='object') Object.values(val).forEach(r=>{ if(r && typeof r==='object') out.push(normalizeRow(r,key,r.moduleFile)); }); }catch(e){}
+  }
+  // Quitar duplicados razonables
+  const seen=new Set();
+  return out.filter(r=>{ const k=[r.moduleFile,r.name,r.total,r.max,r.date,r.updatedAt,r.source].join('|'); if(seen.has(k)) return false; seen.add(k); return true; });
+}
+function filteredResults(){
+  const cfg=readJSON('grammarAssignmentConfig', null); const allowed=new Set(cfg?.modules||[]);
+  let rows=collectStoredResults();
+  if(allowed.size) rows=rows.filter(r=>allowed.has(r.moduleFile) || allowed.has(r.raw?.moduleFile));
+  rows.sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
+  return rows;
 }
 function renderResults(){
-  const cfg=readJSON('grammarAssignmentConfig', null); const data=readJSON('grammarResults', {}); let rows=Object.values(data);
-  if(cfg?.id) rows=rows.filter(r=>r.assignmentId===cfg.id);
-  const box=document.getElementById('studentResults');
-  if(!rows.length){box.innerHTML='<div class="notice">Aún no hay resultados guardados en este navegador. Abre un módulo y completa actividades.</div>'; return;}
-  box.innerHTML='<table><thead><tr><th>Módulo</th><th>Total</th><th>Estado</th><th>Actualizado</th></tr></thead><tbody>'+rows.map(r=>`<tr><td>${r.moduleTitle}</td><td><b>${r.total||''}</b></td><td>${r.state||''}</td><td>${(r.updatedAt||'').slice(0,19).replace('T',' ')}</td></tr>`).join('')+'</tbody></table>';
+  const rows=filteredResults(); const box=document.getElementById('studentResults');
+  document.getElementById('statTotal').textContent=rows.length;
+  const avg=rows.length?Math.round(rows.reduce((s,r)=>s+(r.percent||0),0)/rows.length):0;
+  document.getElementById('statAvg').textContent=avg+'%';
+  document.getElementById('statBest').textContent=bestState(rows);
+  document.getElementById('statReady').textContent=rows.length?'Lista':'Pendiente';
+  if(!rows.length){box.innerHTML='<div class="notice">Aún no hay resultados detectados. Completa una actividad o registra el resultado manualmente.</div>'; return rows;}
+  box.innerHTML='<table><thead><tr><th>Módulo</th><th>Nombre</th><th>Carrera</th><th>Año</th><th>Puntaje</th><th>Porcentaje</th><th>Estado</th><th>Actualizado</th><th>Origen</th></tr></thead><tbody>'+rows.map(r=>`<tr><td><b>${esc(r.moduleTitle)}</b><br><span class="small">${esc(r.moduleFile)}</span></td><td>${esc(r.name)}</td><td>${esc(r.career)}</td><td>${esc(r.year)}</td><td><b>${esc(r.total)}</b> / ${esc(r.max)}</td><td>${esc(r.percent)}%</td><td><span class="pill">${esc(r.state)}</span></td><td>${esc((r.updatedAt||'').slice(0,19).replace('T',' '))}</td><td>${esc(r.source)}</td></tr>`).join('')+'</tbody></table>';
+  return rows;
+}
+function bestState(rows){
+  const order={AA:4,AS:3,AF:2,AI:1,Completado:2}; let best='—', score=0;
+  rows.forEach(r=>{const v=order[r.state]||0; if(v>score){score=v; best=r.state;}}); return best;
+}
+function addManualResult(){
+  const m=moduleByFile(manualModule.value); const score=Number(manualScore.value); const max=Number(manualMax.value)||100;
+  if(!m) return alert('Selecciona un módulo.'); if(Number.isNaN(score)) return alert('Escribe el puntaje obtenido.');
+  const p=pct(score,max); const state=manualState.value || statusFromPercent(p);
+  const row={moduleFile:m.file,moduleTitle:m.title,name:deliveryName.value.trim()||'—',career:deliveryCareer.value.trim()||'—',year:deliveryYear.value.trim()||'—',total:score,max:max,percent:p,state:state,note:manualNote.value.trim(),updatedAt:nowISO(),source:'manual'};
+  const arr=readJSON('studentManualResults', []); arr.unshift(row); saveJSON('studentManualResults', arr.slice(0,100));
+  manualScore.value=''; manualNote.value=''; renderResults(); alert('Resultado manual agregado.');
+}
+function clearManualResults(){ if(confirm('¿Borrar resultados manuales registrados desde este panel?')){ localStorage.removeItem('studentManualResults'); renderResults(); } }
+function buildReport(){
+  const cfg=readJSON('grammarAssignmentConfig', null); const rows=renderResults();
+  const profile={name:deliveryName.value.trim(),career:deliveryCareer.value.trim(),year:deliveryYear.value.trim(),group:deliveryGroup.value.trim()};
+  const avg=rows.length?Math.round(rows.reduce((s,r)=>s+(r.percent||0),0)/rows.length):0;
+  return {assignment:cfg, profile, results:rows, summary:{count:rows.length, average:avg, bestState:bestState(rows)}, exportedAt:nowISO(), version:'student-delivery-v2'};
+}
+function summaryText(report){
+  const a=report.assignment||{}; const p=report.profile||{};
+  const lines=[];
+  lines.push('ENTREGA DE RESULTADOS');
+  lines.push('Estudiante: '+(p.name||'—'));
+  lines.push('Carrera: '+(p.career||'—'));
+  lines.push('Año: '+(p.year||'—'));
+  lines.push('Grupo: '+(p.group||a.group||'—'));
+  lines.push('Tarea: '+(a.title||'—'));
+  lines.push('Docente: '+(a.teacher||'—'));
+  lines.push('Fecha de entrega: '+new Date(report.exportedAt).toLocaleString('es-NI'));
+  lines.push('Resultados detectados: '+report.summary.count);
+  lines.push('Promedio: '+report.summary.average+'%');
+  lines.push('Mejor estado: '+report.summary.bestState);
+  lines.push('');
+  report.results.forEach((r,i)=>lines.push((i+1)+'. '+r.moduleTitle+' — '+r.total+'/'+r.max+' ('+r.percent+'%) — '+r.state));
+  return lines.join('\n');
 }
 function generateReport(){
-  const cfg=readJSON('grammarAssignmentConfig', null); const data=readJSON('grammarResults', {}); let rows=Object.values(data); if(cfg?.id) rows=rows.filter(r=>r.assignmentId===cfg.id);
-  const report={assignment:cfg, results:rows, exportedAt:new Date().toISOString()};
+  saveDeliveryProfile(); const report=buildReport();
   document.getElementById('reportCode').value=b64Encode(report);
-  renderResults();
+  document.getElementById('reportSummary').value=summaryText(report);
+  const msg=document.getElementById('deliveryMessage'); msg.style.display='block'; msg.className=report.results.length?'goodbox':'warnbox';
+  msg.innerHTML=report.results.length?'✅ Entrega preparada. Copia el código o descarga el archivo y envíalo al docente.':'⚠️ Entrega preparada, pero no hay resultados. Completa actividades o registra resultados manuales.';
+}
+async function copyText(text){
+  if(!text) return alert('Primero genera el reporte.');
+  try{ await navigator.clipboard.writeText(text); alert('Copiado.'); }catch(e){ const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); alert('Copiado.'); }
+}
+function copyReportCode(){ if(!reportCode.value) generateReport(); copyText(reportCode.value); }
+function downloadFile(filename, content, type){ const blob=new Blob([content],{type}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+function downloadJSON(){ const report=buildReport(); document.getElementById('reportCode').value=b64Encode(report); document.getElementById('reportSummary').value=summaryText(report); const name=(report.profile.name||'estudiante').replace(/\s+/g,'_'); downloadFile('reporte_'+name+'.json', JSON.stringify(report,null,2), 'application/json;charset=utf-8'); }
+function downloadTXT(){ const report=buildReport(); downloadFile('resumen_entrega.txt', summaryText(report), 'text/plain;charset=utf-8'); }
+function downloadCSV(){
+  const report=buildReport(); const rows=report.results;
+  const headers=['Estudiante','Carrera','Año','Grupo','Tarea','Módulo','Puntaje','Máximo','Porcentaje','Estado','Actualizado','Origen'];
+  const csv=[headers.join(',')].concat(rows.map(r=>[report.profile.name||r.name,report.profile.career||r.career,report.profile.year||r.year,report.profile.group||report.assignment?.group||'',report.assignment?.title||'',r.moduleTitle,r.total,r.max,r.percent,r.state,r.updatedAt,r.source].map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','))).join('\n');
+  downloadFile('resultados_estudiante.csv', csv, 'text/csv;charset=utf-8');
 }
 function resetStudent(){ if(confirm('¿Borrar la tarea cargada en este navegador?')){ localStorage.removeItem('grammarAssignmentConfig'); renderAssignment(); } }
-loadFromLink(true); renderAssignment(); renderResults();
+loadFromLink(true); renderAssignment(); loadDeliveryProfile(); fillManualModules(); renderResults();
 </script>
-
 </body>
 </html>
