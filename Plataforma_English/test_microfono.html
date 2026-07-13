@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Test de micrófono</title>
+<style>body{font-family:Arial,sans-serif;background:#0f172a;color:white;padding:25px}button{padding:12px 16px;border:0;border-radius:10px;font-weight:bold;margin:6px;cursor:pointer}.ok{background:#14532d}.bad{background:#7f1d1d}.warn{background:#713f12}#status{white-space:pre-wrap;background:#1e293b;border-radius:12px;padding:14px;margin-top:12px}textarea{width:100%;min-height:90px;margin-top:12px;border-radius:10px;padding:10px}audio{width:100%;margin-top:12px}</style></head>
+<body><h1>🎙️ Test de micrófono</h1><p>Abre esta página desde GitHub Pages con HTTPS en Chrome o Edge.</p><button onclick="permiso()">1. Probar permiso</button><button onclick="reconocer()">2. Reconocer voz</button><button onclick="grabar()">3. Grabar</button><button onclick="detener()">Detener</button><div id="status">Esperando...</div><textarea id="txt" readonly placeholder="Transcripción..."></textarea><audio id="audio" controls></audio>
+<script>
+let rec, mr, chunks=[], stream;
+function st(m,c='warn'){status.className=c;status.textContent=m}
+function secure(){return window.isSecureContext||location.protocol==='https:'||location.hostname==='localhost'}
+function err(e){return (e&&e.name)?e.name:String(e)}
+async function permiso(){try{if(!secure())return st('ERROR: No estás en HTTPS. Usa GitHub Pages, no file://','bad'); stream=await navigator.mediaDevices.getUserMedia({audio:true}); let label=stream.getAudioTracks()[0]?.label||'micrófono detectado'; stream.getTracks().forEach(t=>t.stop()); st('OK permiso concedido: '+label,'ok')}catch(e){st('ERROR permiso: '+err(e),'bad')}}
+function reconocer(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return st('Este navegador no soporta SpeechRecognition. Usa Chrome/Edge.','bad'); if(!secure())return st('No estás en HTTPS.','bad'); rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.onstart=()=>st('Escuchando... habla ahora','warn');rec.onresult=e=>{txt.value=e.results[0][0].transcript;st('Transcripción: '+txt.value,'ok')};rec.onerror=e=>st('Error reconocimiento: '+e.error,'bad');rec.start()}
+async function grabar(){try{if(!secure())return st('No estás en HTTPS.','bad'); stream=await navigator.mediaDevices.getUserMedia({audio:true}); chunks=[]; mr=new MediaRecorder(stream); mr.ondataavailable=e=>chunks.push(e.data); mr.onstart=()=>st('Grabando...','warn'); mr.onstop=()=>{let blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'}); audio.src=URL.createObjectURL(blob); stream.getTracks().forEach(t=>t.stop()); st('Grabación lista','ok')}; mr.start()}catch(e){st('Error grabación: '+err(e),'bad')}}
+function detener(){if(mr&&mr.state!=='inactive')mr.stop();else st('No hay grabación activa','warn')}
+</script></body></html>

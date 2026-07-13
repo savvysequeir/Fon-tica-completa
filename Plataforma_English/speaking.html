@@ -35,6 +35,11 @@ textarea{min-height:120px}
 .modal-box{background:white;border-radius:18px;padding:22px;max-width:720px;width:100%;max-height:90vh;overflow:auto}
 footer{text-align:center;padding:25px;font-weight:bold}
 .recording{animation:pulse 1s infinite} @keyframes pulse{50%{opacity:.5}}
+
+.mic-tools{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px;margin-top:10px}
+.mic-status{background:#0f172a;color:#e5e7eb;border-radius:12px;padding:12px;min-height:48px;white-space:pre-wrap;font-weight:700}
+.mic-status.ok{background:#052e16;color:#dcfce7}.mic-status.bad{background:#450a0a;color:#fee2e2}.mic-status.warn{background:#451a03;color:#ffedd5}
+.small-note{font-size:13px;color:#64748b;line-height:1.45}
 @media(max-width:700px){h1{font-size:34px}}
 </style>
 </head>
@@ -59,6 +64,20 @@ footer{text-align:center;padding:25px;font-weight:bold}
 <div><h2>Objetivo</h2><p>Formar oraciones en el tiempo o modal indicado y responder preguntas oralmente con claridad, coherencia y corrección gramatical.</p></div>
 <div><h2>Estudiante</h2><div id="studentBadge" class="info">Sin identificación registrada.</div></div>
 </div>
+</section>
+
+<section id="micDiagnostic" class="card">
+<h2>🎙️ Diagnóstico del micrófono</h2>
+<p class="small-note">Usa esta prueba primero. Si aquí no funciona, el problema no está en la actividad: está en permisos, navegador, enlace o micrófono.</p>
+<div class="actions">
+<button class="dark" onclick="diagnoseMicrophone()">1. Probar permiso</button>
+<button id="testSpeechBtn" class="green" onclick="startRecognition('test')">2. Probar reconocimiento</button>
+<button class="soft" onclick="startRecording('test')">3. Probar grabación</button>
+<button class="red" onclick="stopRecording()">Detener grabación</button>
+</div>
+<div id="testStatus" class="mic-status warn">Estado: esperando prueba. Recomendado: abrir desde GitHub Pages con HTTPS y usar Chrome o Edge.</div>
+<textarea id="testTranscript" placeholder="Aquí aparecerá la transcripción de prueba..." readonly style="margin-top:10px"></textarea>
+<audio id="testAudio" controls class="hidden" style="width:100%;margin-top:10px"></audio>
 </section>
 
 <section id="verbLab" class="card">
@@ -157,6 +176,7 @@ function init(){
  const c=document.getElementById('studentCareer');
  c.innerHTML='<option value="">Selecciona una carrera</option>'+careers.map(x=>`<option>${x}</option>`).join('');
  renderClasses();restoreStudent();generateVerbBubbles();
+ setTimeout(()=>{ if(document.getElementById('testStatus')) micMessage('test', isSecureMicContext()?'Estado: contexto seguro. Haz clic en “Probar permiso”.':'❌ Esta página no está en HTTPS. Abre desde GitHub Pages para usar micrófono.', isSecureMicContext()?'warn':'bad'); },300);
 }
 function renderClasses(){
  document.getElementById('classGrid').innerHTML=Object.keys(questionData).map(n=>`<div class="question-card"><h3>Clase ${n}</h3><p>${questionData[n].length} preguntas orales.</p><button class="dark" onclick="startQuestionClass('${n}')">Comenzar</button></div>`).join('');
@@ -207,14 +227,26 @@ function speakModel(){
  if(!text){alert('Primero escribe tu oración.');return;}
  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u);
 }
+function micTargets(target){
+ const isSentence = target === 'sentence';
+ const isTest = target === 'test';
+ return {
+  status: isSentence ? document.getElementById('sentenceFeedback') : isTest ? document.getElementById('testStatus') : document.getElementById('qStatus-'+target),
+  transcript: isSentence ? document.getElementById('sentenceTranscript') : isTest ? document.getElementById('testTranscript') : document.getElementById('qTranscript-'+target),
+  audio: isSentence ? document.getElementById('sentenceAudio') : isTest ? document.getElementById('testAudio') : document.getElementById('qAudio-'+target),
+  speechBtn: isSentence ? document.getElementById('speechBtn') : isTest ? document.getElementById('testSpeechBtn') : document.getElementById('qSpeechBtn-'+target)
+ };
+}
 function micMessage(target,msg,type='warn'){
- const el = target==='sentence' ? document.getElementById('sentenceFeedback') : document.getElementById('qStatus-'+target);
- if(el){el.className='status '+type;el.textContent=msg;}
- else alert(msg);
+ const t = micTargets(target);
+ if(t.status){
+  t.status.className = target === 'test' ? 'mic-status '+type : 'status '+type;
+  t.status.textContent = msg;
+ } else alert(msg);
 }
 function resetMicButton(target){
- const btn=target==='sentence'?document.getElementById('speechBtn'):document.getElementById('qSpeechBtn-'+target);
- if(btn){btn.classList.remove('recording');btn.textContent='🎤 Reconocer voz';btn.disabled=false;}
+ const btn = micTargets(target).speechBtn;
+ if(btn){btn.classList.remove('recording');btn.textContent = target === 'test' ? '2. Probar reconocimiento' : '🎤 Reconocer voz';btn.disabled=false;}
 }
 function isSecureMicContext(){
  return window.isSecureContext || location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1';
@@ -222,92 +254,130 @@ function isSecureMicContext(){
 function explainMicError(error){
  const name=(error && error.name) ? error.name : String(error || 'Error');
  const messages={
-  NotAllowedError:'El navegador bloqueó el micrófono. Toca el candado del sitio y permite el micrófono.',
-  PermissionDeniedError:'Permiso de micrófono denegado. Permite el micrófono en Chrome.',
-  NotFoundError:'No se encontró ningún micrófono conectado.',
-  NotReadableError:'El micrófono está siendo usado por otra aplicación.',
-  OverconstrainedError:'El micrófono no cumple la configuración solicitada.',
-  SecurityError:'La página debe abrirse con HTTPS o localhost para usar el micrófono.',
+  NotAllowedError:'El navegador bloqueó el micrófono. Toca el candado del sitio → Permisos del sitio → Micrófono → Permitir.',
+  PermissionDeniedError:'Permiso de micrófono denegado. Permite el micrófono en Chrome o Edge.',
+  NotFoundError:'No se encontró ningún micrófono conectado. Revisa audífonos o micrófono externo.',
+  NotReadableError:'El micrófono está siendo usado por otra aplicación. Cierra Zoom, Meet, WhatsApp, OBS u otra app.',
+  OverconstrainedError:'La configuración de audio no es compatible con este micrófono.',
+  SecurityError:'La página debe abrirse con HTTPS. No uses file:// ni vista previa local.',
   AbortError:'El navegador interrumpió el acceso al micrófono.'
  };
  return messages[name] || ('Error de micrófono: '+name);
 }
-async function ensureMicrophone(target){
+function browserMicReport(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ const lines=[];
+ lines.push('Protocolo: '+location.protocol);
+ lines.push('Contexto seguro: '+(isSecureMicContext()?'sí':'no'));
+ lines.push('getUserMedia: '+(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia?'sí':'no'));
+ lines.push('MediaRecorder: '+(window.MediaRecorder?'sí':'no'));
+ lines.push('SpeechRecognition: '+(SR?'sí':'no'));
+ lines.push('Navegador: '+navigator.userAgent);
+ return lines.join('\n');
+}
+async function diagnoseMicrophone(){
+ micMessage('test','Probando entorno...\n'+browserMicReport(),'warn');
  if(!isSecureMicContext()){
-  micMessage(target,'Abre esta página desde GitHub Pages con https://. El micrófono no funciona bien con file:// o enlaces no seguros.','bad');
-  throw new Error('insecure-context');
+  micMessage('test','❌ La página no está en contexto seguro. Ábrela desde GitHub Pages con https://, no desde file:/// ni desde una vista previa insegura.\n\n'+browserMicReport(),'bad');
+  return;
  }
  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-  micMessage(target,'Este navegador no permite grabar audio. Usa Google Chrome o Microsoft Edge actualizado.','bad');
-  throw new Error('getUserMedia-unavailable');
+  micMessage('test','❌ Este navegador no permite acceso al micrófono. Usa Google Chrome o Microsoft Edge.\n\n'+browserMicReport(),'bad');
+  return;
  }
- const testStream=await navigator.mediaDevices.getUserMedia({audio:true});
- testStream.getTracks().forEach(t=>t.stop());
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  const tracks=stream.getAudioTracks();
+  const label=tracks[0] && tracks[0].label ? tracks[0].label : 'micrófono detectado';
+  stream.getTracks().forEach(t=>t.stop());
+  let devices='';
+  try{
+   const list=await navigator.mediaDevices.enumerateDevices();
+   const inputs=list.filter(d=>d.kind==='audioinput');
+   devices='\nMicrófonos detectados: '+(inputs.length||'sin etiqueta')+'\n'+inputs.map((d,i)=>`${i+1}. ${d.label||'Micrófono sin nombre'}`).join('\n');
+  }catch(e){}
+  micMessage('test','✅ Permiso concedido. Micrófono: '+label+devices+'\n\nAhora prueba “Reconocimiento” y luego “Grabación”.','ok');
+ }catch(e){
+  micMessage('test','❌ '+explainMicError(e)+'\n\n'+browserMicReport(),'bad');
+ }
 }
 async function startRecognition(target){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- const btn=target==='sentence'?document.getElementById('speechBtn'):document.getElementById('qSpeechBtn-'+target);
- if(!SR){micMessage(target,'Tu navegador no admite reconocimiento de voz. Usa Google Chrome o Microsoft Edge.','bad');return;}
+ const t=micTargets(target);
+ if(!SR){micMessage(target,'❌ Este navegador no admite reconocimiento de voz. Usa Google Chrome o Microsoft Edge.','bad');return;}
+ if(!isSecureMicContext()){
+  micMessage(target,'❌ Abre esta página desde GitHub Pages con https://. El reconocimiento no funciona bien con file:// o enlaces no seguros.','bad');return;
+ }
  try{
-  if(activeRecognition){try{activeRecognition.stop();}catch(e){} activeRecognition=null;}
-  if(btn){btn.disabled=true;btn.classList.add('recording');btn.textContent='🎤 Preparando...';}
-  await ensureMicrophone(target);
-  const r=new SR();activeRecognition=r;
-  r.lang='en-US';r.interimResults=false;r.continuous=false;r.maxAlternatives=1;
-  r.onstart=()=>{if(btn){btn.disabled=false;btn.classList.add('recording');btn.textContent='🎤 Escuchando...';} micMessage(target,'Escuchando... habla claro en inglés.','warn');};
+  if(activeRecognition){try{activeRecognition.abort();}catch(e){} activeRecognition=null;}
+  const r=new SR(); activeRecognition=r;
+  r.lang='en-US'; r.interimResults=true; r.continuous=false; r.maxAlternatives=1;
+  if(t.speechBtn){t.speechBtn.disabled=false;t.speechBtn.classList.add('recording');t.speechBtn.textContent='🎤 Escuchando...';}
+  micMessage(target,'🎤 Escuchando... habla claro en inglés después de presionar el botón.','warn');
+  let finalText='';
+  const safety=setTimeout(()=>{try{r.stop();}catch(e){}},10000);
+  r.onstart=()=>{micMessage(target,'🎤 Micrófono activo. Habla ahora.','warn');};
   r.onresult=e=>{
-   const transcript=e.results[0][0].transcript;
-   if(target==='sentence')document.getElementById('sentenceTranscript').value=transcript;
-   else document.getElementById('qTranscript-'+target).value=transcript;
-   micMessage(target,'✅ Voz reconocida: '+transcript,'ok');
+   let interim='';
+   for(let i=e.resultIndex;i<e.results.length;i++){
+    const txt=e.results[i][0].transcript;
+    if(e.results[i].isFinal) finalText+=txt;
+    else interim+=txt;
+   }
+   const out=(finalText||interim).trim();
+   if(t.transcript) t.transcript.value=out;
+   if(out) micMessage(target,'✅ Transcripción: '+out,'ok');
   };
   r.onerror=e=>{
+   clearTimeout(safety);
    const error=e.error||'desconocido';
-   let msg='No fue posible reconocer la voz: '+error+'. ';
-   if(error==='no-speech') msg+='No se detectó voz. Acércate al micrófono y habla después de presionar el botón.';
+   let msg='❌ No fue posible reconocer la voz: '+error+'. ';
+   if(error==='no-speech') msg+='No se detectó voz. Habla más cerca del micrófono y espera a que diga “Micrófono activo”.';
+   else if(error==='audio-capture') msg+='No se detectó micrófono. Revisa el dispositivo de entrada.';
    else if(error==='not-allowed') msg+='Permite el micrófono desde el candado del navegador.';
-   else if(error==='network') msg+='Revisa tu conexión a internet; el reconocimiento de voz de Chrome puede necesitar conexión.';
-   else msg+='Intenta de nuevo en Google Chrome.';
+   else if(error==='network') msg+='El reconocimiento de Chrome necesita conexión a internet. Revisa la conexión.';
+   else msg+='Prueba en Chrome/Edge y revisa permisos.';
    micMessage(target,msg,'bad');
   };
-  r.onend=()=>{resetMicButton(target);activeRecognition=null;};
+  r.onend=()=>{clearTimeout(safety);resetMicButton(target);activeRecognition=null;};
   r.start();
  }catch(e){
   resetMicButton(target);
-  micMessage(target,explainMicError(e),'bad');
+  micMessage(target,'❌ '+explainMicError(e),'bad');
  }
 }
 async function startRecording(target){
  try{
-  if(!window.MediaRecorder){micMessage(target,'Este navegador no soporta grabación con MediaRecorder. Usa Chrome o Edge.','bad');return;}
-  if(!isSecureMicContext()){micMessage(target,'Abre esta página con https:// desde GitHub Pages. La grabación no funciona correctamente con file://.','bad');return;}
+  if(!isSecureMicContext()){micMessage(target,'❌ Abre esta página con https:// desde GitHub Pages. La grabación no funciona correctamente con file://.','bad');return;}
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){micMessage(target,'❌ Este navegador no permite usar el micrófono. Usa Chrome o Edge.','bad');return;}
+  if(!window.MediaRecorder){micMessage(target,'❌ Este navegador no soporta grabación con MediaRecorder. Usa Chrome o Edge actualizado.','bad');return;}
   if(mediaRecorder && mediaRecorder.state!=='inactive'){mediaRecorder.stop();}
-  currentStream=await navigator.mediaDevices.getUserMedia({audio:true});
+  currentStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
   audioChunks=[];currentAudioTarget=target;
-  const preferred=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'];
-  const mime=preferred.find(t=>MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t));
+  const preferred=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'];
+  const mime=preferred.find(t=>window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t));
   mediaRecorder=mime ? new MediaRecorder(currentStream,{mimeType:mime}) : new MediaRecorder(currentStream);
   mediaRecorder.ondataavailable=e=>{if(e.data && e.data.size>0)audioChunks.push(e.data);};
-  mediaRecorder.onstart=()=>micMessage(target,'⏺ Grabando... presiona Detener cuando termines.','warn');
-  mediaRecorder.onerror=e=>micMessage(target,'Error durante la grabación: '+(e.error?.name||'desconocido'),'bad');
+  mediaRecorder.onstart=()=>micMessage(target,'⏺ Grabando... habla ahora y luego presiona Detener.','warn');
+  mediaRecorder.onerror=e=>micMessage(target,'❌ Error durante la grabación: '+(e.error?.name||'desconocido'),'bad');
   mediaRecorder.onstop=()=>{
    const type=mediaRecorder.mimeType || mime || 'audio/webm';
    const blob=new Blob(audioChunks,{type});
    const url=URL.createObjectURL(blob);
-   const audio=target==='sentence'?document.getElementById('sentenceAudio'):document.getElementById('qAudio-'+target);
-   if(audio){audio.src=url;audio.classList.remove('hidden');}
+   const t=micTargets(target);
+   if(t.audio){t.audio.src=url;t.audio.classList.remove('hidden');}
    if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
-   micMessage(target,'✅ Grabación lista. Puedes reproducir el audio.','ok');
+   micMessage(target,'✅ Grabación lista. Reprodúcela con el control de audio.','ok');
   };
-  mediaRecorder.start();
+  mediaRecorder.start(250);
  }catch(e){
   if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null;}
-  micMessage(target,explainMicError(e),'bad');
+  micMessage(target,'❌ '+explainMicError(e),'bad');
  }
 }
 function stopRecording(){
  if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
- else micMessage(currentAudioTarget,'No hay una grabación activa.','warn');
+ else micMessage(currentAudioTarget||'test','No hay una grabación activa.','warn');
 }
 function startQuestionClass(n){
  if(!getStudent().name){openModal('idModal');alert('Registra tu identificación primero.');return;}
