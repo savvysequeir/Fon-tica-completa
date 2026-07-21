@@ -1,0 +1,296 @@
+PLANIFICADOR DE CLASES
+
+NOVEDADES V45
+- Nueva carrera “Odontología II” en el planificador, control de notas y control de asistencia.
+- Los grupos A, B y Único se guardan por separado según carrera, asignatura y año.
+- Los planes se numeran independientemente por carrera y grupo.
+- El estudio de diapositivas conserva el archivo PowerPoint original completo (formas, cuadros, colores, imágenes y posiciones).
+- La biblioteca guarda además una copia visual de respaldo de las diapositivas renderizadas.
+- Para conservar la máxima fidelidad, abra y guarde las presentaciones desde “Biblioteca de diapositivas”.
+
+USO SIN AMINA
+Abra index.html. La generación local y la descarga en Word funcionan sin conexión.
+
+USO CON AMINA (WINDOWS)
+1. Instale Node.js si aún no lo tiene: https://nodejs.org/
+2. Obtenga una clave de OpenAI API en https://platform.openai.com/api-keys
+3. Abra INICIAR_PLANIFICADOR.bat.
+4. Pegue la clave cuando se solicite. No se guarda en ningún archivo.
+5. En la página, complete los datos y pulse “Amina”.
+6. Puede modificar el borrador y pulsar “Amina” nuevamente todas las veces que necesite.
+
+IMPORTANTE
+Una suscripción de ChatGPT y el uso de la API se administran por separado. La API puede generar cargos según el uso.
+No publique ni comparta su clave.
+
+DESCARGA EN WORD
+Pulse “Descargar en Word” o el botón “Word”. Se descargará el plan completo en formato .doc, compatible con Microsoft Word.
+
+CONTROL DE ASISTENCIA
+1. Desde la página principal, pulse “Abrir asistencia”.
+2. Seleccione carrera, asignatura, grupo, año y período.
+3. Importe la lista de estudiantes o añádalos manualmente.
+4. Añada cada fecha de clase y marque 1, 0, 3 o 4 pulsando las celdas.
+5. Use “QR” para mostrar el código de cada estudiante y “Escanear QR” para registrar su presencia.
+6. Pulse “PDF / imprimir” para conservar una copia con el formato institucional.
+
+Para usar la cámara del lector QR, inicie el sistema con INICIAR_PLANIFICADOR.bat y permita el acceso a la cámara. Si el navegador no admite lectura automática, puede escribir o pegar el carnet en el mismo lector.
+
+El archivo original Asistencia_modelo_institucional.xlsx se incluye dentro de la carpeta documentos como referencia.
+
+CALENDARIO Y PERÍODOS
+- Seleccione Cuatrimestre o Semestre. Los cuatrimestres permiten I, II y III; los semestres permiten I y II.
+- Añada las fechas desde el calendario y asigne cada clase al I, II o III parcial.
+- Indique una fecha de examen para cada uno de los tres parciales.
+- Las clases y los exámenes se organizan automáticamente en secciones separadas por mes.
+- La tabla calcula asistencia y derecho a examen para los tres parciales.
+
+SÍMBOLOS DE ASISTENCIA
+- ❤️ Presente.
+- 💔 Corazón partido oscuro: ausente.
+- 😠 Llegada tarde.
+- 😢 Ausencia justificada.
+
+Pulse repetidamente una celda para cambiar el estado. El encabezado de cada fecha muestra el calendario, el día de la semana, la fecha y el parcial.
+
+CALENDARIO ACADÉMICO Y RELOJ
+- Defina comienzo de clases, final de clases y rescate especial.
+- Se muestran seis secciones mensuales con todos sus días y los eventos resaltados.
+- El resumen de la fecha seleccionada cuenta presentes, ausentes, llegadas tarde y justificados.
+- Seleccione una fecha, indique la duración y pulse “Iniciar sesión”.
+- Durante los primeros 15 minutos el estudiante puede escribir su carnet en “Anotar mi asistencia”. Después, el sistema cierra automáticamente esa opción.
+
+EXPORTAR LISTA
+Pulse “Exportar lista” para descargar un archivo CSV compatible con Excel. Incluye estudiantes, estados con emojis, porcentajes y derecho a examen de los tres parciales.
+
+CORRECCIONES DE ASISTENCIA V19
+- Los seis meses muestran únicamente las fechas programadas, no todos los días del calendario.
+- El reloj usa un selector de fecha desplegable, parcial, hora de inicio y duración.
+- “Usar hora actual” completa automáticamente la hora de comienzo.
+- “Descargar lista de asistencia” genera un CSV compatible con Excel.
+- “Descargar calendario” genera un archivo .ics para calendarios digitales.
+- El resumen nominal permite comprobar quién está presente, ausente, tarde o justificado.
+- “Verificarme con QR” registra al estudiante únicamente durante los primeros 15 minutos de la sesión activa.
+
+HORA DE LLEGADA
+- El estudiante aparece inmediatamente como ❤️ presente después de abrir el QR desde su celular.
+- El sistema guarda la hora exacta de llegada y el método utilizado.
+- La sección “Hora de llegada” muestra número, carnet, nombre, hora y tipo de registro.
+- La lista exportada incluye también la hora de llegada correspondiente a cada fecha.
+
+QR DIRECTO DESDE EL CELULAR
+1. La computadora del docente y los celulares deben conectarse a la misma red Wi-Fi.
+2. Abra siempre INICIAR_PLANIFICADOR.bat. No abra index.html directamente.
+3. Si Windows pregunta por el firewall, permita Node.js en redes privadas.
+4. La clave de OpenAI es opcional para la asistencia: puede dejarla vacía y presionar Enter.
+5. En Asistencia, seleccione la fecha y pulse “Iniciar sesión”.
+6. Abra el QR del estudiante desde la columna Acciones.
+7. El estudiante apunta la cámara de su celular al QR y toca la dirección que aparece.
+8. La página móvil envía la asistencia automáticamente; el estudiante no escribe ni copia nada.
+9. En la computadora, el estudiante aparecerá como ❤️ presente con su hora de llegada “QR celular”.
+
+El QR funciona durante los primeros 15 minutos de la sesión. La ventana negra de INICIAR_PLANIFICADOR.bat debe permanecer abierta durante la clase.
+
+CORRECCIÓN QR V23
+- INICIAR_PLANIFICADOR.bat detecta la IP de la conexión Wi-Fi activa y la muestra como “Dirección para celulares”.
+- Esa misma dirección aparece dentro de Asistencia y se incluye en cada QR.
+- Si la detección no es correcta, copie la dirección mostrada en la ventana negra, péguela en “Dirección del QR para celulares” y pulse “Aplicar dirección QR”.
+- No use localhost ni 127.0.0.1 para el QR del estudiante.
+
+IMPORTAR LISTA
+- Pulse “Importar archivo Excel / CSV” para seleccionar .xlsx, .xls, .csv o .txt.
+- El sistema reconoce el modelo institucional: No, Carnet, Sexo, Apellidos y Nombres.
+- También puede copiar filas desde Excel, pegarlas en el cuadro y pulsar “Importar texto pegado”.
+- Se admiten columnas separadas por tabulación, punto y coma, coma o barra vertical.
+- Las filas repetidas o incompletas se omiten y el sistema informa cuántos estudiantes se importaron.
+
+CORRECCIÓN V24
+- El botón QR vuelve a mostrarse en la columna Acciones de cada estudiante.
+- El QR se dibuja aunque la red no se detecte; si la dirección es localhost, aparece una advertencia para corregirla.
+- La dirección incluida en el QR se muestra debajo del código para poder comprobarla.
+- El importador busca la fila real de encabezados dentro del archivo institucional.
+- Solo importa Carnet, Sexo y Nombres/Apellidos.
+- No importa universidad, asignatura, docente, modalidad, período, carrera, número de fila ni datos de asistencia anteriores.
+
+QR GENERAL V25
+1. Abra INICIAR_PLANIFICADOR.bat y mantenga abierta la ventana negra.
+2. En Asistencia, seleccione fecha, parcial y hora; después pulse “Iniciar sesión”.
+3. Pulse “Mostrar QR general”. Aparecerá un código grande y de alto contraste.
+4. Muestre ese único QR a todos los estudiantes.
+5. Cada estudiante lo escanea, escribe su carnet y pulsa “Enviar asistencia”.
+6. El docente verá automáticamente el estudiante presente y su hora de llegada.
+
+El botón “Probar enlace” permite comprobar la página antes de mostrar el QR. Si el celular reconoce el QR pero no abre la página, permita Node.js en el firewall de redes privadas y confirme que ambos dispositivos usan la misma red Wi-Fi.
+
+CORRECCIÓN DE “file://checkin.html”
+La dirección file://checkin.html indica que asistencia.html se abrió directamente. Ese QR nunca puede abrirse desde otro celular.
+
+Use solamente este procedimiento:
+1. Cierre la pestaña de asistencia que muestra una ruta de archivo.
+2. Haga doble clic en ABRIR_ASISTENCIA_QR.
+3. Mantenga abierta la ventana negra.
+4. Espere a que se abra http://localhost:8787/asistencia.html.
+5. Inicie la sesión y pulse “Mostrar QR general”.
+6. Compruebe que debajo del QR aparezca http:// seguido de una IP, nunca file://.
+
+La página ahora bloquea la creación del QR si detecta que fue abierta como archivo y muestra estas instrucciones en pantalla.
+
+CORRECCIÓN V27 SEGÚN LAS CAPTURAS
+- Se eliminó el comando TIMEOUT que producía “Sintaxis no válida”.
+- Se eliminó la detección de IP defectuosa del archivo .bat que mostraba http:// :8787.
+- El servidor valida la IP y nunca acepta una dirección vacía.
+- ABRIR_ASISTENCIA_QR abre automáticamente http://localhost:8787/asistencia.html mediante PowerShell.
+- El iniciador cambia primero a su propia carpeta, por lo que server.mjs siempre se encuentra correctamente.
+
+Después de abrir ABRIR_ASISTENCIA_QR, use únicamente la pestaña cuya barra de direcciones comienza con http://localhost:8787. Cierre cualquier pestaña anterior que muestre una ruta de archivo o el aviso “MODO INCORRECTO”.
+
+CORRECCIÓN V28: “EL DOCENTE TODAVÍA NO HA INICIADO LA SESIÓN”
+- El botón ahora se llama “Iniciar y mostrar QR general”.
+- Al pulsarlo, coloca la hora actual, crea la sesión compartida y abre automáticamente los 15 minutos de asistencia.
+- El QR aparece solamente después de que el servidor confirma la sesión.
+- Si el celular abrió la página unos segundos antes, intenta conectarse nuevamente de forma automática.
+
+CORRECCIÓN V29: CERRAR EL QR
+- El QR tiene un botón rojo ✕ fijo en la parte superior.
+- Debajo aparece “Volver a asistencia”.
+- También puede cerrarse con la tecla Escape.
+- Pulsar el fondo oscuro cierra la ventana.
+- El tamaño del QR se adapta a la altura de la pantalla para que los controles no queden ocultos.
+
+CORRECCIÓN V30: SELECCIONAR E IMPORTAR EXCEL
+- Se eliminó el filtro “Archivos personalizados” de la ventana de Windows.
+- El selector muestra todos los archivos para que pueda localizar su lista.
+- Se admiten .xlsx, .xls, .xlsm, .csv y .txt.
+- Puede pulsar “Seleccionar archivo Excel” o arrastrar el archivo a la nueva zona punteada.
+- El sistema muestra el nombre del archivo leído y la cantidad de estudiantes importados.
+- Solo se conservan Carnet, Sexo y Nombres/Apellidos.
+
+CORRECCIÓN V31: PEGAR NOMBRES Y EXPORTAR
+- Puede pegar una lista que contenga únicamente un nombre completo por línea.
+- A esos estudiantes se les asigna temporalmente PEND-001, PEND-002, etc.
+- Use el nuevo botón “Editar” para completar carnet, sexo o corregir el nombre.
+- También admite filas completas: Carnet, Sexo, Nombres y Apellidos.
+- “Exportar a Excel” genera ahora un archivo .xlsx real, no solamente CSV.
+- El archivo incluye estudiantes, fechas, estados, horas de llegada y resultados de los tres parciales.
+
+CONTADOR INDIVIDUAL POR CARNET V32
+- Escriba el carnet en “Contador individual de asistencia” y pulse “Consultar asistencia”.
+- Muestra el total de ❤️ asistencias, 💔 ausencias, 😢 justificaciones y 😠 llegadas tarde.
+- Incluye una tabla con fecha, parcial, estado y hora de llegada.
+- Las clases pasadas sin registro se cuentan como ausencias.
+- Las fechas futuras no se cuentan como ausencias.
+- El campo de carnet ofrece sugerencias de los estudiantes guardados.
+
+CONTROL DE NOTAS V33
+- Desde la página principal pulse “12. Abrir control de notas”.
+- Es una página independiente basada en Control de Notas(1).xlsx.
+- Incluye I, II y III parcial, pruebas evaluativas, acumulado, examen, nota de cada parcial y nota final.
+- Los acumulados, notas parciales y promedio final se calculan automáticamente.
+- Los valores fuera del máximo permitido se señalan como inválidos.
+- Puede importar el modelo Excel adjunto o la lista guardada en Asistencia.
+- Permite añadir, editar y eliminar estudiantes.
+- Guarda el control por carrera, asignatura, grupo y año académico.
+- Exporta el control completo a Excel y permite imprimirlo o guardarlo como PDF.
+
+CONSULTA DE NOTAS Y CALENDARIO V34
+- En Control de notas, escriba un carnet en “Buscar estudiante por carnet” para abrir su resumen individual.
+- Cada estudiante recibe un código privado de seis caracteres, que permanece guardado con su registro.
+- Asigne una fecha con el calendario desplegable situado debajo de cada prueba y examen.
+- Pulse “Publicar notas para estudiantes” después de guardar o modificar calificaciones.
+- Comparta con el estudiante la dirección mostrada y solamente su código individual.
+- El estudiante abre “Consulta estudiantil”, introduce el código y ve sus pruebas, fechas, parciales y nota final.
+- Para que la consulta funcione, abra siempre el sistema mediante INICIAR_PLANIFICADOR.bat y mantenga esa ventana abierta.
+- La computadora y los celulares deben estar conectados a la misma red Wi-Fi.
+
+MODIFICACIÓN JUSTIFICADA DE NOTAS V35
+- Una nota vacía puede registrarse normalmente por primera vez.
+- Para cambiar una nota ya registrada, el sistema exige una justificación.
+- Los motivos permitidos son: Eventos externos al docente, Eventos causados por el estudiante y Eventos causados por la institución.
+- También es obligatorio escribir una explicación concreta del cambio.
+- Si pulsa Cancelar, se conserva automáticamente la nota anterior.
+- El botón “Historial de cambios” muestra fecha, estudiante, evaluación, nota anterior, nota nueva, motivo y explicación.
+- Al exportar a Excel se crea una segunda hoja llamada “Historial de cambios”.
+- Después de modificar una nota, pulse “Publicar notas para estudiantes” para actualizar la consulta mediante código.
+
+LISTAS INDEPENDIENTES V36
+- La tabla de estudiantes se guarda de forma independiente por carrera, asignatura, grupo y año académico.
+- Cambiar uno de esos cuatro campos carga únicamente la lista correspondiente.
+- Borrar o editar un estudiante afecta solamente a la lista que aparece activa en pantalla.
+- La barra de mensajes indica siempre la carrera, asignatura, grupo, año y cantidad de estudiantes de la lista activa.
+- Al abrir V36 por primera vez se conserva la lista que estaba activa en la versión anterior.
+- Las demás carreras comienzan separadas para evitar que continúen las copias creadas por el problema anterior.
+
+INTERVENCIONES VISIBLES Y PUNTAJES EXCEPCIONALES V37
+- Puede escribir 20 o más puntos incluso en una casilla cuyo valor normal sea 10.
+- Todo puntaje que supere el valor normal exige seleccionar una de las tres causas y escribir una explicación.
+- También continúa exigiéndose justificación al modificar cualquier nota ya registrada.
+- La intervención guarda automáticamente fecha y hora, evaluación, nota anterior, nota nueva, valor normal, motivo y explicación.
+- Después de la intervención, pulse “Publicar notas para estudiantes”.
+- En la consulta individual por código, el estudiante ve las intervenciones asociadas a su carnet.
+- La consulta muestra si fue un puntaje excepcional, las tres razones institucionales aplicadas y la fecha exacta.
+
+ESTUDIO DE DIAPOSITIVAS V38
+- Desde el planificador pulse “13. Crear y leer diapositivas”.
+- Puede crear diapositivas nuevas con portada, contenido o texto acompañado de una imagen.
+- Permite editar título, contenido, diseño, fondo, color, imagen y notas del presentador.
+- Puede duplicar, borrar y cambiar el orden de las diapositivas.
+- “Subir PowerPoint” importa archivos .pptx y recupera sus textos e imágenes principales para modificarlos.
+- Los efectos avanzados, animaciones, vídeos y gráficos complejos pueden simplificarse durante la importación.
+- “Presentar” abre un lector de diapositivas en pantalla completa, controlado con botones o flechas del teclado.
+- “Descargar PowerPoint” genera nuevamente un archivo .pptx compatible con Microsoft PowerPoint.
+- “Guardar proyecto editable” descarga una copia .amina-slides.json que puede abrirse después sin perder el trabajo.
+- El editor guarda automáticamente el proyecto actual en el navegador cuando el tamaño lo permite.
+
+CORRECCIONES Y GENERADOR DE DIAPOSITIVAS V39
+- “Seleccionar PowerPoint” muestra todos los archivos; después Amina verifica que el elegido termine en .pptx.
+- También puede arrastrar el archivo .pptx directamente a la zona punteada “También puede arrastrar aquí”.
+- La descarga se genera ahora como un archivo PowerPoint desde el navegador y muestra el nombre descargado.
+- En “Crear con un tema” basta con escribir el tema, elegir la cantidad y pulsar “Amina · Crear presentación”.
+- Puede generar 5, 7, 10 o 12 diapositivas para nivel universitario, secundaria, principiante o avanzado.
+- Amina crea portada, objetivos, conceptos, explicación, ejemplo, actividad y comprobación del aprendizaje.
+- Todo el contenido generado puede editarse antes de presentarlo o descargarlo.
+
+CONSERVACIÓN DEL DISEÑO ORIGINAL V40
+- Al importar un PowerPoint, Amina conserva internamente el archivo .pptx original.
+- Si modifica únicamente el título y los textos, la descarga mantiene las formas, colores, tipografías, imágenes, fondos, posiciones y diseño del archivo original.
+- El mensaje “Diseño original protegido” confirma que la presentación está en este modo.
+- El archivo descargado termina en “_editado.pptx” para no reemplazar accidentalmente el original.
+- Si añade, borra, duplica, reordena o cambia el diseño de una diapositiva, Amina debe reconstruirla con el editor y ya no puede garantizar la conservación exacta de la plantilla original.
+- Para conservar completamente la apariencia, importe el archivo, modifique solamente los textos y descárguelo durante la misma sesión.
+
+VISOR VISUAL REAL DE POWERPOINT V41
+- Se sustituyó la vista simplificada por un renderizador real de archivos PowerPoint.
+- El lector muestra fondos, colores, formas, cuadros de texto, imágenes SVG, grupos, posiciones y tamaños del archivo importado.
+- Las miniaturas laterales también reproducen la apariencia de cada diapositiva.
+- El modo Presentar utiliza la composición visual original y no una reconstrucción basada solamente en texto.
+- La función fue comprobada con “slide 11.pptx”: reconoce sus 9 diapositivas, formas SVG, texto y fondo morado #7167CA.
+- Abra siempre el sistema con INICIAR_PLANIFICADOR.bat para que el módulo visual pueda cargarse correctamente.
+- Al modificar textos y descargar, el archivo original continúa conservando su diseño interno.
+
+EDITOR VISUAL COMPLETO V42
+- La diapositiva se escala automáticamente para mostrarla completa dentro del área central, sin cortar los bordes.
+- El ajuste respeta la proporción original 16:9 y también se aplica al modo Presentar.
+- En “Textos originales de esta diapositiva” aparece un campo separado por cada cuadro de texto real.
+- Puede modificar cada cuadro individualmente sin cambiar su posición, color, tamaño, forma ni estilo.
+- Los cambios se aplican automáticamente a la vista original después de una pausa breve al escribir.
+- El archivo “slide 11.pptx” fue verificado: se detectaron 9 diapositivas y 31 cuadros de texto editables.
+- Las miniaturas, el visor principal y la presentación a pantalla completa conservan el contenido visual original.
+
+BIBLIOTECA DE DIAPOSITIVAS V43
+- Desde el planificador pulse “14. Biblioteca de diapositivas”.
+- En el editor use “Guardar en biblioteca” y escriba el nombre de la presentación.
+- Cada presentación se almacena separadamente con número, nombre, fecha de actualización y cantidad de diapositivas.
+- La biblioteca permite buscar por nombre o por el contenido de las diapositivas.
+- “Abrir y editar” recupera la presentación completa para continuar trabajando.
+- “Duplicar” crea una copia independiente y “Borrar” elimina solamente la presentación seleccionada.
+- Si la presentación proviene de un archivo PowerPoint, también se guarda el archivo original para conservar colores, imágenes, formas y posiciones al volver a abrirla.
+- Los archivos permanecen guardados en el navegador del mismo dispositivo y deben abrirse siempre mediante INICIAR_PLANIFICADOR.bat.
+
+CONSERVACIÓN FIEL Y GUARDADO AUTOMÁTICO V44
+- Después de guardar una presentación por primera vez, se activa el guardado automático.
+- Los cambios de texto, orden, imágenes, colores, notas y contenido se actualizan en la biblioteca después de una pausa breve.
+- El mensaje “Guardado automático completado” confirma que la versión más reciente quedó conservada.
+- La biblioteca muestra una miniatura real de los PowerPoint importados, no solamente el título escrito.
+- Al abrir una presentación importada se recuperan conjuntamente el proyecto editable y los bytes del PowerPoint original.
+- Las presentaciones creadas con Amina conservan todas sus diapositivas, textos, imágenes, colores y notas dentro del registro.
+- Continúan disponibles las funciones Abrir y editar, Duplicar y Borrar de manera independiente.
