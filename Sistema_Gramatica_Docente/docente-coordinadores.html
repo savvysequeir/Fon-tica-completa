@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Docente - Sistema de Gramática</title>
+<style>
+:root{--bg:#07111f;--card:#0f172a;--card2:#111827;--line:rgba(148,163,184,.22);--text:#e5e7eb;--muted:#94a3b8;--accent:#38bdf8;--accent2:#a78bfa;--good:#22c55e;--bad:#ef4444;--warn:#f59e0b}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top left,#1e3a8a 0,#07111f 32%,#020617 100%);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh} a{color:inherit}.wrap{max-width:1180px;margin:auto;padding:28px}.hero{background:linear-gradient(135deg,rgba(56,189,248,.17),rgba(167,139,250,.14));border:1px solid var(--line);border-radius:26px;padding:28px;box-shadow:0 18px 60px rgba(0,0,0,.35)}h1{font-size:clamp(30px,4vw,52px);margin:0 0 10px}.subtitle{color:#cbd5e1;line-height:1.65}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:18px}.card{background:rgba(15,23,42,.88);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.24)}.card h3{margin:0 0 8px}.muted{color:var(--muted)}.btn,button{border:0;border-radius:14px;padding:11px 14px;background:var(--accent);color:#031522;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}.btn.secondary,button.secondary{background:#1f2937;color:#e5e7eb;border:1px solid var(--line)}.btn.purple{background:var(--accent2);color:#12091f}.btn.danger{background:#ef4444;color:white}.btn.good{background:#22c55e;color:#052e16}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}label{font-weight:700;color:#cbd5e1}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;background:#020617;color:#e5e7eb;padding:12px;font-size:15px}textarea{min-height:110px;resize:vertical}.module-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.module{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:rgba(2,6,23,.5);border-radius:16px;padding:12px}.module input{width:auto;margin-top:4px}.pill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:#cbd5e1;background:rgba(15,23,42,.75);font-size:12px}.notice{border-left:5px solid var(--accent);background:rgba(56,189,248,.10);padding:14px;border-radius:14px;line-height:1.55}.warn{border-left-color:var(--warn);background:rgba(245,158,11,.11)}.dangerbox{border-left:5px solid var(--bad);background:rgba(239,68,68,.10);padding:14px;border-radius:14px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;background:rgba(15,23,42,.72)}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:#f8fafc;background:rgba(30,41,59,.8)}.code{font-family:Consolas,monospace;background:#020617;border:1px solid var(--line);border-radius:14px;padding:12px;white-space:pre-wrap;word-break:break-word}.locked{opacity:.45;filter:saturate(.6)}
+</style>
+<style id="bloqueoDocente">body{display:none}</style>
+<script>
+(function protegerPanelDocente(){
+  // VERSIÓN COORDINADORES V4
+  // CLAVES ACEPTADAS: estoico, Enfermería, Química, Medicina y Odontología.
+  const VERSION_ACCESOS = "coordinaciones-v2";
+  const ACCESOS = {
+    "estoico": "Acceso general · Lic. Wascar Sequeira",
+    "enfermeria": "Coordinación de Enfermería",
+    "quimica": "Coordinación de Química Farmacéutica",
+    "medicina": "Coordinación de Medicina",
+    "odontologia": "Coordinación de Odontología"
+  };
+  function normalizarClave(valor){
+    return String(valor || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+  function mostrarPanel(coordinacion){
+    document.addEventListener("DOMContentLoaded", function(){
+      document.body.style.display = "block";
+      const bloqueo = document.getElementById("bloqueoDocente");
+      if(bloqueo) bloqueo.remove();
+      const etiqueta = document.getElementById("coordinacionActiva");
+      if(etiqueta) etiqueta.textContent = coordinacion || "Acceso docente";
+    });
+  }
+  const acceso = sessionStorage.getItem("panel_docente_abierto");
+  const coordinacionGuardada = sessionStorage.getItem("panel_docente_coordinacion");
+  const versionGuardada = sessionStorage.getItem("panel_docente_version_accesos");
+  if(acceso === "si" && coordinacionGuardada && versionGuardada === VERSION_ACCESOS){ mostrarPanel(coordinacionGuardada); return; }
+  sessionStorage.removeItem("panel_docente_abierto");
+  sessionStorage.removeItem("panel_docente_coordinacion");
+  const clave = prompt("🔐 Acceso al Portal Docente y de Coordinaciones\n\nIngrese su contraseña:\nEnfermería · Química · Medicina · Odontología");
+  const coordinacion = ACCESOS[normalizarClave(clave)];
+  if(coordinacion){
+    sessionStorage.setItem("panel_docente_abierto", "si");
+    sessionStorage.setItem("panel_docente_coordinacion", coordinacion);
+    sessionStorage.setItem("panel_docente_version_accesos", VERSION_ACCESOS);
+    mostrarPanel(coordinacion);
+  }else{
+    alert("Contraseña incorrecta. El Panel Docente se cerrará.");
+    window.location.href = "index.html";
+  }
+})();
+</script>
+
+</head>
+<body>
+
+<div class="wrap">
+  <section class="hero">
+    <h1>👨‍🏫 Panel Docente</h1>
+    <div id="coordinacionActiva" class="pill">Acceso docente</div>
+    <p class="subtitle">Desde aquí puedes seleccionar qué páginas estarán disponibles, escribir indicaciones y generar un enlace de tarea para tus estudiantes.</p>
+    <div class="toolbar"><a class="btn secondary" href="index.html">← Inicio</a><a class="btn purple" href="estudiante.html">Ver panel estudiante</a><a class="btn good" href="https://savvysequeir.github.io/Fon-tica-completa/Planificador_Amina/">📚 Planificador Amina</a><button class="btn danger" onclick="cerrarPanelDocente()">🔒 Cerrar Panel Docente</button></div>
+  </section>
+
+  <section class="grid">
+    <article class="card">
+      <h3>1. Datos de la tarea</h3>
+      <div class="field"><label>Título de la tarea</label><input id="taskTitle" value="Tarea de gramática"></div>
+      <div class="field"><label>Grupo / sección</label><input id="taskGroup" placeholder="Ejemplo: A2+ Odontología II año"></div>
+      <div class="field"><label>Docente</label><input id="teacherName" placeholder="Nombre del docente"></div>
+      <div class="field"><label>Fecha límite</label><input id="dueDate" type="date"></div>
+      <div class="field"><label>Indicaciones para el estudiante</label><textarea id="instructions">Completa las actividades asignadas. Inserta tu nombre, carrera y año antes de iniciar.</textarea></div>
+      <div class="toolbar">
+        <button onclick="selectAll(true)">Seleccionar todo</button>
+        <button class="secondary" onclick="selectAll(false)">Bloquear todo</button>
+        <button class="purple" onclick="updateAssignments()">🔄 Actualizar asignaciones</button>
+      </div>
+    </article>
+    <article class="card">
+      <h3>2. Generar enlace</h3>
+      <p class="muted">El enlace guarda la configuración en el navegador del estudiante y le muestra solo los módulos asignados.</p>
+      <div class="toolbar">
+        <button class="good" onclick="saveLocal()">Guardar en este navegador</button>
+        <button onclick="generateLink()">Generar enlace para estudiantes</button>
+        <button class="purple" onclick="updateAssignments()">🔄 Actualizar actividades</button>
+        <button class="danger" onclick="clearConfig()">Borrar configuración local</button>
+      </div>
+      <div id="assignmentStatus" class="notice" style="display:none"></div>
+      <div class="field"><label>Enlace generado</label><textarea id="generatedLink" readonly placeholder="Aquí aparecerá el enlace..."></textarea></div>
+      <div class="toolbar"><button class="purple" onclick="copyLink()">Copiar enlace</button></div>
+      <div class="notice warn"><b>Límite técnico:</b> si subes esto a GitHub Pages, cada estudiante debe entrar por el enlace generado. Sin Firebase, el docente no puede ver automáticamente los resultados de todos desde otro dispositivo.</div>
+    </article>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h3>3. Módulos disponibles</h3>
+    <div id="moduleList" class="module-list"></div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h3>4. Resultados recibidos en este navegador</h3>
+    <p class="muted">Aquí se guardan resultados cuando las actividades se hacen en este mismo navegador. También puedes importar el reporte que genere un estudiante.</p>
+    <div class="toolbar"><button onclick="renderResults()">Actualizar tabla</button><button class="secondary" onclick="exportResults()">Exportar resultados</button><button class="danger" onclick="clearResults()">Borrar resultados</button></div>
+    <div class="field"><label>Importar reporte del estudiante</label><textarea id="importBox" placeholder="Pega aquí el código/reporte exportado desde el panel estudiante"></textarea></div>
+    <div class="toolbar"><button class="purple" onclick="importResults()">Importar reporte</button></div>
+    <div id="resultsBox" class="table-wrap"></div>
+  </section>
+</div>
+<script>
+const modules = [{"file": "../VOWELS/vocal_a_laberinto.html", "title": "Vocal 1 /ɑː/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_o_laberinto.html", "title": "Vocal 2 /ɒ/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_e_laberinto.html", "title": "Vocal 3 /e/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_ae_laberinto.html", "title": "Vocal 4 /æ/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_er_laberinto.html", "title": "Vocal 5 /ɜ:/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_i_laberinto.html", "title": "Vocal 6 /i:/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_ih_laberinto.html", "title": "Vocal 7 /ɪ/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_aw_laberinto.html", "title": "Vocal 8 /ɔ:/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_uh_laberinto.html", "title": "Vocal 9 /ʌ/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_u_laberinto.html", "title": "Vocal 10 /u:/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_oo_short_laberinto.html", "title": "Vocal 11 /ʊ/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_schwa_laberinto.html", "title": "Vocal 12 /ə/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_ai_laberinto.html", "title": "Diptongo /aɪ/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_ei_laberinto.html", "title": "Diptongo /eɪ/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_ia_laberinto.html", "title": "Diptongo /ɪə/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_oi_laberinto.html", "title": "Diptongo /ɔɪ/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_ua_laberinto.html", "title": "Diptongo /ʊə/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_au_laberinto.html", "title": "Diptongo /aʊ/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_ea_laberinto.html", "title": "Diptongo /eə/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_ou_laberinto.html", "title": "Diptongo /oʊ/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_ju_laberinto.html", "title": "Diptongo /ju/", "category": "Fonética: diptongos"}, {"file": "../VOWELS/vocal_rcolored_laberinto.html", "title": "Vocal /ɚ/", "category": "Fonética: vocales"}, {"file": "../VOWELS/vocal_aia_aua_laberinto.html", "title": "Triptongo /aɪə/ & /aʊə/", "category": "Fonética: triptongos"}, {"file": "../VOWELS/vocal_eia_oia_oua_laberinto.html", "title": "Triptongo /eɪə/ & /ɔɪə/", "category": "Fonética: triptongos"}, {"file": "../CONSONANTS/consonantes_sh_ch_th_laberinto.html", "title": "Consonantes 1 /ʃ/, /tʃ/ y /θ/", "category": "Fonética: consonantes"}, {"file": "../CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html", "title": "Consonantes 2 /ŋ/, /ʒ/, /dʒ/ y /ð/", "category": "Fonética: consonantes"}, {"file": "../CONSONANTS/blends_laberinto.html", "title": "Consonantes 3: Blends", "category": "Fonética: consonantes"}, {"file": "presente_continuo.html", "title": "Presente Continuo", "category": "Gramática: tiempos continuos"}, {"file": "pasado_continuo.html", "title": "Pasado Continuo", "category": "Gramática: tiempos continuos"}, {"file": "futuro_continuo.html", "title": "Futuro Continuo", "category": "Gramática: tiempos continuos"}, {"file": "presente_perfecto.html", "title": "Presente Perfecto", "category": "Gramática: tiempos perfectos"}, {"file": "pasado_perfecto.html", "title": "Pasado Perfecto", "category": "Gramática: tiempos perfectos"}, {"file": "futuro_perfecto.html", "title": "Futuro Perfecto", "category": "Gramática: tiempos perfectos"}, {"file": "presente_perfecto_continuo.html", "title": "Presente Perfecto Continuo", "category": "Gramática: perfectos continuos"}, {"file": "pasado_perfecto_continuo.html", "title": "Pasado Perfecto Continuo", "category": "Gramática: perfectos continuos"}, {"file": "futuro_perfecto_continuo.html", "title": "Futuro Perfecto Continuo", "category": "Gramática: perfectos continuos"}, {"file": "condicional_cero_primero.html", "title": "Condicional Cero y Primero", "category": "Gramática: condicionales"}, {"file": "segundo_condicional.html", "title": "Segundo Condicional", "category": "Gramática: condicionales"}, {"file": "tercer_condicional.html", "title": "Tercer Condicional", "category": "Gramática: condicionales"}, {"file": "condicional_wish.html", "title": "Condicional Wish", "category": "Gramática: condicionales"}, {"file": "mixed_condicional_1_2.html", "title": "Mixed Conditional 1 y 2", "category": "Gramática: condicionales"}, {"file": "comparaciones_superlativos.html", "title": "Comparaciones y Superlativos", "category": "Gramática: comparaciones"}, {"file": "used_to_be_used_to_get_used_to.html", "title": "Used to / Be used to / Get used to", "category": "Gramática: expresiones"}, {"file": "modal_expressions.html", "title": "Be about to / Be willing to / Be a must to / Be able to / Would like to / Would rather", "category": "Gramática: expresiones"}, {"file": "../Plataforma_English/index.html", "title": "Módulo de Habilidades", "category": "Habilidades integradas"}];
+function uid(){return 'task-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7)}
+function b64Encode(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
+function b64Decode(str){ return JSON.parse(decodeURIComponent(escape(atob(str)))); }
+function readJSON(k,f){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch(e){return f}}
+function saveJSON(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function renderModules(){
+  const saved = readJSON('grammarAssignmentConfig', null);
+  const allowed = new Set(saved?.modules || modules.map(m=>m.file));
+  const box=document.getElementById('moduleList'); box.innerHTML='';
+  modules.forEach((m,i)=>{
+    const row=document.createElement('label'); row.className='module';
+    row.innerHTML=`<input type="checkbox" class="moduleCheck" value="${m.file}" ${allowed.has(m.file)?'checked':''}> <span><b>${m.title}</b><br><span class="muted">${m.category} · ${m.file}</span><br><a href="${m.file}?preview=docente" target="_blank">Vista previa</a></span>`;
+    box.appendChild(row);
+  });
+  if(saved){
+    document.getElementById('taskTitle').value=saved.title||'Tarea de gramática';
+    document.getElementById('taskGroup').value=saved.group||'';
+    document.getElementById('teacherName').value=saved.teacher||'';
+    document.getElementById('dueDate').value=saved.dueDate||'';
+    document.getElementById('instructions').value=saved.instructions||'';
+  }
+}
+function selectedModules(){return [...document.querySelectorAll('.moduleCheck:checked')].map(x=>x.value)}
+function getConfig(){
+  const previous = readJSON('grammarAssignmentConfig', {});
+  return {
+    id: previous.id || uid(),
+    title: document.getElementById('taskTitle').value.trim() || 'Tarea de gramática',
+    group: document.getElementById('taskGroup').value.trim(),
+    teacher: document.getElementById('teacherName').value.trim(),
+    dueDate: document.getElementById('dueDate').value,
+    instructions: document.getElementById('instructions').value.trim(),
+    modules: selectedModules(),
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+}
+function setAssignmentStatus(msg, tipo='ok'){
+  const box=document.getElementById('assignmentStatus');
+  if(!box) return;
+  box.style.display='block';
+  box.className = tipo==='warn' ? 'notice warn' : 'notice';
+  box.innerHTML = msg;
+}
+function buildStudentLink(cfg){
+  const url=new URL('estudiante.html', location.href);
+  url.searchParams.set('data', b64Encode(cfg));
+  return url.href;
+}
+function saveLocal(){
+  const cfg=getConfig();
+  if(!cfg.modules.length) return alert('Selecciona al menos un módulo.');
+  saveJSON('grammarAssignmentConfig', cfg);
+  setAssignmentStatus('✅ Configuración guardada. Módulos asignados: <b>'+cfg.modules.length+'</b>.');
+  alert('Configuración guardada en este navegador.');
+}
+function generateLink(){
+  const cfg=getConfig();
+  if(!cfg.modules.length) return alert('Selecciona al menos un módulo.');
+  saveJSON('grammarAssignmentConfig', cfg);
+  document.getElementById('generatedLink').value=buildStudentLink(cfg);
+  setAssignmentStatus('✅ Enlace generado con <b>'+cfg.modules.length+'</b> actividades asignadas. Copia y envía este enlace a tus estudiantes.');
+}
+function updateAssignments(){
+  const cfg=getConfig();
+  if(!cfg.modules.length) return alert('Selecciona al menos un módulo.');
+  saveJSON('grammarAssignmentConfig', cfg);
+  document.getElementById('generatedLink').value=buildStudentLink(cfg);
+  renderModules();
+  setAssignmentStatus('🔄 Actividades actualizadas y guardadas. Ahora hay <b>'+cfg.modules.length+'</b> módulos asignados. <br><b>Importante:</b> si ya habías enviado un enlace anterior, copia y envía el nuevo enlace generado para que los estudiantes reciban los cambios.','warn');
+  alert('Asignaciones actualizadas. Copia el nuevo enlace y compártelo con tus estudiantes.');
+}
+function copyLink(){ const txt=document.getElementById('generatedLink'); if(!txt.value) generateLink(); txt.select(); document.execCommand('copy'); alert('Enlace copiado.'); }
+function selectAll(v){document.querySelectorAll('.moduleCheck').forEach(c=>c.checked=v)}
+function clearConfig(){ if(confirm('¿Borrar configuración local?')){localStorage.removeItem('grammarAssignmentConfig'); location.reload();} }
+function renderResults(){
+  const data=readJSON('grammarResults', {}); const rows=Object.values(data).sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
+  const box=document.getElementById('resultsBox');
+  if(!rows.length){box.innerHTML='<div class="notice">Aún no hay resultados guardados.</div>'; return;}
+  box.innerHTML='<table><thead><tr><th>Estudiante</th><th>Carrera</th><th>Año</th><th>Módulo</th><th>Total</th><th>Estado</th><th>Actualizado</th></tr></thead><tbody>'+rows.map(r=>`<tr><td>${r.name}</td><td>${r.career}</td><td>${r.year}</td><td>${r.moduleTitle}</td><td><b>${r.total||''}</b></td><td>${r.state||''}</td><td>${(r.updatedAt||'').slice(0,19).replace('T',' ')}</td></tr>`).join('')+'</tbody></table>';
+}
+function exportResults(){ const data=readJSON('grammarResults', {}); const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='resultados_gramatica.json'; a.click(); }
+function clearResults(){if(confirm('¿Borrar resultados guardados?')){localStorage.removeItem('grammarResults'); renderResults();}}
+function importResults(){
+  const txt=document.getElementById('importBox').value.trim(); if(!txt) return alert('Pega un reporte.');
+  try{
+    let imported;
+    if(txt.startsWith('{') || txt.startsWith('[')) imported=JSON.parse(txt); else imported=b64Decode(txt);
+    const current=readJSON('grammarResults', {});
+    if(Array.isArray(imported)) imported.forEach((r,i)=> current[(r.assignmentId||'import')+'::'+(r.moduleFile||i)+'::'+(r.name||i)] = r);
+    else if(imported.results) imported.results.forEach((r,i)=> current[(r.assignmentId||'import')+'::'+(r.moduleFile||i)+'::'+(r.name||i)] = r);
+    else Object.assign(current, imported);
+    saveJSON('grammarResults', current); renderResults(); alert('Reporte importado.');
+  }catch(e){ alert('No pude importar el reporte. Verifica que esté completo.'); }
+}
+renderModules(); renderResults();
+</script>
+
+
+<script>
+function cerrarPanelDocente(){
+  sessionStorage.removeItem("panel_docente_abierto");
+  sessionStorage.removeItem("panel_docente_coordinacion");
+  sessionStorage.removeItem("panel_docente_version_accesos");
+  alert("Panel docente cerrado.");
+  window.location.href = "index.html";
+}
+</script>
+</body>
+</html>
