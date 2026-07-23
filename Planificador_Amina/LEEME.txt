@@ -1,5 +1,21 @@
 PLANIFICADOR DE CLASES
 
+NOVEDADES V47 · FIREBASE
+- El botón flotante “Nube” permite iniciar sesión con la cuenta creada en Firebase Authentication.
+- Los planes, el plan didáctico, las asistencias y las notas conservan su respaldo local y pueden guardarse también en Realtime Database.
+- “Guardar en la nube” publica la información del dispositivo actual.
+- “Recuperar de la nube” descarga la información compartida y actualiza la página.
+- Los cambios realizados después de iniciar sesión se guardan automáticamente.
+- No comparta la contraseña docente. Cree cuentas independientes en Firebase Authentication para otros usuarios autorizados.
+
+PRIMER USO DE LA NUBE
+1. Abra el planificador publicado en GitHub.
+2. Pulse “Nube”, en la esquina inferior derecha.
+3. Inicie sesión con el correo y la contraseña creados en Firebase.
+4. En el dispositivo que ya contiene la información, pulse “Guardar en la nube”.
+5. En otro dispositivo, inicie sesión y pulse “Recuperar de la nube”.
+6. Confirme la recuperación. La página se actualizará con la información compartida.
+
 NOVEDADES V45
 - Nueva carrera “Odontología II” en el planificador, control de notas y control de asistencia.
 - Los grupos A, B y Único se guardan por separado según carrera, asignatura y año.
