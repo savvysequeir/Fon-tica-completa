@@ -11,20 +11,41 @@
 <style id="bloqueoDocente">body{display:none}</style>
 <script>
 (function protegerPanelDocente(){
-  const CONTRASENA_DOCENTE = "estoico";
-  function mostrarPanel(){
+  // VERSIÓN COORDINADORES V4
+  // CLAVES ACEPTADAS: estoico, Enfermería, Química, Medicina y Odontología.
+  const VERSION_ACCESOS = "coordinaciones-v2";
+  const ACCESOS = {
+    "estoico": "Acceso general · Lic. Wascar Sequeira",
+    "enfermeria": "Coordinación de Enfermería",
+    "quimica": "Coordinación de Química Farmacéutica",
+    "medicina": "Coordinación de Medicina",
+    "odontologia": "Coordinación de Odontología"
+  };
+  function normalizarClave(valor){
+    return String(valor || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+  function mostrarPanel(coordinacion){
     document.addEventListener("DOMContentLoaded", function(){
       document.body.style.display = "block";
       const bloqueo = document.getElementById("bloqueoDocente");
       if(bloqueo) bloqueo.remove();
+      const etiqueta = document.getElementById("coordinacionActiva");
+      if(etiqueta) etiqueta.textContent = coordinacion || "Acceso docente";
     });
   }
   const acceso = sessionStorage.getItem("panel_docente_abierto");
-  if(acceso === "si"){ mostrarPanel(); return; }
-  const clave = prompt("🔐 Ingrese la contraseña para abrir el Panel Docente:");
-  if(clave === CONTRASENA_DOCENTE){
+  const coordinacionGuardada = sessionStorage.getItem("panel_docente_coordinacion");
+  const versionGuardada = sessionStorage.getItem("panel_docente_version_accesos");
+  if(acceso === "si" && coordinacionGuardada && versionGuardada === VERSION_ACCESOS){ mostrarPanel(coordinacionGuardada); return; }
+  sessionStorage.removeItem("panel_docente_abierto");
+  sessionStorage.removeItem("panel_docente_coordinacion");
+  const clave = prompt("🔐 Acceso al Portal Docente y de Coordinaciones\n\nIngrese su contraseña:\nEnfermería · Química · Medicina · Odontología");
+  const coordinacion = ACCESOS[normalizarClave(clave)];
+  if(coordinacion){
     sessionStorage.setItem("panel_docente_abierto", "si");
-    mostrarPanel();
+    sessionStorage.setItem("panel_docente_coordinacion", coordinacion);
+    sessionStorage.setItem("panel_docente_version_accesos", VERSION_ACCESOS);
+    mostrarPanel(coordinacion);
   }else{
     alert("Contraseña incorrecta. El Panel Docente se cerrará.");
     window.location.href = "index.html";
@@ -38,6 +59,7 @@
 <div class="wrap">
   <section class="hero">
     <h1>👨‍🏫 Panel Docente</h1>
+    <div id="coordinacionActiva" class="pill">Acceso docente</div>
     <p class="subtitle">Desde aquí puedes seleccionar qué páginas estarán disponibles, escribir indicaciones y generar un enlace de tarea para tus estudiantes.</p>
     <div class="toolbar"><a class="btn secondary" href="index.html">← Inicio</a><a class="btn purple" href="estudiante.html">Ver panel estudiante</a><a class="btn good" href="https://savvysequeir.github.io/Fon-tica-completa/Planificador_Amina/">📚 Planificador Amina</a><button class="btn danger" onclick="cerrarPanelDocente()">🔒 Cerrar Panel Docente</button></div>
   </section>
@@ -190,6 +212,8 @@ renderModules(); renderResults();
 <script>
 function cerrarPanelDocente(){
   sessionStorage.removeItem("panel_docente_abierto");
+  sessionStorage.removeItem("panel_docente_coordinacion");
+  sessionStorage.removeItem("panel_docente_version_accesos");
   alert("Panel docente cerrado.");
   window.location.href = "index.html";
 }
