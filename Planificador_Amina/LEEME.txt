@@ -1,5 +1,21 @@
 PLANIFICADOR DE CLASES
 
+NOVEDADES V48 · ACCESO PARA COORDINACIONES
+- La cuenta docente administra y publica todas las carreras.
+- Química Farmacéutica consulta únicamente Farmacia/Química Farmacéutica.
+- Odontología consulta Odontología y Odontología II.
+- Medicina consulta únicamente Medicina.
+- Enfermería consulta únicamente Enfermería.
+- Las coordinaciones tienen acceso de solo lectura y descarga.
+- Únicamente la cuenta docente puede modificar la información guardada en Firebase.
+
+ACTIVACIÓN OBLIGATORIA
+1. Abra Firebase Console > Realtime Database > Reglas.
+2. Sustituya las reglas actuales por el contenido de REGLAS_FIREBASE_V48.json.
+3. Pulse Publicar.
+4. Suba firebase-sync.js y las páginas HTML actualizadas a Planificador_Amina en GitHub.
+5. Desde la cuenta docente, pulse Nube > Guardar en la nube para publicar las carpetas de cada coordinación.
+
 NOVEDADES V47 · FIREBASE
 - El botón flotante “Nube” permite iniciar sesión con la cuenta creada en Firebase Authentication.
 - Los planes, el plan didáctico, las asistencias y las notas conservan su respaldo local y pueden guardarse también en Realtime Database.
