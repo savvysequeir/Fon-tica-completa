@@ -163,5 +163,7 @@ els.playSelectedAudioBtn.onclick=()=>playAudio(els.audioTargetSelect.value, els.
 els.exportHtmlBtn.onclick=async()=>{const all=await dbGetAll();const html=document.documentElement.outerHTML.replace(/<script id="embedded-audio-data" type="application\/json">[\s\S]*?<\/script>/,`<script id="embedded-audio-data" type="application/json">${JSON.stringify(all)}<\/script>`);const blob=new Blob(['<!DOCTYPE html>\n'+html],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fonetica_blends_con_audios.html';a.click();URL.revokeObjectURL(a.href);toast('HTML exportado con audios.','ok')};
 (async function init(){populateAudioTargets();await ensureEmbeddedLoaded();buildBlendSelect();renderMaze();renderSentences();})();
 </script>
+<script src="/Fon-tica-completa/shared-results.js"></script>
+<script src="/Fon-tica-completa/phonetics-mini-quiz.js"></script>
 </body>
 </html>
