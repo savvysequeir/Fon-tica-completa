@@ -1,26 +1,76 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AMINA · Portal Educativo</title>
-<style>
-:root{--bg:#06111f;--panel:#0d2034;--line:#29405a;--text:#f4f9ff;--muted:#9eb1c6}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 0,#123c57 0,transparent 36rem),radial-gradient(circle at 5% 55%,#251b4a 0,transparent 34rem),var(--bg);color:var(--text);font-family:Arial,sans-serif}
-main{width:min(1160px,calc(100% - 30px));min-height:100vh;margin:auto;padding:24px 0 40px}
-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:22px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px}.mark{display:grid;width:43px;height:43px;place-items:center;border-radius:14px;background:linear-gradient(145deg,#29c9e8,#4255da);font-weight:800}.brand b{letter-spacing:.18em}.brand small{display:block;margin-top:3px;color:var(--muted)}
-.hero{padding:58px 0 38px}.tag{color:#63dcf4;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{max-width:820px;margin:12px 0 15px;font-size:clamp(39px,6vw,68px);line-height:1;letter-spacing:-.045em}.hero p{max-width:700px;color:#afc0d1;font-size:18px;line-height:1.6}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:17px}.card{position:relative;min-height:265px;padding:24px;border:1px solid var(--line);border-radius:24px;background:rgba(13,32,52,.9);color:var(--text);text-decoration:none;transition:.18s}.card:hover{transform:translateY(-4px);border-color:var(--accent)}.icon{display:grid;width:52px;height:52px;place-items:center;border:1px solid var(--accent);border-radius:16px;color:var(--accent);font-size:20px;font-weight:800}.card h2{margin:25px 0 8px;font-size:30px}.card p{color:var(--muted);line-height:1.55}.cyan{--accent:#3ed8ee}.violet{--accent:#a78bfa}.amber{--accent:#fbbf24}.rose{--accent:#fb7185}
-footer{display:flex;justify-content:space-between;gap:15px;margin-top:25px;padding-top:20px;border-top:1px solid var(--line);color:#8295aa;font-size:12px}@media(max-width:700px){header>span{display:none}.grid{grid-template-columns:1fr}.card{min-height:225px}footer{flex-direction:column}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AMINA · Portal Educativo</title>
+  <style>
+    :root{--ink:#f7fbff;--muted:#a9bad0;--panel:#0b1c30d9;--line:#9bc0e033}
+    *{box-sizing:border-box}html{background:#06111f}body{margin:0;min-height:100vh;color:var(--ink);
+      font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 88% 8%,#0fa6ca33,transparent 30rem),
+      radial-gradient(circle at 8% 54%,#7946d629,transparent 35rem),linear-gradient(145deg,#06111f,#081827 48%,#07101d)}
+    a{color:inherit;text-decoration:none}.shell{width:min(1180px,calc(100% - 32px));margin:auto;padding:22px 0 30px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:12px}.mark{display:grid;width:43px;height:43px;place-items:center;border-radius:14px;
+      background:linear-gradient(145deg,#29c9e8,#4255da);font-size:22px;font-weight:900}.brand b{display:block;letter-spacing:.2em}
+    .brand small{display:block;margin-top:3px;color:var(--muted)}header>span{color:#c1cede;font-size:14px}
+    .hero{display:grid;grid-template-columns:1fr auto;gap:35px;align-items:end;padding:48px 0 32px}
+    .kicker{margin:0;color:#63dcf4;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+    h1{max-width:800px;margin:12px 0 15px;font-size:clamp(36px,5vw,62px);line-height:1;letter-spacing:-.04em}
+    .lead{max-width:700px;margin:0;color:#b2c1d3;font-size:17px;line-height:1.6}.badge{padding:18px 22px;border:1px solid var(--line);
+      border-radius:20px;background:#0c1b2ea8;text-align:center}.badge strong{display:block;color:#62e2f7;font-size:42px}.badge span{color:var(--muted)}
+    .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;padding:12px;border:1px solid var(--line);
+      border-radius:18px;background:#071423c7}.quick a{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--line);
+      border-radius:11px;background:#0f243cb8;font-weight:800;font-size:13px}.quick i{display:grid;width:25px;height:25px;place-items:center;
+      border-radius:8px;background:#174664;color:#7ee8f8;font-style:normal}.quick a:hover,.quick a:focus{border-color:#63dcf4;background:#12314d}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{min-height:270px;padding:22px;border:1px solid var(--line);
+      border-radius:23px;background:var(--panel);box-shadow:0 18px 60px #0003;transition:.18s}.card:hover,.card:focus{transform:translateY(-4px);
+      border-color:var(--accent);outline:0}.icon{display:grid;width:50px;height:50px;place-items:center;border-radius:16px;
+      color:var(--accent);background:#ffffff0d;font-size:20px;font-weight:900}.card h2{margin:22px 0 9px;font-size:26px}.card p{margin:0;
+      color:#adbdce;line-height:1.55}.card small{display:inline-block;margin-top:18px;color:var(--accent);font-weight:900}
+    .cyan{--accent:#3ed8ee}.violet{--accent:#a78bfa}.amber{--accent:#fbbf24}.rose{--accent:#fb7185}
+    footer{display:flex;justify-content:space-between;gap:15px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line);
+      color:#8195aa;font-size:12px}
+    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.quick{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:620px){header>span,.badge{display:none}.hero{grid-template-columns:1fr;padding:36px 0 25px}.grid{grid-template-columns:1fr}
+      .quick{grid-template-columns:1fr}.card{min-height:230px}footer{flex-direction:column}}
+  </style>
 </head>
-<body><main>
-<header><div class="brand"><span class="mark">A</span><div><b>AMINA</b><small>Portal Educativo</small></div></div><span>Lic. Wascar Enrique Sequeira Hurtado</span></header>
-<section class="hero"><div class="tag">Si el aprendizaje fuera divertido nadie fuera a fiestas</div><h1>Aprendizajes por habilidades, todo en un solo lugar</h1><p>Accede a las actividades de inglés y a todas las herramientas docentes desde este portal central.</p></section>
-<section class="grid">
-<a class="card cyan" href="pronunciacion/index.html"><span class="icon">Aa</span><h2>Pronunciación</h2><p>Vocales, diptongos, triptongos, consonantes y blends con laberintos fonéticos.</p></a>
-<a class="card violet" href="gramatica/index.html"><span class="icon">G</span><h2>Gramática</h2><p>Tiempos continuos, perfectos y perfectos continuos; condicionales y wish.</p></a>
-<a class="card amber" href="habilidades/index.html"><span class="icon">4</span><h2>Habilidades</h2><p>Reading, Writing, Listening y Speaking con actividades y resultados.</p></a>
-<a class="card rose" href="portal-docente/index.html"><span class="icon">🔒</span><h2>Portal docente</h2><p>Acceso protegido mediante las claves existentes. Planificación, asistencia QR, notas, diapositivas, documentos y coordinación.</p></a>
-</section>
-<footer><span>Universidad Jean-Jacques Rousseau</span><span>Pronunciación · Gramática · Habilidades · Gestión docente</span></footer>
-</main></body></html>
+<body>
+<main class="shell">
+  <header>
+    <div class="brand"><span class="mark">A</span><div><b>AMINA</b><small>Portal Educativo</small></div></div>
+    <span>Lic. Wascar Enrique Sequeira Hurtado</span>
+  </header>
+  <section class="hero">
+    <div><p class="kicker">Si el aprendizaje fuera divertido nadie fuera a fiestas</p>
+      <h1>Aprendizajes por habilidades, todo en un solo lugar</h1>
+      <p class="lead">Accede a las actividades de inglés y a todas las herramientas docentes desde este portal central.</p></div>
+    <div class="badge"><strong>6</strong><span>módulos integrados</span></div>
+  </section>
+  <nav class="quick" aria-label="Accesos rápidos">
+    <a href="pronunciacion/index.html"><i>1</i>Pronunciación</a>
+    <a href="gramatica/index.html"><i>2</i>Gramática</a>
+    <a href="habilidades/index.html"><i>3</i>Habilidades</a>
+    <a href="asignaciones/docente.html"><i>4</i>Portal docente de tareas</a>
+    <a href="asignaciones/estudiante.html"><i>5</i>Portal estudiante</a>
+    <a href="portal-docente/index.html"><i>6</i>Planificador docente</a>
+  </nav>
+  <section class="grid">
+    <a class="card cyan" href="pronunciacion/index.html"><span class="icon">Aa</span><h2>Pronunciación</h2>
+      <p>Vocales, diptongos, triptongos, consonantes y blends con lectores y mini pruebas.</p><small>Entrar →</small></a>
+    <a class="card violet" href="gramatica/index.html"><span class="icon">G</span><h2>Gramática</h2>
+      <p>Tiempos continuos, perfectos, perfectos continuos, condicionales y wish.</p><small>Entrar →</small></a>
+    <a class="card amber" href="habilidades/index.html"><span class="icon">4</span><h2>Habilidades</h2>
+      <p>Reading, Writing, Listening y Speaking con actividades y resultados.</p><small>Entrar →</small></a>
+    <a class="card rose" href="asignaciones/docente.html"><span class="icon">🔒</span><h2>Portal docente de tareas</h2>
+      <p>Selecciona actividades, crea la asignación y genera el enlace para los estudiantes.</p><small>Acceso docente →</small></a>
+    <a class="card cyan" href="asignaciones/estudiante.html"><span class="icon">E</span><h2>Portal estudiante</h2>
+      <p>Muestra únicamente las actividades seleccionadas por el docente mediante el enlace asignado.</p><small>Entrar →</small></a>
+    <a class="card violet" href="portal-docente/index.html"><span class="icon">P</span><h2>Planificador docente</h2>
+      <p>Planes, asistencia QR, notas, diapositivas, documentos y coordinación académica.</p><small>Acceso protegido →</small></a>
+  </section>
+  <footer><span>Universidad Jean-Jacques Rousseau</span><span>Pronunciación · Gramática · Habilidades · Gestión docente</span></footer>
+</main>
+</body>
+</html>

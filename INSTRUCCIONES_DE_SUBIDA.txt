@@ -1,0 +1,35 @@
+ACTUALIZACIÓN DEL PORTAL EDUCATIVO AMINA EN GITHUB PAGES
+
+Repositorio:
+https://github.com/savvysequeir/Fon-tica-completa
+
+Enlace público:
+https://savvysequeir.github.io/Fon-tica-completa/
+
+PASOS
+
+1. Descomprime Amina_Portal_GitHub_Pages.zip.
+2. Abre el repositorio Fon-tica-completa en GitHub.
+3. Sustituye el contenido anterior por TODO el contenido de esta carpeta.
+4. Conserva exactamente la estructura de carpetas.
+5. Confirma los cambios en la rama main.
+6. Espera uno o dos minutos y abre el enlace público.
+7. Si aparece la versión anterior, presiona Ctrl + F5.
+
+IMPORTANTE
+
+- index.html debe quedar en la raíz del repositorio.
+- No subas la carpeta contenedora como un nivel adicional.
+- Las carpetas pronunciacion, gramatica, habilidades, asignaciones y
+  portal-docente deben quedar directamente junto a index.html.
+- También deben quedar en la raíz shared-results.js y
+  phonetics-mini-quiz.js.
+
+LOS SEIS ACCESOS INCLUIDOS
+
+1. Pronunciación
+2. Gramática
+3. Habilidades
+4. Portal docente de tareas
+5. Portal estudiante
+6. Planificador docente
