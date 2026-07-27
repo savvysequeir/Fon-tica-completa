@@ -28,7 +28,7 @@
 <h2>Panel del docente: audios personalizados</h2>
 <p class="muted">Sube tu propia pronunciación para cada palabra u oración. Después puedes exportar el HTML con los audios incluidos.</p>
 <div class="row"><select id="audioTargetSelect"></select><input id="audioFileInput" type="file" accept="audio/*"><button id="saveSelectedAudioBtn" class="btn-purple">Guardar audio</button><button id="playSelectedAudioBtn" class="btn-soft">Probar audio</button><button id="exportHtmlBtn" class="btn-teal">Exportar HTML con audios</button></div>
-<p id="audioPanelStatus" class="muted">Aún no se ha cargado audio.</p>
+<p id="audioPanelStatus" class="muted">Voz automática disponible. Puedes añadir una grabación personal.</p>
 </section>
 
 <section id="instructionsPanel" class="card instructions hidden">
@@ -81,6 +81,7 @@
 <div id="toast" class="toast hidden"></div>
 <script>
 let aminaEnglishVoices=[];
+let currentSpeechUtterance=null;
 function refreshAminaVoices(){
   if(!('speechSynthesis' in window)) return [];
   aminaEnglishVoices=speechSynthesis.getVoices().filter(v=>/^en[-_]/i.test(v.lang));
@@ -139,7 +140,7 @@ async function dbGet(key){const db=await openDB();return new Promise((resolve,re
 async function dbGetAll(){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction('audios','readonly');const store=tx.objectStore('audios');const out={};const req=store.openCursor();req.onsuccess=e=>{const cur=e.target.result;if(cur){out[cur.key]=cur.value;cur.continue()}else resolve(out)};req.onerror=()=>reject(req.error)})}
 function blobToDataUrl(blob){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=reject;fr.readAsDataURL(blob)})}
 async function ensureEmbeddedLoaded(){for(const [k,v] of Object.entries(embeddedAudio)){if(!await dbGet(k)) await dbPut(k,v)}}
-async function playAudio(key,text){let data=await dbGet(key); if(!data && embeddedAudio[key]) data=embeddedAudio[key]; if(data){speechSynthesis?.cancel();if(currentAudio)currentAudio.pause();currentAudio=new Audio(data);await currentAudio.play();return} if('speechSynthesis' in window){speechSynthesis.cancel();const voice=createAminaUtterance(text,.86);speechSynthesis.speak(voice);return} toast('Este navegador no tiene lector de voz disponible.','warn')}
+async function playAudio(key,text){let data=await dbGet(key); if(!data && embeddedAudio[key]) data=embeddedAudio[key]; if(data){speechSynthesis?.cancel();if(currentAudio)currentAudio.pause();currentAudio=new Audio(data);await currentAudio.play();return} if('speechSynthesis' in window){speechSynthesis.cancel();refreshAminaVoices();currentSpeechUtterance=createAminaUtterance(text,.86);currentSpeechUtterance.onend=()=>{currentSpeechUtterance=null};currentSpeechUtterance.onerror=()=>toast('El celular bloqueó la voz. Pulsa Escuchar otra vez.','warn');setTimeout(()=>{speechSynthesis.resume();speechSynthesis.speak(currentSpeechUtterance)},80);return} toast('Este navegador no tiene lector de voz disponible.','warn')}
 function populateAudioTargets(){els.audioTargetSelect.innerHTML='';[...new Set(ALL_WORDS)].forEach(w=>{const o=document.createElement('option');o.value='word:'+w;o.textContent='Palabra: '+w;els.audioTargetSelect.appendChild(o)});SENTENCES.forEach((s,i)=>{const o=document.createElement('option');o.value='sentence:'+(i+1);o.textContent='Oración '+(i+1);els.audioTargetSelect.appendChild(o)})}
 function buildVariant(){syncActiveWords();const v=VARIANTS[variantIndex%VARIANTS.length]; ROWS=v.rows; COLS=v.cols; PATH=v.path; PATH_KEYS=PATH.map(p=>pathKey(p[0],p[1])); MAZE=Array.from({length:ROWS},()=>Array(COLS).fill(''));
  const pathSet=new Set(PATH_KEYS); PATH.forEach((p,i)=>{MAZE[p[0]][p[1]]=PATH_WORDS[i]}); const activeSet=new Set(PATH_WORDS); const shuffled=[...DISTRACTORS.filter(w=>!activeSet.has(w))]; const shift=(variantIndex*19+bankIndex*29)%shuffled.length; const rotated=[...shuffled.slice(shift),...shuffled.slice(0,shift)]; let di=0; for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(!pathSet.has(pathKey(r,c))){MAZE[r][c]=rotated[di++%rotated.length]}

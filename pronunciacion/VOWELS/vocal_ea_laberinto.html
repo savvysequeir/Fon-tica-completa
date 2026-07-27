@@ -212,6 +212,7 @@ const els = {
   exportHtmlBtn: document.getElementById('exportHtmlBtn'), exportPackBtn: document.getElementById('exportPackBtn'), importPackInput: document.getElementById('importPackInput'), toast: document.getElementById('toast')
 };
 
+let currentSpeechUtterance = null;
 let student = ''; let step = 0; let mistakes = 0; let completedMaze = false; let mazeLockedForRestart = false; let selectedSentenceKeys = new Set(); let lockedSentences = false; let currentAudio = null;
 const pathKey = (r,c)=>`${r},${c}`;
 const AUDIO_DB = 'fonetica-diptongo-ea-audio-v1';
@@ -278,13 +279,19 @@ function textForAudioKey(key){
 }
 function speakEnglish(text, rate=0.82){
   if(!text || !('speechSynthesis' in window)){
-    toast('Este navegador no tiene lector de voz disponible.', 'warn');
+    toast('Activa el lector de texto a voz del celular e inténtalo nuevamente.', 'warn');
     return;
   }
   if(currentAudio){ currentAudio.pause(); currentAudio.currentTime = 0; }
   speechSynthesis.cancel();
-  const utterance = createAminaUtterance(text,rate);
-  speechSynthesis.speak(utterance);
+  refreshAminaVoices();
+  currentSpeechUtterance = createAminaUtterance(text,rate);
+  currentSpeechUtterance.onend = ()=>{ currentSpeechUtterance = null; };
+  currentSpeechUtterance.onerror = ()=>{ toast('El celular bloqueó la voz. Pulsa Escuchar otra vez.', 'warn'); };
+  setTimeout(()=>{
+    speechSynthesis.resume();
+    speechSynthesis.speak(currentSpeechUtterance);
+  }, 80);
 }
 async function playKey(key){
   const src = await getAudioSrc(key);
@@ -355,7 +362,7 @@ async function refreshAudioStatus(){
   els.audioPanelStatus.innerHTML = `Estado: <strong>${n}</strong> de <strong>${targets.length}</strong> audios cargados. Puedes reemplazarlos cuando quieras.`;
   document.querySelectorAll('[data-audio-status-key]').forEach(async el=>{
     const ok = await hasAudio(el.getAttribute('data-audio-status-key'));
-    el.textContent = ok ? 'Audio cargado' : 'Sin audio cargado';
+    el.textContent = ok ? 'Audio cargado' : 'Voz automática disponible';
     el.className = ok ? 'audio-ok' : 'audio-missing';
   });
 }
@@ -438,7 +445,7 @@ function renderWords(){
       <div class="upload-line">
         <button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar</button>
         <label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label>
-        <span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span>
+        <span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Voz automática disponible</span>
       </div>
     </div>`;
   }).join('');
@@ -513,7 +520,7 @@ function renderSentencePronunciation(){
       if(!/^[A-Za-z']+$/.test(part)) return escapeHtml(part);
       return isTargetToken(i,part,parts,idx) ? `<mark>${escapeHtml(part)}</mark>` : escapeHtml(part);
     }).join('');
-    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar oración</button><label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label><span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span></div></div>`;
+    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar oración</button><label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label><span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Voz automática disponible</span></div></div>`;
   }).join('');
   bindAudioButtons(els.sentencePronunciationList); refreshAudioStatus();
 }
