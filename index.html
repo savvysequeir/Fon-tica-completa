@@ -1,138 +1,37 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Fonética Inglesa | Menú Principal</title>
-  <style>
-    body{font-family:system-ui,sans-serif;background:#eff6ff;color:#0f172a;margin:0;padding:20px}
-    .wrap{max-width:1000px;margin:auto;background:white;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.1)}
-    .register-panel{background:#f8fafc;border:2px solid #e2e8f0;padding:25px;border-radius:15px;margin-bottom:30px}
-    .input-group{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:15px}
-    input, select{padding:12px;border-radius:8px;border:1px solid #cbd5e1}
-    #saveBtn{background:#16a34a;color:white;border:0;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:20px}
-    .btn-act{display:block;background:#1d4ed8;color:white;padding:15px;text-decoration:none;border-radius:10px;text-align:center;font-weight:bold}
-    .btn-con{background:#7c2d12}
-    .docente-btn{margin-top:40px;display:inline-block;background:#0f172a;color:white;padding:15px;text-decoration:none;border-radius:10px}
-    /* Estilos del Footer */
-    .footer-section{margin-top:50px; text-align:center; border-top:2px solid #e2e8f0; padding-top:20px;}
-    .footer-image{width:150px; height:150px; object-fit:cover; border-radius:50%; margin-bottom:15px; border:4px solid #1d4ed8;}
-  </style>
-</head>
-<body>
-
-<div class="wrap">
-  <h1>Fonética Inglesa</h1>
-  <div class="register-panel">
-    <h3>📝 Registrar datos del estudiante</h3>
-    <div id="welcomeMsg" style="color:#166534; font-weight:bold; margin-bottom:10px;"></div>
-    <div class="input-group">
-      <input id="nameInput" type="text" placeholder="Nombres y Apellidos">
-      <select id="careerInput">
-        <option value="">Seleccionar Carrera</option>
-        <option value="Odontologia">Odontología</option>
-        <option value="Medicina">Medicina</option>
-        <option value="Quimica Farmaceutica">Química Farmacéutica</option>
-        <option value="Enfermeria">Enfermería</option>
-        <option value="Mecanica Dental">Mecánica Dental</option>
-        <option value="Veterinaria">Veterinaria</option>
-        <option value="Agricola">Agrícola</option>
-        <option value="Agronomia">Agronomía</option>
-        <option value="Ingenieria Forestal">Ingeniería Forestal</option>
-        <option value="Agronegocios">Agronegocios</option>
-        <option value="Zootecnia">Zootecnia</option>
-        <option value="Agroindustria">Agroindustria de los Alimentos</option>
-        <option value="Ingles">Inglés</option>
-      </select>
-      <select id="yearInput">
-        <option value="">Año</option>
-        <option value="1">1er Año</option><option value="2">2do Año</option><option value="3">3er Año</option>
-        <option value="4">4to Año</option><option value="5">5to Año</option>
-      </select>
-      <button id="saveBtn">Guardar Datos</button>
-    </div>
-  </div>
-
-  <h2>Actividades Disponibles</h2>
-  <div class="grid">
-    <!-- Vocales (12) -->
-    <a class="btn-act" href="VOWELS/vocal_a_laberinto.html">Vocal 1 /ɑː/</a>
-    <a class="btn-act" href="VOWELS/vocal_o_laberinto.html">Vocal 2 /ɒ/</a>
-    <a class="btn-act" href="VOWELS/vocal_e_laberinto.html">Vocal 3 /e/</a>
-    <a class="btn-act" href="VOWELS/vocal_ae_laberinto.html">Vocal 4 /æ/</a>
-    <a class="btn-act" href="VOWELS/vocal_er_laberinto.html">Vocal 5 /ɜ:/</a>
-    <a class="btn-act" href="VOWELS/vocal_i_laberinto.html">Vocal 6 /i:/</a>
-    <a class="btn-act" href="VOWELS/vocal_ih_laberinto.html">Vocal 7 /ɪ/</a>
-    <a class="btn-act" href="VOWELS/vocal_aw_laberinto.html">Vocal 8 /ɔ:/</a>
-    <a class="btn-act" href="VOWELS/vocal_uh_laberinto.html">Vocal 9 /ʌ/</a>
-    <a class="btn-act" href="VOWELS/vocal_u_laberinto.html">Vocal 10 /u:/</a>
-    <a class="btn-act" href="VOWELS/vocal_oo_short_laberinto.html">Vocal 11 /ʊ/</a>
-    <a class="btn-act" href="VOWELS/vocal_schwa_laberinto.html">Vocal 12 /ə/</a>
-    <!-- Diptongos y Consonantes -->
-    <a class="btn-act" href="VOWELS/vocal_ai_laberinto.html">Diptongo /aɪ/</a>
-    <a class="btn-act" href="VOWELS/vocal_ei_laberinto.html">Diptongo /eɪ/</a>
-    <a class="btn-act" href="VOWELS/vocal_ia_laberinto.html">Diptongo /ɪə/</a>
-    <a class="btn-act" href="VOWELS/vocal_oi_laberinto.html">Diptongo /ɔɪ/</a>
-    <a class="btn-act" href="VOWELS/vocal_ua_laberinto.html">Diptongo /ʊə/</a>
-    <a class="btn-act" href="VOWELS/vocal_au_laberinto.html">Diptongo /aʊ/</a>
-    <a class="btn-act" href="VOWELS/vocal_ea_laberinto.html">Diptongo /eə/</a>
-    <a class="btn-act" href="VOWELS/vocal_ou_laberinto.html">Diptongo /oʊ/</a>
-    <a class="btn-act" href="VOWELS/vocal_ju_laberinto.html">Diptongo /ju/</a>
-    <a class="btn-act" href="VOWELS/vocal_rcolored_laberinto.html">Vocal /ɚ/</a>
-    <a class="btn-act" href="VOWELS/vocal_aia_aua_laberinto.html">Triptongo /aɪə/ & /aʊə/</a>
-    <a class="btn-act" href="VOWELS/vocal_eia_oia_oua_laberinto.html">Triptongo /eɪə/ & /ɔɪə/</a>
-    <a class="btn-act btn-con" href="CONSONANTS/consonantes_sh_ch_th_laberinto.html">Consonantes 1</a>
-    <a class="btn-act btn-con" href="CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html">Consonantes 2</a>
-    <a class="btn-act btn-con" href="CONSONANTS/blends_laberinto.html">Consonantes 3 (Blends)</a>
-  </div>
-  <h2 style="margin-top:40px;">Gramática Inglesa</h2>
-<div class="grid">
-  <a class="btn-act" href="Sistema_Gramatica_Docente/presente_continuo.html">Presente Continuo</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/presente_perfecto.html">Presente Perfecto</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/presente_perfecto_continuo.html">Presente Perfecto Cont.</a>
-
-  <a class="btn-act" href="Sistema_Gramatica_Docente/pasado_continuo.html">Pasado Continuo</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/pasado_perfecto.html">Pasado Perfecto</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/pasado_perfecto_continuo.html">Pasado Perfecto Cont.</a>
-
-  <a class="btn-act" href="Sistema_Gramatica_Docente/futuro_continuo.html">Futuro Continuo</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/futuro_perfecto.html">Futuro Perfecto</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/futuro_perfecto_continuo.html">Futuro Perfecto Cont.</a>
-
-  <a class="btn-act" href="Sistema_Gramatica_Docente/condicional_cero_primero.html">Condicional 0 y 1</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/segundo_condicional.html">Condicional 2do</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/tercer_condicional.html">Condicional 3ero</a>
-
-  <a class="btn-act" href="Sistema_Gramatica_Docente/condicional_wish.html">Condicional Wish</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/mixed_condicional_1_2.html">Condicional Mixto 1-2</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/comparaciones_superlativos.html">Comparativos y Superlativos</a>
-
-  <a class="btn-act" href="Sistema_Gramatica_Docente/used_to_be_used_to_get_used_to.html">Used to / Be used to / Get used to</a>
-  <a class="btn-act" href="Sistema_Gramatica_Docente/modal_expressions.html">Modal Expressions</a>
-
-    <a class="btn-act" href="Plataforma_English/index.html">Ir al Módulo de Habilidades</a>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fonética | VOWELS & CONSONANTS</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#eff6ff;color:#0f172a;margin:0;padding:22px}.wrap{max-width:1040px;margin:auto;background:white;border:1px solid #dbe4ef;border-radius:24px;padding:24px;box-shadow:0 16px 40px rgba(15,23,42,.12)}h1{margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px;margin-top:18px}a{display:block;text-decoration:none;background:#1d4ed8;color:white;border-radius:18px;padding:18px;font-weight:900;box-shadow:0 10px 24px rgba(29,78,216,.25)}a.con{background:#7c2d12}a small{display:block;color:#dbeafe;margin-top:6px;font-weight:700}.note{background:#ecfeff;border:1px solid #a5f3fc;color:#164e63;border-radius:16px;padding:14px;margin-top:18px;font-weight:700}h2{margin-top:26px}</style></head><body><div class="wrap"><h1>Fonética · VOWELS & CONSONANTS</h1><p>Selecciona una actividad. Cada archivo conserva laberinto, selección de palabras en oraciones, explicación final, bloqueo después de 3 errores y panel para subir audios del docente.</p><h2>Vowels / Diphthongs / Triphthongs</h2><div class="grid">
+<a href="VOWELS/vocal_a_laberinto.html">Vocal 1 /ɑː/<small>Laberinto exacto: SARCASM</small></a>
+<a href="VOWELS/vocal_o_laberinto.html">Vocal 2 /ɒ/<small>Laberinto exacto: GOD → ON</small></a>
+<a href="VOWELS/vocal_e_laberinto.html">Vocal 3 /e/<small>Laberinto exacto: END → MEASURE</small></a>
+<a href="VOWELS/vocal_ae_laberinto.html">Vocal 4 /æ/<small>Laberinto exacto: CAP → LACK</small></a>
+<a href="VOWELS/vocal_er_laberinto.html">Vocal 5 /ɜ:/<small>Laberinto exacto: URN → TURKEY</small></a>
+<a href="VOWELS/vocal_i_laberinto.html">Vocal 6 /i:/<small>Laberinto exacto: EAT → GRIEF</small></a>
+<a href="VOWELS/vocal_ih_laberinto.html">Vocal 7 /ɪ/<small>Laberinto exacto: IS → KID</small></a>
+<a href="VOWELS/vocal_aw_laberinto.html">Vocal 8 /ɔ:/<small>Laberinto exacto: OR → TALK</small></a>
+<a href="VOWELS/vocal_uh_laberinto.html">Vocal 9 /ʌ/<small>Laberinto exacto: US → FUCK</small></a>
+<a href="VOWELS/vocal_u_laberinto.html">Vocal 10 /u:/<small>Laberinto exacto: FOOD → AVENUE</small></a>
+<a href="VOWELS/vocal_oo_short_laberinto.html">Vocal 11 /ʊ/<small>Laberinto exacto: COOK → WOULD</small></a>
+<a href="VOWELS/vocal_schwa_laberinto.html">Vocal 12 /ə/<small>Laberinto exacto: AGO → BEHIND</small></a>
+<a href="VOWELS/vocal_ai_laberinto.html">Diptongo /aɪ/<small>Laberinto exacto: EYE → HI</small></a>
+<a href="VOWELS/vocal_ei_laberinto.html">Diptongo /eɪ/<small>Laberinto exacto: ATE → SAY</small></a>
+<a href="VOWELS/vocal_ia_laberinto.html">Diptongo /ɪə/<small>Laberinto exacto: EAR → STEER</small></a>
+<a href="VOWELS/vocal_oi_laberinto.html">Diptongo /ɔɪ/<small>Laberinto exacto: OIL → SOIL</small></a>
+<a href="VOWELS/vocal_ua_laberinto.html">Diptongo /ʊə/<small>Laberinto exacto: SURE → OBSCURE</small></a>
+<a href="VOWELS/vocal_au_laberinto.html">Diptongo /aʊ/<small>Laberinto exacto: OUT → COW</small></a>
+<a href="VOWELS/vocal_ea_laberinto.html">Diptongo /eə/<small>Laberinto exacto: AIR → WEAR</small></a>
+<a href="VOWELS/vocal_ou_laberinto.html">Diptongo /oʊ/<small>Laberinto exacto: AGO → YELLOW</small></a>
+<a href="VOWELS/vocal_ju_laberinto.html">Diptongo /ju/<small>Laberinto exacto: ACCUSE → UNIVERSITY</small></a>
+<a href="VOWELS/vocal_rcolored_laberinto.html">Vocal /ɚ/<small>Laberinto exacto: WINTER → ACTOR</small></a>
+<a href="VOWELS/vocal_aia_aua_laberinto.html">Diptongos /aɪə/ y /aʊə/<small>Laberinto exacto: VOWEL → ADMIRE</small></a>
+<a href="VOWELS/vocal_eia_oia_oua_laberinto.html">Triptongos /eɪə/, /ɔɪə/ y /əʊə/<small>Laberinto exacto: BETRAYER → WIDOWER</small></a>
+</div><h2>Consonants</h2><div class="grid"><a class="con" href="CONSONANTS/consonantes_sh_ch_th_laberinto.html">Consonantes /ʃ/, /tʃ/ y /θ/<small>3 rutas de 50 palabras</small></a><a class="con" href="CONSONANTS/consonantes_ng_zh_dj_dh_laberinto.html">Consonantes /ŋ/, /ʒ/, /dʒ/ y /ð/<small>4 rutas de 50 palabras: ALONG → WORTHY</small></a><a class="con" href="CONSONANTS/blends_laberinto.html">Blends consonánticos<small>Encuentra 3 palabras por cada blend, sin salida</small></a></div><div class="note">Para abrir en Google Chrome: descomprime el ZIP, entra a la carpeta <strong>fonetica</strong> y abre <strong>index.html</strong> con Google Chrome. La página funciona sin internet.</div></div>
+<div style="position:fixed;right:16px;bottom:16px;z-index:9999">
+<a href="RESULTADOS/index.html"
+style="display:inline-block;background:#7c3aed;color:white;text-decoration:none;
+padding:13px 16px;border-radius:14px;font-weight:900;
+box-shadow:0 8px 24px rgba(0,0,0,.28)">
+📊 Carpeta de resultados
+</a>
 </div>
 
-  <div class="footer-section">
-    <p><strong>Lic. Wascar Enrique Sequeira Hurtado</strong></p>
-    <p>Educador | Creador de Herramientas Educativas Digitales</p>
-  </div>
-
-  <a class="docente-btn" href="Sistema_Gramatica_Docente/docente.html">👩‍🏫 Portal del Docente</a>
-</div>
-
-<script>
-  function updateUI() {
-    var saved = localStorage.getItem('fonetica_student_full_name');
-    if(saved) document.getElementById('welcomeMsg').textContent = "✅ Estudiante: " + saved.split('||')[0];
-  }
-  document.getElementById('saveBtn').onclick = function() {
-    var n = document.getElementById('nameInput').value, c = document.getElementById('careerInput').value, y = document.getElementById('yearInput').value;
-    if(n && c && y) { localStorage.setItem('fonetica_student_full_name', n + '||' + c + '||' + y); updateUI(); alert("Datos guardados."); }
-    else alert("Completa todos los campos.");
-  };
-  updateUI();
-</script>
-
-</body>
-</html>
+</body></html>

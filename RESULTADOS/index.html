@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carpeta de resultados de Fonética</title>
+<style>
+:root{
+  --ink:#0f172a;--muted:#64748b;--card:#fff;--line:#dbe4ef;
+  --blue:#2563eb;--green:#0f766e;--purple:#7c3aed
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:linear-gradient(180deg,#dbeafe,#f8fafc);color:var(--ink)
+}
+.wrap{max-width:1200px;margin:auto;padding:20px}
+.hero{
+  background:linear-gradient(135deg,#0f172a,#1e3a8a 55%,#0f766e);
+  color:white;border-radius:26px;padding:24px;box-shadow:0 18px 42px #0f172a33
+}
+.hero h1{margin:0}.hero p{color:#dbeafe}
+.toolbar,.tabs{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+button{
+  border:0;border-radius:13px;padding:10px 13px;font-weight:850;
+  cursor:pointer;background:#334155;color:white
+}
+.primary{background:var(--blue)}.danger{background:#b91c1c}
+.tab{background:white;color:#334155;border:1px solid var(--line)}
+.tab.active{background:var(--purple);color:white}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:18px;margin-top:16px;box-shadow:0 10px 28px #0f172a14
+}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.badge{
+  display:inline-block;border-radius:999px;padding:7px 10px;
+  background:#e0e7ff;color:#3730a3;font-weight:900
+}
+.ok{color:#166534}.pending{color:#991b1b}
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px
+}
+.section{
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:14px
+}
+.word-list{display:flex;gap:7px;flex-wrap:wrap}
+.word{
+  background:white;border:1px solid #cbd5e1;border-radius:999px;
+  padding:7px 10px;display:inline-flex;gap:6px;align-items:center
+}
+.speak{background:#e0f2fe;color:#075985;padding:5px 8px}
+.sentence{
+  background:white;border-left:4px solid #60a5fa;padding:11px;
+  border-radius:10px;margin:8px 0;line-height:1.55
+}
+.empty{text-align:center;padding:42px;color:var(--muted)}
+details summary{cursor:pointer;font-weight:900}
+.meta{color:var(--muted);font-size:.92rem}
+.score{font-size:1.55rem;font-weight:1000;color:var(--green)}
+@media(max-width:650px){
+  .wrap{padding:11px}.hero{border-radius:18px}.top{display:block}
+  .toolbar>*{width:100%}
+}
+@media print{
+  .hero,.toolbar,.tabs,.delete{display:none!important}
+  .card{break-inside:avoid;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <h1>📊 Carpeta de resultados</h1>
+  <p>Formato uniforme para vocales, diptongos, triptongos, consonantes y blends.</p>
+  <div class="toolbar">
+    <button class="primary" onclick="history.back()">← Volver a la actividad</button>
+    <button onclick="window.print()">🖨️ Imprimir o guardar en PDF</button>
+    <button class="danger" onclick="clearAll()">🗑️ Borrar historial</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+<section id="records"></section>
+</main>
+
+<script>
+const KEY='fonetica_resultados_v2';
+const categories=['Todos','Vocales','Diptongos','Triptongos','Consonantes','Blends'];
+let active='Todos';
+
+const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[char]));
+
+function speak(text){
+  speechSynthesis.cancel();
+  const voiceMessage=new SpeechSynthesisUtterance(text);
+  voiceMessage.lang='en-US';
+  voiceMessage.rate=.82;
+  const voices=speechSynthesis.getVoices();
+  voiceMessage.voice=
+    voices.find(voice=>/^en[-_](US|GB)/i.test(voice.lang)) ||
+    voices.find(voice=>/^en/i.test(voice.lang)) ||
+    null;
+  speechSynthesis.speak(voiceMessage);
+}
+
+function getRecords(){
+  try{return JSON.parse(localStorage.getItem(KEY)||'[]')}
+  catch{return[]}
+}
+
+function clearAll(){
+  if(confirm('¿Deseas borrar todos los resultados guardados en este navegador?')){
+    localStorage.removeItem(KEY);
+    render();
+  }
+}
+
+function deleteRecord(id){
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(getRecords().filter(record=>record.id!==id))
+  );
+  render();
+}
+
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=categories.map(category=>`
+    <button class="tab ${category===active?'active':''}"
+      onclick="active='${category}';render()">${category}</button>
+  `).join('');
+}
+
+function render(){
+  renderTabs();
+  const records=getRecords().filter(record=>
+    active==='Todos'||record.category===active
+  );
+
+  const container=document.getElementById('records');
+
+  if(!records.length){
+    container.innerHTML=`
+      <div class="card empty">
+        <h2>No hay resultados guardados</h2>
+        <p>Completa una actividad y pulsa <strong>Guardar resultado</strong>.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML=records.map(record=>{
+    const date=new Date(record.date);
+    const stats=record.stats||{};
+    const words=record.words||[];
+    const sentenceWords=record.sentenceVocabulary||[];
+    const sentences=record.sentences||[];
+
+    return `
+    <article class="card">
+      <div class="top">
+        <div>
+          <span class="badge">${escapeHtml(record.category)}</span>
+          <h2>${escapeHtml(record.topic)}</h2>
+          <div class="meta">
+            👤 ${escapeHtml(record.student)} ·
+            📅 ${date.toLocaleDateString()} ${date.toLocaleTimeString([],{
+              hour:'2-digit',minute:'2-digit'
+            })}
+          </div>
+        </div>
+        <div>
+          <div class="score">${stats.score??0}/100</div>
+          <button class="delete danger"
+            onclick="deleteRecord('${escapeHtml(record.id)}')">Borrar</button>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:14px">
+        <div class="section">
+          <h3>1. Resumen de la actividad</h3>
+          <p class="${stats.mazeCompleted?'ok':'pending'}">
+            ${stats.mazeCompleted?'✅':'⏳'}
+            Laberinto ${stats.mazeCompleted?'completado':'pendiente'}
+          </p>
+          <p class="${stats.sentencesCompleted?'ok':'pending'}">
+            ${stats.sentencesCompleted?'✅':'⏳'}
+            Oraciones ${stats.sentencesCompleted?'completadas':'pendientes'}
+          </p>
+          <p>${escapeHtml(stats.mazeErrors||'Errores: —')}</p>
+          <p>${escapeHtml(stats.progress||'Progreso: —')}</p>
+          <p>${escapeHtml(stats.sentenceProgress||'Palabras marcadas: —')}</p>
+        </div>
+
+        <div class="section">
+          <h3>2. Palabras principales (${words.length})</h3>
+          <div class="word-list">
+            ${words.map(item=>`
+              <span class="word">
+                <strong>${escapeHtml(item.word)}</strong>
+                <span>${escapeHtml(item.ipa||'')}</span>
+                <button class="speak"
+                  onclick='speak(${JSON.stringify(String(item.word))})'>🔊</button>
+              </span>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <details class="section" open style="margin-top:12px">
+        <summary>3. Vocabulario de las oraciones (${sentenceWords.length})</summary>
+        <div class="word-list" style="margin-top:12px">
+          ${sentenceWords.map(word=>`
+            <span class="word">
+              ${escapeHtml(word)}
+              <button class="speak"
+                onclick='speak(${JSON.stringify(String(word))})'>🔊</button>
+            </span>`).join('')}
+        </div>
+      </details>
+
+      <details class="section" open style="margin-top:12px">
+        <summary>4. Oraciones completas (${sentences.length})</summary>
+        ${sentences.map((sentence,index)=>`
+          <div class="sentence">
+            <strong>${index+1}.</strong> ${escapeHtml(sentence)}
+            <button class="speak"
+              onclick='speak(${JSON.stringify(String(sentence))})'>
+              🔊 Escuchar
+            </button>
+          </div>`).join('')}
+      </details>
+    </article>`;
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>
