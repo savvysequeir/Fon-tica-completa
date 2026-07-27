@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SPEAKING</title>
+<style>
+:root{--navy:#10233f;--blue:#2456a6;--light:#eef4ff;--green:#198754;--red:#c0392b;--gold:#d59b16;--ink:#1f2937}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:var(--ink)}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;padding:26px 20px;position:sticky;top:0;z-index:10}
+.wrap{max-width:1250px;margin:auto}
+h1{margin:0;font-size:44px}
+.subtitle{max-width:900px;line-height:1.5}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 15px;font-weight:700;cursor:pointer}
+.btn{background:white;color:var(--blue)} .dark{background:var(--navy);color:white} .green{background:var(--green);color:white} .red{background:var(--red);color:white} .soft{background:#e8eef9;color:var(--navy)}
+main{max-width:1250px;margin:22px auto;padding:0 16px 50px}
+.card{background:white;border:1px solid #dce5f3;border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 6px 18px #10233f12}
+.hidden{display:none!important}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.info{background:var(--light);border-left:5px solid var(--blue);padding:15px;border-radius:10px}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.metric{background:#f6f8fb;border-radius:12px;padding:14px;text-align:center} .metric b{display:block;font-size:22px;color:var(--blue)}
+.floating-area{min-height:260px;position:relative;overflow:hidden;border:2px dashed #9ab1d4;border-radius:16px;background:linear-gradient(#f8fbff,#eef4ff)}
+.verb-bubble{position:absolute;border-radius:999px;background:white;border:2px solid var(--blue);padding:10px 15px;color:var(--navy);font-weight:bold;box-shadow:0 5px 14px #10233f22;animation:float 5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.prompt{font-size:20px;line-height:1.55;background:#f8fafc;border-radius:14px;padding:18px;border-left:5px solid var(--gold)}
+input,select,textarea{width:100%;border:1px solid #b8c6da;border-radius:10px;padding:11px;font:inherit}
+textarea{min-height:120px}
+.status{margin-top:10px;font-weight:700} .ok{color:var(--green)} .bad{color:var(--red)} .warn{color:#8a6500}
+.question-card{border:1px solid #d8e1ee;border-radius:14px;padding:16px;margin:12px 0}
+.progress{height:12px;background:#dfe6ef;border-radius:999px;overflow:hidden} .fill{height:100%;background:var(--green);width:0}
+.modal{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:18px;z-index:100}
+.modal-box{background:white;border-radius:18px;padding:22px;max-width:720px;width:100%;max-height:90vh;overflow:auto}
+footer{text-align:center;padding:25px;font-weight:bold}
+.recording{animation:pulse 1s infinite} @keyframes pulse{50%{opacity:.5}}
+@media(max-width:700px){h1{font-size:34px}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<h1>SPEAKING</h1>
+<p class="subtitle">Practica la construcción de oraciones con verbos y tiempos gramaticales, responde preguntas y utiliza el micrófono para desarrollar fluidez, pronunciación y seguridad al hablar.</p>
+<div class="actions">
+<button class="btn" onclick="openModal('idModal')">Identificación</button>
+<button class="btn" onclick="openModal('explainModal')">Cómo practicar</button>
+<button class="btn" onclick="showVerbLab()">Laboratorio de verbos</button>
+<button class="btn" onclick="showQuestionClasses()">Preguntas por clase</button>
+<a href="index.html"><button class="btn">Menú principal</button></a><a href="resultados.html"><button class="btn">Resultados</button></a>
+</div>
+</div>
+</header>
+
+<main>
+<section class="card">
+<div class="grid">
+<div><h2>Objetivo</h2><p>Formar oraciones en el tiempo o modal indicado y responder preguntas oralmente con claridad, coherencia y corrección gramatical.</p></div>
+<div><h2>Estudiante</h2><div id="studentBadge" class="info">Sin identificación registrada.</div></div>
+</div>
+</section>
+
+<section id="verbLab" class="card">
+<h2>Laboratorio de verbos</h2>
+<p>Genera 20 verbos flotantes. Al seleccionar uno, el sistema asignará una estructura y una forma gramatical.</p>
+<div class="actions">
+<button class="dark" onclick="generateVerbBubbles()">Generar 20 verbos</button>
+<button class="soft" onclick="toggleVerbType()">Cambiar lista: <span id="verbTypeLabel">Verbos normales</span></button>
+</div>
+<div id="floatingArea" class="floating-area" style="margin-top:15px"></div>
+</section>
+
+<section id="sentenceTask" class="card hidden">
+<h2>Construye y di una oración</h2>
+<div id="sentencePrompt" class="prompt"></div>
+<div class="grid" style="margin-top:15px">
+<div>
+<label>Escribe tu oración</label>
+<textarea id="sentenceText" placeholder="Write your sentence here..."></textarea>
+<div class="actions">
+<button class="green" onclick="evaluateSentence()">Evaluar oración</button>
+<button class="soft" onclick="speakModel()">Escuchar modelo orientativo</button>
+</div>
+<div id="sentenceFeedback" class="status"></div>
+</div>
+<div>
+<label>Respuesta por voz</label>
+<div class="actions">
+<button id="speechBtn" class="dark" onclick="startRecognition('sentence')">🎤 Reconocer voz</button>
+<button class="soft" onclick="startRecording('sentence')">⏺ Grabar audio</button>
+<button class="red" onclick="stopRecording()">⏹ Detener</button>
+</div>
+<textarea id="sentenceTranscript" placeholder="La transcripción aparecerá aquí..." readonly></textarea>
+<audio id="sentenceAudio" controls class="hidden" style="width:100%;margin-top:10px"></audio>
+</div>
+</div>
+</section>
+
+<section id="classesSection" class="card">
+<h2>Preguntas por clase</h2>
+<div id="classGrid" class="grid"></div>
+</section>
+
+<section id="questionPractice" class="card hidden">
+<h2 id="questionClassTitle"></h2>
+<div class="metric-grid">
+<div class="metric"><b id="answeredCount">0/20</b>Respondidas</div>
+<div class="metric"><b id="goodCount">0</b>Aceptadas</div>
+<div class="metric"><b id="attemptCount">0</b>Intentos</div>
+<div class="metric"><b id="timeCount">00:00</b>Tiempo</div>
+</div>
+<div class="progress" style="margin:12px 0"><div id="progressFill" class="fill"></div></div>
+<div id="questionsContainer"></div>
+<button class="green" onclick="showResults()">Ver resultados</button>
+<div id="resultsBox" class="hidden info" style="margin-top:15px"></div>
+</section>
+</main>
+
+<footer>Wascar Enrique Sequeira Hurtado</footer>
+
+<div id="idModal" class="modal hidden"><div class="modal-box">
+<button class="red" style="float:right" onclick="closeModal('idModal')">✕</button>
+<h2>Identificación</h2>
+<label>Nombre completo</label><input id="studentName">
+<label>Carrera</label><select id="studentCareer"></select>
+<label>Año que cursa</label><select id="studentYear"><option value="">Selecciona</option><option>Primer año</option><option>Segundo año</option><option>Tercer año</option><option>Cuarto año</option><option>Quinto año</option><option>Sexto año</option></select>
+<br><br><button class="green" onclick="saveStudent()">Guardar</button>
+</div></div>
+
+<div id="explainModal" class="modal hidden"><div class="modal-box">
+<button class="red" style="float:right" onclick="closeModal('explainModal')">✕</button>
+<h2>Cómo practicar Speaking</h2>
+<ol>
+<li>Lee la consigna e identifica el verbo, el tiempo verbal y la forma solicitada.</li>
+<li>Piensa primero en el sujeto, luego en el auxiliar y finalmente en el verbo.</li>
+<li>Escribe una oración breve y correcta antes de decirla.</li>
+<li>Usa el micrófono para comparar lo que dijiste con la transcripción.</li>
+<li>En las preguntas, responde con ideas completas, no solo con “yes” o “no”.</li>
+<li>Repite la respuesta buscando mejorar fluidez, claridad y pronunciación.</li>
+</ol>
+</div></div>
+
+<script>
+const normalVerbs=[{"base": "Accept", "past": "Accepted"}, {"base": "Achieve", "past": "Achieved"}, {"base": "Act", "past": "Acted"}, {"base": "Add", "past": "Added"}, {"base": "Admire", "past": "Admired"}, {"base": "Admit", "past": "Admitted"}, {"base": "Advise", "past": "Advised"}, {"base": "Afford", "past": "Afforded"}, {"base": "Agree", "past": "Agreed"}, {"base": "Allow", "past": "Allowed"}, {"base": "Answer", "past": "Answered"}, {"base": "Appear", "past": "Appeared"}, {"base": "Arrive", "past": "Arrived"}, {"base": "Ask", "past": "Asked"}, {"base": "Attract", "past": "Attracted"}, {"base": "Avoid", "past": "Avoided"}, {"base": "Bake", "past": "Baked"}, {"base": "Be", "past": "Was, Were"}, {"base": "Beat", "past": "Beat"}, {"base": "Become", "past": "Became"}, {"base": "Begin", "past": "Began"}, {"base": "Believe", "past": "Believed"}, {"base": "Belong", "past": "Belonged"}, {"base": "Bite", "past": "Bit"}, {"base": "Blame", "past": "Blamed"}, {"base": "Bleed", "past": "Bled"}, {"base": "Blow", "past": "Blew"}, {"base": "Borrow", "past": "Borrowed"}, {"base": "Bother", "past": "Bothered"}, {"base": "Break", "past": "Broke"}, {"base": "Breathe", "past": "Breathed"}, {"base": "Bring", "past": "Brought"}, {"base": "Brush", "past": "Brushed"}, {"base": "Build", "past": "Built"}, {"base": "Burn", "past": "Burnt"}, {"base": "Buy", "past": "Bought"}, {"base": "Call", "past": "Called"}, {"base": "Camp", "past": "Camped"}, {"base": "Can", "past": "Could"}, {"base": "Care", "past": "Cared"}, {"base": "Carry", "past": "Carried"}, {"base": "Catch", "past": "Caught"}, {"base": "Cause", "past": "Caused"}, {"base": "Celebrate", "past": "Celebrated"}, {"base": "Change", "past": "Changed"}, {"base": "Chat", "past": "Chatted"}, {"base": "Check", "past": "Checked"}, {"base": "Choose", "past": "Chose"}, {"base": "Clean", "past": "Cleaned"}, {"base": "Clear", "past": "Cleared"}, {"base": "Climb", "past": "Climbed"}, {"base": "Close", "past": "Closed"}, {"base": "Collect", "past": "Collected"}, {"base": "Come", "past": "Came"}, {"base": "Compare", "past": "Compared"}, {"base": "Complain", "past": "Complained"}, {"base": "Complete", "past": "Completed"}, {"base": "Confirm", "past": "Confirmed"}, {"base": "Connect", "past": "Connected"}, {"base": "Consider", "past": "Considered"}, {"base": "Continue", "past": "Continued"}, {"base": "Cook", "past": "Cooked"}, {"base": "Copy", "past": "Copied"}, {"base": "Correct", "past": "Corrected"}, {"base": "Cost", "past": "Cost"}, {"base": "Count", "past": "Counted"}, {"base": "Cover", "past": "Covered"}, {"base": "Create", "past": "Created"}, {"base": "Cross", "past": "Crossed"}, {"base": "Cry", "past": "Cried"}, {"base": "Cut", "past": "Cut"}, {"base": "Damage", "past": "Damaged"}, {"base": "Dance", "past": "Danced"}, {"base": "Decide", "past": "Decided"}, {"base": "Deliver", "past": "Delivered"}, {"base": "Depend", "past": "Depend"}, {"base": "Describe", "past": "Described"}, {"base": "Design", "past": "Designed"}, {"base": "Destroy", "past": "Destroyed"}, {"base": "Develop", "past": "Developed"}, {"base": "Die", "past": "Died"}, {"base": "Dig", "past": "Dug"}, {"base": "Dirty", "past": "Dirtied"}, {"base": "Discover", "past": "Discovered"}, {"base": "Discuss", "past": "Discussed"}, {"base": "Dislike", "past": "Disliked"}, {"base": "Divide", "past": "Divided"}, {"base": "Do", "past": "Did"}, {"base": "Download", "past": "Downloaded"}, {"base": "Draw", "past": "Drew"}, {"base": "Dream", "past": "Dreamt"}, {"base": "Dress", "past": "Dressed"}, {"base": "Drink", "past": "Drank"}, {"base": "Drive", "past": "Drove"}, {"base": "Drop", "past": "Dropped"}, {"base": "Dry", "past": "Dried"}, {"base": "Earn", "past": "Earned"}, {"base": "Eat", "past": "Ate"}, {"base": "Educate", "past": "Educated"}, {"base": "Employ", "past": "Employed"}, {"base": "Empty", "past": "Emptied"}, {"base": "Encourage", "past": "Encouraged"}, {"base": "End", "past": "Ended"}, {"base": "Enjoy", "past": "Enjoyed"}, {"base": "Enter", "past": "Entered"}, {"base": "Escape", "past": "Escaped"}, {"base": "Examine", "past": "Examined"}, {"base": "Exchange", "past": "Exchanged"}, {"base": "Excite", "past": "Excited"}, {"base": "Excuse", "past": "Excused"}, {"base": "Exercise", "past": "Exercised"}, {"base": "Exist", "past": "Existed"}, {"base": "Expect", "past": "Expected"}, {"base": "Explain", "past": "Explained"}, {"base": "Express", "past": "Expressed"}, {"base": "Face", "past": "Faced"}, {"base": "Fail", "past": "Failed"}, {"base": "Fall", "past": "Fell"}, {"base": "Fear", "past": "Feared"}, {"base": "Feed", "past": "Fed"}, {"base": "Feel", "past": "Felt"}, {"base": "Fight", "past": "Fought"}, {"base": "Fill", "past": "Filled"}, {"base": "Find", "past": "Found"}, {"base": "Finish", "past": "Finished"}, {"base": "Fit", "past": "Fit"}, {"base": "Fix", "past": "Fixed"}, {"base": "Fly", "past": "Flew"}, {"base": "Fold", "past": "Folded"}, {"base": "Follow", "past": "Followed"}, {"base": "Forget", "past": "Forgot"}, {"base": "Forgive", "past": "Forgave"}, {"base": "Form", "past": "Formed"}, {"base": "Freeze", "past": "Froze"}, {"base": "Fry", "past": "Fried"}, {"base": "Gain", "past": "Gained"}, {"base": "Get", "past": "Got"}, {"base": "Give", "past": "Gave"}, {"base": "Go", "past": "Went"}, {"base": "Greet", "past": "Greeted"}, {"base": "Grow", "past": "Grew"}, {"base": "Guess", "past": "Guessed"}, {"base": "Guide", "past": "Guided"}, {"base": "Hand", "past": "Handed"}, {"base": "Happen", "past": "Happened"}, {"base": "Hate", "past": "Hated"}, {"base": "Have", "past": "Had"}, {"base": "Hear", "past": "Heard"}, {"base": "Help", "past": "Helped"}, {"base": "Hide", "past": "Hid"}, {"base": "Hit", "past": "Hit"}, {"base": "Hold", "past": "Held"}, {"base": "Hope", "past": "Hoped"}, {"base": "Hurt", "past": "Hurt"}, {"base": "Identify", "past": "Identified"}, {"base": "Ignore", "past": "Ignored"}, {"base": "Imagine", "past": "Imagined"}, {"base": "Import", "past": "Imported"}, {"base": "Improve", "past": "Improved"}, {"base": "Include", "past": "Included"}, {"base": "Increase", "past": "Increased"}, {"base": "Inform", "past": "Informed"}, {"base": "Intend", "past": "Intended"}, {"base": "Interest", "past": "Interested"}, {"base": "Interview", "past": "Interviewed"}, {"base": "Introduce", "past": "Introduced"}, {"base": "Invent", "past": "Invented"}, {"base": "Invite", "past": "Invited"}, {"base": "Iron", "past": "Ironed"}, {"base": "Jog", "past": "Jogged"}, {"base": "Join", "past": "Joined"}, {"base": "Joke", "past": "Joked"}, {"base": "Judge", "past": "Judged"}, {"base": "Jump", "past": "Jumped"}, {"base": "Keep", "past": "Kept"}, {"base": "Kick", "past": "Kicked"}, {"base": "Kiss", "past": "Kissed"}, {"base": "Knock", "past": "Knocked"}, {"base": "Know", "past": "Knew"}, {"base": "Last", "past": "Lasted"}, {"base": "Laugh", "past": "Laughed"}, {"base": "Lead", "past": "Led"}, {"base": "Learn", "past": "Learnt"}, {"base": "Leave", "past": "Left"}, {"base": "Lend", "past": "Lent"}, {"base": "Let", "past": "Let"}, {"base": "Lie", "past": "Lay"}, {"base": "Like", "past": "Liked"}, {"base": "Limit", "past": "Limited"}, {"base": "Line", "past": "Lined"}, {"base": "Link", "past": "Linked"}, {"base": "Listen", "past": "Listened"}, {"base": "Live", "past": "Lived"}, {"base": "Lock", "past": "Locked"}, {"base": "Look", "past": "Looked"}, {"base": "Lose", "past": "Lost"}, {"base": "Love", "past": "Loved"}, {"base": "Make", "past": "Made"}, {"base": "Manage", "past": "Managed"}, {"base": "Mark", "past": "Marked"}, {"base": "Marry", "past": "Married"}, {"base": "Match", "past": "Matched"}, {"base": "Matter", "past": "Mattered"}, {"base": "May", "past": "Might"}, {"base": "Mean", "past": "Meant"}, {"base": "Measure", "past": "Measured"}, {"base": "Meet", "past": "Met"}, {"base": "Mention", "past": "Mentioned"}, {"base": "Mind", "past": "Minded"}, {"base": "Miss", "past": "Missed"}, {"base": "Mix", "past": "Mixed"}, {"base": "Move", "past": "Moved"}, {"base": "Must", "past": "Had to"}, {"base": "Name", "past": "Named"}, {"base": "Need", "past": "Needed"}, {"base": "Note", "past": "Noted"}, {"base": "Notice", "past": "Noticed"}, {"base": "Offer", "past": "Offered"}, {"base": "Open", "past": "Opened"}, {"base": "Order", "past": "Ordered"}, {"base": "Organize", "past": "Organized"}, {"base": "Own", "past": "Owned"}, {"base": "Pack", "past": "Packed"}, {"base": "Paint", "past": "Painted"}, {"base": "Park", "past": "Parked"}, {"base": "Pass", "past": "Passed"}, {"base": "Pay", "past": "Paid"}, {"base": "Perform", "past": "Performed"}, {"base": "Permit", "past": "Permitted"}, {"base": "Phone", "past": "Phoned"}, {"base": "Pick", "past": "Picked"}, {"base": "Plan", "past": "Planned"}, {"base": "Play", "past": "Played"}, {"base": "Point", "past": "Pointed"}, {"base": "Post", "past": "Posted"}, {"base": "Practice", "past": "Practiced"}, {"base": "Prefer", "past": "Prefered"}, {"base": "Prepare", "past": "Prepared"}, {"base": "Present", "past": "Presented"}, {"base": "Press", "past": "Pressed"}, {"base": "Prevent", "past": "Prevented"}, {"base": "Print", "past": "Printed"}, {"base": "Produce", "past": "Produced"}, {"base": "Promise", "past": "Promised"}, {"base": "Protect", "past": "Protected"}, {"base": "Prove", "past": "Proved"}, {"base": "Provide", "past": "Provided"}, {"base": "Publish", "past": "Published"}, {"base": "Pull", "past": "Pulled"}, {"base": "Push", "past": "Pushed"}, {"base": "Put", "past": "Put"}, {"base": "Rain", "past": "Rained"}, {"base": "Reach", "past": "Reached"}, {"base": "Read", "past": "Read"}, {"base": "Receive", "past": "Received"}, {"base": "Recommend", "past": "Recommended"}, {"base": "Record", "past": "Recorded"}, {"base": "Reduce", "past": "Reduced"}, {"base": "Refuse", "past": "Refused"}, {"base": "Regret", "past": "Regretted"}, {"base": "Relax", "past": "Relaxed"}, {"base": "Remain", "past": "Remained"}, {"base": "Remember", "past": "Remembered"}, {"base": "Remind", "past": "Reminded"}, {"base": "Remove", "past": "Removed"}, {"base": "Rent", "past": "Rented"}, {"base": "Repair", "past": "Repaired"}, {"base": "Repeat", "past": "Repeated"}, {"base": "Reply", "past": "Replied"}, {"base": "Report", "past": "Reported"}, {"base": "Request", "past": "Requested"}, {"base": "Require", "past": "Required"}, {"base": "Return", "past": "Returned"}, {"base": "Review", "past": "Reviewed"}, {"base": "Ride", "past": "Rode"}, {"base": "Ring", "past": "Rang"}, {"base": "Rise", "past": "Rose"}, {"base": "Run", "past": "Ran"}, {"base": "Sail", "past": "Sailed"}, {"base": "Save", "past": "Saved"}, {"base": "Say", "past": "Said"}, {"base": "Search", "past": "Searched"}, {"base": "See", "past": "Saw"}, {"base": "Seem", "past": "Seemed"}, {"base": "Sell", "past": "Sold"}, {"base": "Send", "past": "Sent"}, {"base": "Serve", "past": "Served"}, {"base": "Set", "past": "Set"}, {"base": "Settle", "past": "Settled"}, {"base": "Shake", "past": "Shook"}, {"base": "Share", "past": "Shared"}, {"base": "Shine", "past": "Shone"}, {"base": "Ship", "past": "Shipped"}, {"base": "Shirt", "past": "Shirted"}, {"base": "Shock", "past": "Shocked"}, {"base": "Shoe", "past": "Shoed"}, {"base": "Shoot", "past": "Shot"}, {"base": "Shop", "past": "Shopped"}, {"base": "Shout", "past": "Shouted"}, {"base": "Show", "past": "Showed"}];
+const phrasalVerbs=["Wake up", "Get up", "Go to bed", "Put on", "Take off", "Wash up", "Clean up", "Tidy up", "Dress up", "Turn on", "Turn off", "Switch on", "Switch off", "Plug in", "Blow out", "Sit down", "Stand up", "Look at", "Listen to", "Write down", "Copy down", "Pick up", "Put down", "Open up", "Close up", "Hand in", "Hand out", "Cross out", "Rub out", "Fill in", "Fill out", "Find out", "Go over", "Look up", "Think about", "Go in", "Go out", "Come in", "Come out", "Get in", "Get out", "Get on", "Get off", "Go away", "Come back", "Go back", "Hurry up", "Slow down", "Speed up", "Run away", "Walk away", "Move in", "Move out", "Check in", "Check out", "Set off", "Take off", "Pull up", "Drive away", "Walk in", "Talk to", "Speak up", "Call back", "Hang up", "Hold on", "Break up", "Get along", "Meet up", "Ask for", "Ask in", "Give back", "Pay back", "Say sorry", "Cheer up", "Calm down", "Grow up", "Bring up", "Pass on", "Shut up", "Laugh at", "Look for", "Give up", "Go on", "Carry on", "Keep on", "Come on", "Take out", "Put away", "Throw away", "Try on", "Show off", "Watch out", "Look out", "Run out of", "Break down", "Fall down", "Get up", "Turn up", "Turn down", "Bring back", "Take back", "Hold up", "Drop off", "Pick up", "Set up", "Eat out", "Eat up", "Drink up", "Chop up", "Warm up", "Cool down", "Pay for", "Line up", "Stand in line", "Look around", "Sell out", "Sign up", "Log in", "Log out", "Join in", "Stay in", "Stay up", "Sit down", "Hang out", "Take a break", "Add up", "Back up", "Blow up", "Break in", "Bring in", "Burn down", "Call on", "Clear away", "Close down", "Come along", "Come over", "Cut off", "Cut up", "Die out", "Dig up", "Do up", "Draw out", "Drive in", "Drop in", "End up", "Face up", "Fall off", "Fill up", "Fix up", "Get across", "Call off", "Put off", "Fill in for", "Take over", "Get ahead", "Burn out", "Lay off", "Take on", "Work on", "Sign in", "Sign out", "Hand over", "Step down", "Knock off", "Get down to", "Calm down", "Cheer up", "Get over", "Look down on", "Look up to", "Fall out", "Make up", "Ask out", "Go out with", "Move on", "Count on", "Let down", "Open up", "Cool down", "Mix up", "Sort out", "Work out", "Find out", "Figure out", "Think over", "Give up", "Deal with", "Face up to", "Come up with", "Look into", "Rule out", "Turn out", "Come across", "Bring up", "Drop out", "Dress up", "Dress down", "Try on", "Pick out", "Wear out", "Grow out of", "Look for", "Save up", "Shop around", "Pay off", "Splash out", "Take back", "Sell out", "Throw away", "Put away", "Work out", "Warm up", "Pass out", "Get over", "Come down with", "Fight off", "Give up", "Join in", "Keep up with", "Cut down on", "Put on", "Build up", "Throw up", "Pull a muscle", "Slow down", "Set off", "Check in", "Check out", "Drop off", "Pick up", "See off", "Hold up", "Get in", "Speed up", "Pull over", "Break down", "Hop on", "Hop off", "Look around", "Stop over", "Log in", "Log out", "Back up", "Set up", "Shut down", "Turn up", "Turn down", "Plug in", "Go off", "Key in", "Click on", "Pop up", "Scroll up", "Scroll down", "Wipe out", "Stay out", "Stay up", "Hang out", "Clean up", "Tidy up", "Clear up", "Look after", "Take after", "Run out of", "Call back", "Hang up", "Hold on", "Speak up", "Cut off", "Pass on", "Go over", "Look up", "Write down", "Hand in", "Hand out", "Cross out", "Fill out", "Keep on", "Carry on", "Go on", "Leave out", "Point out", "Put up with", "Take up", "Give back", "Knock down", "Blow up", "Break in", "Bring back", "Take out", "Put on", "Fall off", "Get up", "Turn around", "Move in", "Move out", "Line up", "Stand back", "Pass by", "Watch out"];
+const questionData={"1": ["What’s your name?", "How do you spell your name?", "Where are you from?", "Where do you come from?", "How old are you?", "When is your birthday?", "What is the weather like today?", "Could you tell me what time it is?", "When were you born?", "What year are you in?", "What is your phone number?", "What is your student ID number?", "What size shirt do you wear?", "What day is today?", "What month is it?", "What is your favorite season?", "What are your hobbies?", "What do you do in your free time?", "Are you single or in a relationship?", "What do you do for a living?"], "2": ["What are you like?", "What do you look like?", "How are you today?", "What is your favorite color?", "How can I get to your house?", "Where do you live?", "Who do you live with?", "What university do you attend?", "What career are you studying?", "What type of music do you like?", "What kind of movies do you like?", "What time do you usually wake up?", "What time do you usually have lunch?", "What do you usually do in the morning?", "What is in your backpack?", "Are you motivated to continue this career?", "Is English confusing for you?", "What do you usually do every day?", "What time do you usually arrive at university?", "What time are you leaving the university today?"], "3": ["Do you prefer working in pairs or alone? Why?", "Who are the members of your project or work team?", "Tell me five things you like doing and five things you don’t like doing.", "What is your class schedule like?", "Can you tell me about yourself?", "How do you pronounce this word?", "How do you translate this phrase?", "Tell me ten parts of your body.", "Give me examples using can, may, must, and ought to.", "What does a perfect day look like for you?", "Are you happy today?", "Were you busy yesterday?", "Do you drink coffee every day?", "Did you sleep well last night?", "What did you eat for breakfast?", "Will you study tonight?", "Are you going to work tomorrow?", "Were you going to call me yesterday?", "Can you speak English confidently?", "Could you help me with this?"], "4": ["May I ask you a question?", "Might you travel next month?", "Should people respect different opinions?", "Must students arrive on time?", "Shall we begin the activity?", "Would you like to join us?", "Would you rather study alone or with friends?", "Did you use to play outside as a child?", "Are you used to waking up early?", "Are you getting used to speaking English?", "Are you able to explain your opinion?", "Are you willing to learn from mistakes?", "Are you about to leave?", "What would you like to eat?", "Is it a must to respect the rules?", "What are you doing right now?", "What were you doing last night?", "What will you be doing tomorrow morning?", "Have you finished your homework?", "Had you studied before the exam?"], "5": ["Will you have completed your project by Friday?", "How long have you been learning English?", "Had you been waiting long before I arrived?", "Will you have been working here for five years next month?", "What happens if people lie?", "What will you do if it rains tomorrow?", "What would you do if you were rich?", "What would you have done if you had failed the exam?", "What would your life be like now if you had studied abroad?", "What would you have achieved if you were more disciplined?", "What do you wish you had?", "What do you wish you could change?", "What do you wish people would understand?", "What do you wish you had done differently?", "What do you wish your country would improve?", "What do you think about social media?", "Do you believe social media helps relationships?", "Did social media change the way people communicate?", "Will social media become more dangerous?", "Are people becoming addicted to their phones?"], "6": ["Could people live without the internet?", "Should children use social media?", "Must parents control what children watch online?", "Would you delete your social media for one year?", "What is your opinion about artificial intelligence?", "Do you use artificial intelligence often?", "Have you ever used AI to study?", "Will AI replace many jobs?", "Can AI help teachers?", "Could AI become dangerous?", "Should students use AI for homework?", "Must schools regulate AI use?", "Would you trust AI with legal advice?", "What would happen if AI controlled society?", "What do you think about poverty?", "Is poverty caused by laziness or by the system?", "Do governments help poor people enough?", "Will poverty disappear someday?", "Can education reduce poverty?", "Could rich people do more to help society?"], "7": ["Should the government limit extreme wealth?", "Must society protect vulnerable people?", "What would you do if you were president?", "Do you believe in God?", "Has religion influenced your life?", "Should religion influence politics?", "Can a person be moral without religion?", "Could the world be peaceful without religion?", "Must people respect different beliefs?", "Would you discuss religion with a stranger?", "What would happen if religion disappeared?", "Do you wish people were more tolerant?", "What do you think about faith?", "What is happiness?", "Are you happy with your life right now?", "Were you happier five years ago?", "Do people need money to be happy?", "Did you ever confuse pleasure with happiness?", "Will you be happier in the future?", "Can suffering teach wisdom?"], "8": ["Should people search for meaning?", "Would you rather be rich or peaceful?", "What would you change about your life?", "What makes a good friend?", "Do you have a best friend?", "Did you meet your best friend at school?", "Have you ever lost a friendship?", "Can friends become family?", "Could you forgive betrayal?", "Should friends tell the truth?", "Must friendship be based on loyalty?", "Would you rather have many friends or few real friends?", "What would you do if a friend lied to you?", "What is love?", "Have you ever been in love?", "Do people confuse love with attraction?", "Did your first love teach you something?", "Will you marry someday?", "Can love survive distance?", "Could you forgive infidelity?"], "9": ["Should couples share everything?", "Must love include respect?", "What would you do after a painful breakup?", "What do you usually buy at the supermarket?", "Do you prefer shopping online or in stores?", "Did you buy anything yesterday?", "Are you going to buy new clothes soon?", "Can I pay by card?", "Could you give me a discount?", "May I try this on?", "Would you like a bag?", "Have you ever returned a product?", "What would you do if the cashier charged you twice?", "What would you like to order?", "Do you prefer coffee or juice?", "Did you enjoy the food?", "Are you going to leave a tip?", "Can I see the menu?", "Could you bring me some water?", "May I pay now?"], "10": ["Should I try the chicken?", "Have you ever eaten sushi?", "Would you rather eat at home or at a restaurant?", "What is wrong?", "Do you feel sick?", "Did you take any medicine?", "Have you had this pain before?", "Can you describe the symptoms?", "Could you call a doctor?", "May I see your ID?", "Should I rest today?", "Must I take this medicine after meals?", "Will I be able to work tomorrow?", "Where is the nearest bank?", "Can you tell me the way to the hospital?", "Could you help me find this address?", "Is this bus going downtown?", "Did I miss the bus?", "Will this taxi take me to the airport?", "Are you waiting for someone?"], "11": ["Have you seen my phone?", "Should I turn left or right?", "Would you rather walk or take a taxi?", "What do you think about politics?", "Do you vote?", "Did politicians keep their promises?", "Will the government solve the problem?", "Can democracy protect freedom?", "Could corruption destroy a country?", "Should taxes be lower?", "Must leaders serve the people?", "Would you become a politician?", "What would you change in your country?", "What is justice?", "Is the law always fair?", "Do people respect the law?"], "12": ["Did the judge make the right decision?", "Will justice exist for everyone someday?", "Can a law be legal but unfair?", "Could a poor person receive equal justice?", "Should criminals get second chances?", "Must judges be independent?", "What would you do if you witnessed a crime?", "Why do people lie?", "Can people really change?", "Could childhood affect adult behavior?", "Should people control their emotions?", "Must people take responsibility for their actions?", "Have you ever regretted a decision?", "What were you thinking at that moment?", "What would you do if you felt anxious?", "Do you wish you were more confident?", "What helps you calm down?", "How do you defend yourself when someone insults you?", "Can you stop insulting me?", "Why are you speaking to me like that?"], "13": ["Do you think insulting me makes your argument stronger?", "Could you express your opinion without disrespecting me?", "Should we continue this conversation calmly?", "Must you attack me personally?", "Would you like me to listen or to leave?", "Have I ever disrespected you like that?", "What would you do if someone insulted you in public?", "What is your opinion about education?", "Do schools teach useful life skills?", "Did your teachers inspire you?", "Will education change in the future?", "Can a person succeed without university?", "Could online education replace classrooms?", "Should students learn emotional intelligence?", "Must teachers be respected?", "Would you study another career?", "What would you change about the education system?", "What kind of job do you want?", "Do you enjoy your job?", "Did you work yesterday?"], "14": ["Are you going to change jobs?", "Can you work under pressure?", "Could you work abroad?", "Should workers have more rights?", "Must employers pay fair salaries?", "Would you rather be an employee or a business owner?", "What would you do if your boss treated you badly?", "Do you save money?", "Did you spend too much last month?", "Are you going to buy a house someday?", "Will you invest your money?", "Can money buy happiness?", "Could you live with less money?", "Should people borrow money from friends?", "Must people pay their debts?", "Would you lend money to a friend?", "What would you do if you won the lottery?", "Do you like parties?", "Did you go out last weekend?", "Are you going to a club tonight?"], "15": ["Can you dance?", "Could you turn down the music?", "May I sit here?", "Would you like to dance?", "Should we call a taxi?", "Have you ever lost your phone at a party?", "Would you rather go to a club or a quiet café?", "What did you use to do as a child?", "Did you use to watch cartoons?", "Did you use to be shy?", "Are you used to studying at night?", "Are you used to speaking in public?", "Are you getting used to your new routine?", "Are you getting used to difficult conversations?", "Can people get used to pain?", "Would you like to change an old habit?", "What habit do you wish you had changed earlier?", "What are your goals for this year?", "What will you do next week?", "What are you going to study tonight?"], "16": ["What will you have achieved by next year?", "What will you be doing tomorrow at 8 p.m.?", "How long will you have been studying English by December?", "Would you like to live abroad?", "Would you rather have stability or adventure?", "What would you do if you failed?", "What would you do if you succeeded?", "What kind of person are you becoming?", "Are you improving your discipline?", "Were you more irresponsible before?", "Do you learn from your mistakes?", "Did you apologize when you were wrong?", "Have you changed your mindset?", "Had you realized your weakness before?", "Will you keep improving?", "Can you forgive yourself?", "What do you wish you had understood earlier?", "What do you think about marriage?", "Do you believe marriage is necessary?", "Did your parents teach you about relationships?"], "17": ["Will marriage change in the future?", "Can a relationship survive without trust?", "Could you marry someone with different beliefs?", "Should couples live together before marriage?", "Must partners be completely honest?", "Would you rather marry young or later?", "What would you do if your partner lied?", "What makes life meaningful?", "Is death what gives life value?", "Do humans need purpose?", "Did suffering make you stronger?", "Will people ever understand themselves completely?", "Can science answer every human question?", "Could humans live without hope?", "Should people fear death?", "Must we accept uncertainty?", "What would you do if you had only one year to live?", "What do you think about yourself?", "Are you proud of your progress?", "Were you afraid to speak English before?"], "18": ["Do you believe in your ability?", "Did you overcome a difficult moment?", "Have you been working on yourself lately?", "Will you continue improving your English?", "Can you express your ideas clearly?", "Would you rather be comfortable or become better?", "What do you wish your future self would remember?", "What is one thing you are grateful for today?", "What mistake taught you an important lesson?", "What kind of people do you avoid?", "What kind of people inspire you?", "What is one dream you refuse to give up?", "What would you tell someone who feels lost in life?", "Can technology replace real friendship?"]};
+const targets=["Verb to be — Present", "Verb to be — Past", "Present Simple", "Past Simple", "Future Simple", "Be going to", "Was/Were going to", "Can", "Could", "May", "Might", "Ought to", "Must", "Shall", "Should", "Will", "Would", "Used to", "Be used to", "Get used to", "Be able to", "Be willing to", "Be about to", "Would like to", "Be a must to", "Would rather", "Present Continuous", "Past Continuous", "Future Continuous", "Present Perfect", "Past Perfect", "Future Perfect", "Present Perfect Continuous", "Past Perfect Continuous", "Future Perfect Continuous", "Zero Conditional", "First Conditional", "Second Conditional", "Third Conditional", "Mixed Conditional 1", "Mixed Conditional 2", "Wish"];
+const forms=["Affirmative — without contraction", "Affirmative — with contraction", "Negative — without contraction", "Negative — with contraction", "Interrogative — without contraction", "Interrogative — with contraction"];
+const careers=["Odontología", "Medicina", "Química Farmacéutica", "Enfermería", "Mecánica Dental", "Veterinaria", "Zootecnia", "Agronomía", "Ingeniería Agrícola", "Ingeniería Forestal", "Ingeniería en Agroindustria de los Alimentos", "Agronegocios", "Inglés"];
+
+let verbMode='normal', selectedVerb=null, selectedTarget='', selectedForm='';
+let currentClass=null, answered=0, good=0, attempts=0, timerId=null, startedAt=null;
+let mediaRecorder=null, audioChunks=[], currentAudioTarget='sentence';
+
+function init(){
+ const c=document.getElementById('studentCareer');
+ c.innerHTML='<option value="">Selecciona una carrera</option>'+careers.map(x=>`<option>${x}</option>`).join('');
+ renderClasses();restoreStudent();generateVerbBubbles();
+}
+function renderClasses(){
+ document.getElementById('classGrid').innerHTML=Object.keys(questionData).map(n=>`<div class="question-card"><h3>Clase ${n}</h3><p>${questionData[n].length} preguntas orales.</p><button class="dark" onclick="startQuestionClass('${n}')">Comenzar</button></div>`).join('');
+}
+function toggleVerbType(){
+ verbMode=verbMode==='normal'?'phrasal':'normal';
+ document.getElementById('verbTypeLabel').textContent=verbMode==='normal'?'Verbos normales':'Phrasal verbs';
+ generateVerbBubbles();
+}
+function generateVerbBubbles(){
+ const area=document.getElementById('floatingArea');area.innerHTML='';
+ const source=verbMode==='normal'?normalVerbs.map(v=>v.base):phrasalVerbs;
+ const shuffled=[...source].sort(()=>Math.random()-.5).slice(0,20);
+ shuffled.forEach((verb,i)=>{
+  const b=document.createElement('button');b.className='verb-bubble';b.textContent=verb;
+  b.style.left=(5+Math.random()*75)+'%';b.style.top=(8+Math.random()*70)+'%';b.style.animationDelay=(Math.random()*3)+'s';
+  b.onclick=()=>selectVerb(verb);area.appendChild(b);
+ });
+}
+function selectVerb(verb){
+ if(!getStudent().name){openModal('idModal');alert('Registra tu identificación primero.');return;}
+ selectedVerb=verb;
+ selectedTarget=targets[Math.floor(Math.random()*targets.length)];
+ selectedForm=forms[Math.floor(Math.random()*forms.length)];
+ document.getElementById('sentencePrompt').innerHTML=`<b>Verbo:</b> ${verb}<br><b>Estructura:</b> ${selectedTarget}<br><b>Forma:</b> ${selectedForm}<br><br>Construye una oración completa usando estas condiciones.`;
+ document.getElementById('sentenceTask').classList.remove('hidden');
+ document.getElementById('sentenceTask').scrollIntoView({behavior:'smooth'});
+}
+function evaluateSentence(){
+ const text=document.getElementById('sentenceText').value.trim();
+ const fb=document.getElementById('sentenceFeedback');
+ if(!text){fb.className='status bad';fb.textContent='Escribe una oración antes de evaluar.';return;}
+ let score=0, comments=[];
+ const words=text.split(/\s+/);
+ if(words.length>=4)score+=2;else comments.push('Amplía la oración.');
+ const base=selectedVerb.toLowerCase().split(' ')[0];
+ if(text.toLowerCase().includes(base) || (verbMode==='phrasal' && text.toLowerCase().includes(selectedVerb.toLowerCase())))score+=3;else comments.push('No se reconoce claramente el verbo seleccionado.');
+ if(/[.!?]$/.test(text))score+=1;else comments.push('Agrega puntuación final.');
+ if(selectedForm.toLowerCase().includes('negative') && /\b(not|n't|never)\b/i.test(text))score+=2;
+ else if(selectedForm.toLowerCase().includes('negative'))comments.push('La forma solicitada es negativa.');
+ if(selectedForm.toLowerCase().includes('interrogative') && /\?$/.test(text))score+=2;
+ else if(selectedForm.toLowerCase().includes('interrogative'))comments.push('La forma solicitada es interrogativa.');
+ if(score>=6){fb.className='status ok';fb.textContent='✅ Oración aceptada. Revisa pronunciación y naturalidad al decirla.';}
+ else{fb.className='status warn';fb.textContent='Revisión: '+comments.join(' ');}
+}
+function speakModel(){
+ const text=document.getElementById('sentenceText').value.trim();
+ if(!text){alert('Primero escribe tu oración.');return;}
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u);
+}
+function startRecognition(target){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){alert('El navegador no admite reconocimiento de voz. Usa Google Chrome.');return;}
+ const r=new SR();r.lang='en-US';r.interimResults=false;r.maxAlternatives=1;
+ const btn=target==='sentence'?document.getElementById('speechBtn'):document.getElementById('qSpeechBtn-'+target);
+ btn.classList.add('recording');btn.textContent='🎤 Escuchando...';
+ r.onresult=e=>{
+  const transcript=e.results[0][0].transcript;
+  if(target==='sentence')document.getElementById('sentenceTranscript').value=transcript;
+  else document.getElementById('qTranscript-'+target).value=transcript;
+ };
+ r.onerror=()=>alert('No fue posible reconocer la voz.');
+ r.onend=()=>{btn.classList.remove('recording');btn.textContent='🎤 Reconocer voz';};
+ r.start();
+}
+async function startRecording(target){
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  audioChunks=[];mediaRecorder=new MediaRecorder(stream);currentAudioTarget=target;
+  mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+  mediaRecorder.onstop=()=>{
+   const blob=new Blob(audioChunks,{type:'audio/webm'});
+   const url=URL.createObjectURL(blob);
+   const audio=target==='sentence'?document.getElementById('sentenceAudio'):document.getElementById('qAudio-'+target);
+   audio.src=url;audio.classList.remove('hidden');stream.getTracks().forEach(t=>t.stop());
+  };
+  mediaRecorder.start();
+ }catch(e){alert('No se pudo acceder al micrófono.');}
+}
+function stopRecording(){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop()}
+function startQuestionClass(n){
+ if(!getStudent().name){openModal('idModal');alert('Registra tu identificación primero.');return;}
+ currentClass=n;answered=0;good=0;attempts=0;
+ document.getElementById('questionClassTitle').textContent='Clase '+n;
+ renderQuestions();updateQuestionMetrics();startTimer();
+ document.getElementById('questionPractice').classList.remove('hidden');
+ document.getElementById('questionPractice').scrollIntoView({behavior:'smooth'});
+}
+function renderQuestions(){
+ document.getElementById('questionsContainer').innerHTML=questionData[currentClass].map((q,i)=>`<div class="question-card">
+ <h3>${i+1}. ${q}</h3>
+ <button class="soft" onclick="speakQuestion(${i})">🔊 Escuchar pregunta</button>
+ <textarea id="qText-${i}" placeholder="Escribe una respuesta completa en inglés..."></textarea>
+ <div class="actions">
+ <button class="green" onclick="evaluateAnswer(${i})">Evaluar respuesta</button>
+ <button id="qSpeechBtn-${i}" class="dark" onclick="startRecognition('${i}')">🎤 Reconocer voz</button>
+ <button class="soft" onclick="startRecording('${i}')">⏺ Grabar</button>
+ <button class="red" onclick="stopRecording()">⏹ Detener</button>
+ </div>
+ <textarea id="qTranscript-${i}" placeholder="Transcripción de voz..." readonly></textarea>
+ <audio id="qAudio-${i}" controls class="hidden" style="width:100%;margin-top:8px"></audio>
+ <div id="qStatus-${i}" class="status"></div></div>`).join('');
+}
+function speakQuestion(i){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(questionData[currentClass][i]);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u)}
+function evaluateAnswer(i){
+ const box=document.getElementById('qText-'+i), trans=document.getElementById('qTranscript-'+i);
+ const text=(box.value.trim()||trans.value.trim());const st=document.getElementById('qStatus-'+i);attempts++;
+ if(!text){st.className='status bad';st.textContent='Debes escribir o decir una respuesta.';updateQuestionMetrics();return;}
+ let pts=0;
+ const wc=text.split(/\s+/).filter(Boolean).length;
+ if(wc>=5)pts+=2;if(wc>=10)pts+=2;
+ if(/[.!?]$/.test(text))pts+=1;
+ if(/\b(because|however|also|but|and|so|for example|in my opinion)\b/i.test(text))pts+=2;
+ if(!/^yes\.?$|^no\.?$/i.test(text))pts+=2;
+ if(!st.dataset.done){answered++;st.dataset.done='1';}
+ if(pts>=6){if(!st.dataset.good){good++;st.dataset.good='1';}st.className='status ok';st.textContent='✅ Respuesta aceptada: completa, desarrollada y pertinente.';}
+ else{st.className='status warn';st.textContent='Mejora la respuesta: añade detalles, una razón o un ejemplo.';}
+ updateQuestionMetrics();
+}
+function updateQuestionMetrics(){
+ document.getElementById('answeredCount').textContent=answered+'/20';
+ document.getElementById('goodCount').textContent=good;
+ document.getElementById('attemptCount').textContent=attempts;
+ document.getElementById('progressFill').style.width=Math.min(100,answered/20*100)+'%';
+}
+function showResults(){
+ const s=getStudent();saveSkillResult({skill:'Speaking',student:s.name,career:s.career,year:s.year,activity:'Clase '+currentClass,score:good,maxScore:20,details:'Respondidas: '+answered+'/20; intentos: '+attempts});const box=document.getElementById('resultsBox');box.classList.remove('hidden');
+ box.innerHTML=`<h3>Resultado</h3><b>Estudiante:</b> ${s.name}<br><b>Carrera:</b> ${s.career}<br><b>Año:</b> ${s.year}<br><b>Clase:</b> ${currentClass}<br><b>Preguntas respondidas:</b> ${answered}<br><b>Respuestas aceptadas:</b> ${good}<br><b>Intentos:</b> ${attempts}<br><b>Fecha y hora:</b> ${new Date().toLocaleString()}<br><br><small>La evaluación automática es orientativa y no sustituye la valoración del docente sobre pronunciación, fluidez y precisión gramatical.</small>`;
+}
+function startTimer(){if(timerId)clearInterval(timerId);startedAt=Date.now();timerId=setInterval(()=>{const s=Math.floor((Date.now()-startedAt)/1000);document.getElementById('timeCount').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},1000)}
+function openModal(id){document.getElementById(id).classList.remove('hidden')} function closeModal(id){document.getElementById(id).classList.add('hidden')}
+function saveStudent(){const s={name:studentName.value.trim(),career:studentCareer.value,year:studentYear.value};if(!s.name||!s.career||!s.year){alert('Completa todos los datos.');return}localStorage.setItem('speakingStudent',JSON.stringify(s));displayStudent(s);closeModal('idModal')}
+function getStudent(){try{return JSON.parse(localStorage.getItem('speakingStudent'))||{}}catch(e){return {}}}
+function restoreStudent(){const s=getStudent();if(s.name){studentName.value=s.name;studentCareer.value=s.career;studentYear.value=s.year;displayStudent(s)}}
+function displayStudent(s){document.getElementById('studentBadge').innerHTML=`<b>${s.name}</b><br>${s.career} · ${s.year}`}
+function showVerbLab(){document.getElementById('verbLab').scrollIntoView({behavior:'smooth'})}
+function showQuestionClasses(){document.getElementById('classesSection').scrollIntoView({behavior:'smooth'})}
+init();
+
+
+function saveSkillResult(record){
+ const key='englishSkillResults';let items=[];
+ try{items=JSON.parse(localStorage.getItem(key))||[]}catch(e){items=[]}
+ record.id=Date.now()+'-'+Math.random().toString(36).slice(2);record.date=new Date().toISOString();
+ items.push(record);localStorage.setItem(key,JSON.stringify(items.slice(-500)));
+}
+
+</script>
+</body>
+</html>

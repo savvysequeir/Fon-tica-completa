@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gramática | Futuro Continuo</title>
+  <style>
+    :root {
+      --bg:#f3f7fb; --panel:#ffffff; --ink:#132238; --muted:#5c6b7a; --brand:#275efe; --brand2:#00a88f; --danger:#e5484d; --warn:#f59e0b; --ok:#16a34a; --line:#dbe4ef; --soft:#eef4ff; --shadow:0 18px 48px rgba(21,42,79,.12); --radius:22px;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter, Segoe UI, Arial, sans-serif; background:linear-gradient(135deg,#eaf1ff 0%,#f8fbff 42%,#eefdf8 100%); color:var(--ink); }
+    header { padding:34px 18px 22px; background:linear-gradient(135deg,#12295c,#275efe 58%,#00a88f); color:#fff; position:relative; overflow:hidden; }
+    header::after { content:""; position:absolute; width:340px; height:340px; right:-120px; top:-130px; border-radius:999px; background:rgba(255,255,255,.15); }
+    .hero { max-width:1180px; margin:auto; position:relative; z-index:1; }
+    .eyebrow { display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.18); font-weight:800; letter-spacing:.3px; }
+    h1 { margin:16px 0 8px; font-size:clamp(2rem,5vw,4.5rem); line-height:.96; }
+    .subtitle { max-width:850px; font-size:1.12rem; line-height:1.55; color:#eaf2ff; }
+    nav { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+    nav a { color:#fff; text-decoration:none; padding:10px 13px; border-radius:14px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.22); font-weight:700; }
+    main { max-width:1180px; margin:0 auto; padding:22px 16px 70px; }
+    section { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px; margin-top:18px; }
+    h2 { font-size:1.65rem; margin:0 0 16px; }
+    h3 { margin:0 0 10px; }
+    p, li { line-height:1.58; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+    @media (max-width:850px) { .grid-3,.grid-2 { grid-template-columns:1fr; } }
+    .card,.rule,.question-card { background:#fbfdff; border:1px solid var(--line); border-radius:18px; padding:16px; }
+    label { display:block; font-weight:800; margin-bottom:8px; }
+    input, select { width:100%; padding:13px 14px; border-radius:14px; border:1px solid #cfd9e6; font-size:1rem; background:#fff; color:var(--ink); }
+    input:focus, select:focus { outline:3px solid rgba(39,94,254,.15); border-color:var(--brand); }
+    button { border:0; border-radius:14px; padding:11px 14px; font-weight:850; cursor:pointer; transition:.15s transform,.15s opacity,.15s filter; }
+    button:hover { transform:translateY(-1px); filter:brightness(1.02); }
+    button:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .primary-btn { background:var(--brand); color:#fff; }
+    .ghost-btn { background:#edf4ff; color:#17366d; border:1px solid #cfe0ff; }
+    .danger-btn { background:#fff0f0; color:#a71d2a; border:1px solid #ffd0d0; }
+    .insert-row { display:flex; gap:10px; margin-top:10px; }
+    .student-chip,.pill { display:inline-flex; align-items:center; gap:6px; margin-top:10px; padding:8px 10px; border-radius:999px; background:#eef4ff; color:#193a78; font-weight:800; }
+    .pill.ok { background:#eafaf1; color:#126b36; } .pill.warn { background:#fff7e6; color:#925d00; } .pill.bad { background:#fff0f0; color:#a71d2a; }
+    .results-wrap { overflow:auto; border-radius:16px; border:1px solid var(--line); }
+    table { width:100%; border-collapse:collapse; background:#fff; min-width:950px; }
+    th,td { padding:12px 10px; border-bottom:1px solid var(--line); text-align:left; }
+    th { background:#f0f5ff; color:#16376e; font-size:.92rem; }
+    tr:last-child td { border-bottom:0; }
+    .formula { background:#eff6ff; border-left:5px solid var(--brand); padding:11px 12px; border-radius:12px; margin:8px 0; }
+    .note-box,.lock-note { padding:13px 14px; border-radius:16px; background:#fff8e8; border:1px solid #ffdf9a; color:#714a00; font-weight:750; margin:10px 0; }
+    .lock-note.show { display:block; } .lock-note { display:none; } .locked { opacity:.45; pointer-events:none; filter:grayscale(.4); }
+    .hidden { display:none !important; }
+    .vocab-tools { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+    .vocab-tools input { flex:1; min-width:230px; }
+    .vocab-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    @media (max-width:1000px) { .vocab-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:560px) { .vocab-grid { grid-template-columns:1fr; } }
+    .vocab-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:6px; }
+    .vocab-type { font-size:.75rem; color:#fff; background:var(--brand2); border-radius:999px; padding:4px 8px; align-self:flex-start; font-weight:900; }
+    .vocab-term { font-size:1.15rem; font-weight:900; } .ipa { color:#6a3bc1; font-weight:800; } .translation { color:var(--muted); }
+    .status-line { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0; }
+    .progressbar { height:12px; background:#eaf0f8; border-radius:999px; overflow:hidden; margin:12px 0; }
+    .progressbar span { display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--brand2)); transition:.25s; }
+    .scramble { background:#f7faff; border:1px dashed #9bb6e8; border-radius:18px; padding:16px; font-size:1.2rem; font-weight:900; color:#142b58; margin:12px 0; }
+    .answer-row { display:flex; gap:10px; }
+    .answer-row input { flex:1; }
+    @media (max-width:650px) { .answer-row { flex-direction:column; } }
+    .feedback { margin-top:12px; font-weight:850; min-height:28px; }
+    .feedback.good { color:var(--ok); } .feedback.bad { color:var(--danger); } .feedback.info { color:#1e4c99; }
+    .footer-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+    .quiz-options { display:grid; gap:10px; margin-top:12px; }
+    .option-btn { width:100%; text-align:left; background:#f5f8ff; color:#143266; border:1px solid #d4e1f7; }
+    .option-btn.correct { background:#eafaf1; color:#126b36; border-color:#8ee0ad; } .option-btn.wrong { background:#fff0f0; color:#a71d2a; border-color:#ffb5b8; }
+    .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(12,23,44,.64); z-index:20; place-items:center; padding:16px; }
+    .modal-backdrop.show { display:grid; }
+    .modal { background:#fff; border-radius:24px; padding:24px; max-width:560px; box-shadow:0 30px 90px rgba(0,0,0,.28); }
+    .modal-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; margin-top:18px; }
+    .small { font-size:.92rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div class="eyebrow">Gramática interactiva</div>
+      <h1>Futuro Continuo</h1>
+      <p class="subtitle">Página de práctica con <strong>will / shall + be + verb-ing</strong>. Incluye identificación del estudiante, explicación, vocabulario con audio, actividades con control de errores, mini prueba y resultados automáticos.</p>
+      <nav><a href="#resultados">Resultados</a><a href="#identificacion">Identificación</a><a href="#explicacion">Explicación</a><a href="#vocabulario">Vocabulario</a><a href="#actividades">Actividades</a></nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="resultados">
+      <h2>Resultados</h2>
+      <p class="small">Cada oración correcta vale <strong>1 punto</strong>. Actividad 1: 50 puntos. Actividad 2: 50 puntos. Total máximo: <strong>100 puntos</strong>.</p>
+      <div class="results-wrap"><table><thead><tr><th>Nombre</th><th>Carrera</th><th>Año</th><th>Act. 1</th><th>Act. 2</th><th>Total</th><th>Mini prueba</th><th>Fecha</th><th>Estado</th></tr></thead><tbody id="resultsBody"><tr><td colspan="9">Todavía no hay resultados registrados.</td></tr></tbody></table></div>
+      <div class="footer-actions"><button class="ghost-btn" onclick="clearResults()">Limpiar resultados</button></div>
+    </section>
+
+    <section id="identificacion">
+      <h2>I. Identificación del estudiante</h2>
+      <div class="grid-3">
+        <div class="card"><label for="studentName">1.1 Nombre completo</label><input id="studentName" type="text" placeholder="Escribe el nombre completo" /><div class="insert-row"><button class="primary-btn" onclick="insertName()">Insertar</button></div><div id="nameDisplay" class="student-chip">1. Nombre completo: —</div></div>
+        <div class="card"><label for="careerSelect">1.2 Carrera</label><select id="careerSelect"><option value="">Selecciona la carrera</option><option>Odontología</option><option>Medicina</option><option>Química Farmacéutica</option><option>Enfermería</option><option>Mecánica Dental</option><option>Veterinaria</option><option>Zootecnia</option><option>Agronomía</option><option>Agrícola</option><option>Ingeniería Forestal</option><option>Ingeniería en Agroindustria de los Alimentos</option><option>Agronegocios</option><option>Inglés</option></select><div class="insert-row"><button class="primary-btn" onclick="insertCareer()">Insertar</button></div><div id="careerDisplay" class="student-chip">2. Carrera: —</div></div>
+        <div class="card"><label for="yearSelect">1.3 Año que cursa</label><select id="yearSelect"><option value="">Selecciona el año</option><option>Primer año</option><option>Segundo año</option><option>Tercer año</option><option>Cuarto año</option><option>Quinto año</option><option>Sexto año</option></select><div class="insert-row"><button class="primary-btn" onclick="insertYear()">Insertar</button></div><div id="yearDisplay" class="student-chip">3. Año: —</div></div>
+      </div>
+      <div id="studentReady" class="lock-note show">⚠️ Inserta nombre, carrera y año para activar las actividades.</div>
+    </section>
+
+    <section id="explicacion">
+      <h2>II. Explicación</h2>
+      <div class="rule"><h3>2.1 Estructuras</h3><div class="formula"><strong>Positiva:</strong> Subject + will/shall + be + verb-ing + complement.</div><div class="formula"><strong>Negativa:</strong> Subject + will/shall + not + be + verb-ing + complement.</div><div class="formula"><strong>Interrogativa:</strong> Will/Shall + subject + be + verb-ing + complement?</div><div class="formula"><strong>Con phrasal verbs:</strong> Subject + will/shall + be + verb-ing + particle/preposition + complement.</div></div>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="rule"><h3>2.2 Positiva: will/shall + be + -ing</h3><p>El futuro continuo expresa una acción que estará en progreso en un momento futuro. <strong>Will</strong> puede usarse con todos los sujetos. <strong>Shall</strong> se usa principalmente con <strong>I</strong> y <strong>we</strong> en contextos formales o tradicionales.</p><ul><li>I <strong>will/shall be studying</strong> tomorrow.</li><li>She <strong>will be working</strong> at 8:00.</li><li>We <strong>shall be going over</strong> the lesson.</li></ul><h3>Reglas para añadir -ing</h3><ul><li>Regla general: <strong>work → working</strong>.</li><li>Verbos terminados en <strong>-e</strong>: se elimina la <strong>e</strong>. <strong>close → closing</strong>.</li><li>Verbos terminados en <strong>-ie</strong>: cambia <strong>ie</strong> por <strong>y</strong>. <strong>lie → lying</strong>.</li><li>Una sílaba CVC: se duplica la consonante final. <strong>run → running</strong>.</li><li>Verbos terminados en <strong>-y</strong>: se conserva la <strong>y</strong>. <strong>study → studying</strong>.</li></ul></div>
+        <div class="rule"><h3>Verbos que normalmente no se usan con -ing</h3><p>Algunos verbos expresan estados, posesión, pensamiento, gusto o percepción. Normalmente se prefieren en formas simples, no continuas.</p><ul><li><strong>Mente:</strong> know, understand, believe, remember.</li><li><strong>Deseo/gusto:</strong> want, need, prefer, like, love, hate.</li><li><strong>Posesión:</strong> have, own, belong.</li><li><strong>Sentidos:</strong> see, hear, smell, taste.</li><li><strong>Estado:</strong> seem, mean, cost.</li></ul><p class="small">Algunos pueden usarse con -ing si cambian de significado: <em>I will be thinking about it</em>, <em>She will be having lunch</em>.</p></div>
+      </div>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="rule"><h3>2.3 Negativa</h3><div class="formula">Subject + will/shall + not + be + verb-ing + complement.</div><ul><li>They will not be taking off their shoes.</li><li>We shall not be going back home.</li><li>She will not be checking the messages.</li></ul></div>
+        <div class="rule"><h3>2.4 Interrogative</h3><div class="formula">Will/Shall + subject + be + verb-ing + complement?</div><ul><li>Will you be turning on the TV?</li><li>Shall we be switching on the radio?</li><li>Will he be choosing the topic?</li></ul></div>
+      </div>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="rule"><h3>2.5 Usos</h3><ul><li>Acción en progreso en un momento futuro: <strong>At 8:00, she will be working.</strong></li><li>Planes o acciones esperadas: <strong>We shall be meeting tomorrow.</strong></li><li>Pregunta cortés sobre planes: <strong>Will you be using the computer?</strong></li><li>Acciones futuras con phrasal verbs: <strong>They will be cleaning up the classroom.</strong></li></ul></div>
+        <div class="rule"><h3>2.6 Ejemplos</h3><ul><li>I will be waking up at six tomorrow.</li><li>We shall be finding out the answer.</li><li>Will you be getting off at the next stop?</li><li>She will not be admiring the landscape.</li><li>They will be connecting the cables.</li></ul></div>
+      </div>
+    </section>
+
+    <section id="vocabulario"><h2>III. Vocabulario</h2><p>Solo se incluyen los <strong>50 verbos frasales</strong> de la actividad de ordenar y los <strong>50 verbos normales</strong> de la actividad de traducción. Cada tarjeta contiene audio, fonética y traducción.</p><div class="vocab-tools"><input id="vocabSearch" type="search" placeholder="Buscar verbo, phrasal verb o traducción..." oninput="renderVocab()" /><button class="ghost-btn" onclick="speakAllVisible()">🔊 Leer visibles</button></div><div id="vocabGrid" class="vocab-grid"></div></section>
+
+    <section id="actividades"><h2>IV. Actividades</h2><div id="activitiesLock" class="lock-note show">🔒 Las actividades están bloqueadas hasta insertar nombre, carrera y año.</div><div id="activitiesContent" class="locked"><div class="note-box"><strong>Regla de trabajo:</strong> cada oración correcta vale <strong>1 punto</strong>. En cada actividad solo puedes cometer hasta 2 errores. Al llegar a 3 errores, la actividad vuelve a empezar desde la primera oración.</div>
+      <div id="activity1" class="question-card"><h3>Actividad 1: Reordena 50 oraciones con verbos frasales</h3><p>Instrucciones: Reordena las palabras para formar oraciones gramaticalmente correctas en futuro continuo usando <strong>will/shall + be + phrasal verb-ing</strong>.</p><div class="status-line"><span id="a1ProgressPill" class="pill">Pregunta 1 de 50</span><span id="a1MistakesPill" class="pill warn">Errores: 0 / 3</span><span id="a1ScorePill" class="pill ok">Puntaje: 0</span></div><div class="progressbar"><span id="a1Bar"></span></div><div id="a1Scramble" class="scramble"></div><div class="answer-row"><input id="a1Answer" type="text" placeholder="Escribe la oración correcta aquí..." onkeydown="if(event.key==='Enter') checkActivity1()" /><button id="a1Check" class="primary-btn" onclick="checkActivity1()">Revisar</button></div><div class="footer-actions"><button class="ghost-btn" onclick="showHint(1)">💡 Pista</button><button class="danger-btn" onclick="resetActivity1(true)">Reiniciar actividad 1</button></div><div id="a1Feedback" class="feedback"></div></div>
+      <div id="activity2" class="question-card" style="margin-top:16px"><h3>Actividad 2: Traduce 50 oraciones con verbos normales</h3><p>Instrucciones: Traduce las siguientes oraciones al inglés usando futuro continuo: <strong>will/shall + be + verb-ing</strong>.</p><div class="status-line"><span id="a2ProgressPill" class="pill">Pregunta 1 de 50</span><span id="a2MistakesPill" class="pill warn">Errores: 0 / 3</span><span id="a2ScorePill" class="pill ok">Puntaje: 0</span></div><div class="progressbar"><span id="a2Bar"></span></div><div id="a2Prompt" class="scramble"></div><div class="answer-row"><input id="a2Answer" type="text" placeholder="Escribe la traducción correcta aquí..." onkeydown="if(event.key==='Enter') checkActivity2()" /><button id="a2Check" class="primary-btn" onclick="checkActivity2()">Revisar</button></div><div class="footer-actions"><button class="ghost-btn" onclick="showHint(2)">💡 Pista</button><button class="danger-btn" onclick="resetActivity2(true)">Reiniciar actividad 2</button></div><div id="a2Feedback" class="feedback"></div></div>
+      <div id="miniQuiz" class="question-card hidden" style="margin-top:16px"><h3>Mini prueba: Futuro Continuo</h3><p>Selecciona la respuesta correcta. La mini prueba confirma dominio del tema; el puntaje principal se calcula con las 100 oraciones de las actividades.</p><div class="status-line"><span id="quizProgress" class="pill">Pregunta 1 de 12</span><span id="quizScore" class="pill ok">Correctas: 0</span></div><div class="progressbar"><span id="quizBar"></span></div><div id="quizQuestion" class="scramble"></div><div id="quizOptions" class="quiz-options"></div><div class="footer-actions"><button id="quizNext" class="primary-btn" onclick="nextQuizQuestion()" disabled>Siguiente</button><button class="danger-btn" onclick="restartAllActivities()">Volver a actividad 1</button></div><div id="quizFeedback" class="feedback"></div></div>
+    </div></section>
+  </main>
+
+  <div id="quizPromptModal" class="modal-backdrop" role="dialog" aria-modal="true"><div class="modal"><h2>¿Deseas entrar a la mini prueba?</h2><p>Ya terminaste las actividades. Puedes entrar a la mini prueba para registrar tu resultado o regresar a la actividad 1 para practicar nuevamente.</p><div class="modal-actions"><button class="ghost-btn" onclick="declineQuiz()">No, regresar a actividad 1</button><button class="primary-btn" onclick="acceptQuiz()">Sí, entrar a mini prueba</button></div></div></div>
+
+  <script>
+    const activity1 = [
+      {
+            "scrambled": "six / tomorrow / be / will / up / I / . / at / waking",
+            "answers": [
+                  "I will be waking up at six tomorrow."
+            ]
+      },
+      {
+            "scrambled": ". / getting / She / be / up / early / will",
+            "answers": [
+                  "She will be getting up early."
+            ]
+      },
+      {
+            "scrambled": ". / shall / be / late / to / We / bed / going / tonight",
+            "answers": [
+                  "We shall be going to bed late tonight."
+            ]
+      },
+      {
+            "scrambled": "be / . / on / putting / his / will / coat / He",
+            "answers": [
+                  "He will be putting on his coat."
+            ]
+      },
+      {
+            "scrambled": "be / their / shoes / . / taking / not / They / will / off",
+            "answers": [
+                  "They will not be taking off their shoes."
+            ]
+      },
+      {
+            "scrambled": "be / shall / dinner / washing / after / up / I / .",
+            "answers": [
+                  "I shall be washing up after dinner."
+            ]
+      },
+      {
+            "scrambled": "be / You / will / the / . / classroom / up / cleaning",
+            "answers": [
+                  "You will be cleaning up the classroom."
+            ]
+      },
+      {
+            "scrambled": "desk / tidying / We / the / . / be / up / shall / not",
+            "answers": [
+                  "We shall not be tidying up the desk."
+            ]
+      },
+      {
+            "scrambled": "will / be / for / They / . / the / party / dressing / up",
+            "answers": [
+                  "They will be dressing up for the party."
+            ]
+      },
+      {
+            "scrambled": "Will / be / the / turning / you / on / ? / TV",
+            "answers": [
+                  "Will you be turning on the TV?"
+            ]
+      },
+      {
+            "scrambled": "light / She / not / turning / the / will / . / off / be",
+            "answers": [
+                  "She will not be turning off the light."
+            ]
+      },
+      {
+            "scrambled": "Shall / we / switching / be / on / the / radio / ?",
+            "answers": [
+                  "Shall we be switching on the radio?"
+            ]
+      },
+      {
+            "scrambled": "switching / off / will / . / be / phone / his / He",
+            "answers": [
+                  "He will be switching off his phone."
+            ]
+      },
+      {
+            "scrambled": ". / the / charger / shall / be / I / in / plugging",
+            "answers": [
+                  "I shall be plugging in the charger."
+            ]
+      },
+      {
+            "scrambled": "blowing / be / candles / the / . / They / will / out",
+            "answers": [
+                  "They will be blowing out the candles."
+            ]
+      },
+      {
+            "scrambled": "he / sitting / Will / be / down / soon / ?",
+            "answers": [
+                  "Will he be sitting down soon?"
+            ]
+      },
+      {
+            "scrambled": "will / standing / The / . / up / then / students / be",
+            "answers": [
+                  "The students will be standing up then."
+            ]
+      },
+      {
+            "scrambled": "looking / will / the / at / board / She / . / be",
+            "answers": [
+                  "She will be looking at the board."
+            ]
+      },
+      {
+            "scrambled": "teacher / be / We / listening / . / the / shall / to",
+            "answers": [
+                  "We shall be listening to the teacher."
+            ]
+      },
+      {
+            "scrambled": "be / words / I / . / down / the / will / writing",
+            "answers": [
+                  "I will be writing down the words."
+            ]
+      },
+      {
+            "scrambled": "the / They / be / homework / copying / down / . / will",
+            "answers": [
+                  "They will be copying down the homework."
+            ]
+      },
+      {
+            "scrambled": "? / you / pen / your / Will / be / up / picking",
+            "answers": [
+                  "Will you be picking up your pen?"
+            ]
+      },
+      {
+            "scrambled": "pencil / will / down / his / not / be / . / putting / He",
+            "answers": [
+                  "He will not be putting down his pencil."
+            ]
+      },
+      {
+            "scrambled": "opening / be / books / our / shall / We / . / up",
+            "answers": [
+                  "We shall be opening up our books."
+            ]
+      },
+      {
+            "scrambled": "their / They / . / notebooks / be / up / will / closing",
+            "answers": [
+                  "They will be closing up their notebooks."
+            ]
+      },
+      {
+            "scrambled": "my / . / be / shall / handing / paper / in / I",
+            "answers": [
+                  "I shall be handing in my paper."
+            ]
+      },
+      {
+            "scrambled": "handing / out / be / exams / will / the / . / teacher / The",
+            "answers": [
+                  "The teacher will be handing out the exams."
+            ]
+      },
+      {
+            "scrambled": "answer / the / Will / ? / they / be / out / wrong / crossing",
+            "answers": [
+                  "Will they be crossing out the wrong answer?"
+            ]
+      },
+      {
+            "scrambled": "be / mistake / . / will / rubbing / that / She / out",
+            "answers": [
+                  "She will be rubbing out that mistake."
+            ]
+      },
+      {
+            "scrambled": ". / will / You / in / filling / the / be / blanks",
+            "answers": [
+                  "You will be filling in the blanks."
+            ]
+      },
+      {
+            "scrambled": "form / . / shall / filling / I / out / be / this",
+            "answers": [
+                  "I shall be filling out this form."
+            ]
+      },
+      {
+            "scrambled": "be / the / out / . / We / finding / shall / answer",
+            "answers": [
+                  "We shall be finding out the answer."
+            ]
+      },
+      {
+            "scrambled": "class / The / the / . / going / will / be / over / lesson",
+            "answers": [
+                  "The class will be going over the lesson."
+            ]
+      },
+      {
+            "scrambled": "be / looking / He / the / word / will / up / .",
+            "answers": [
+                  "He will be looking up the word."
+            ]
+      },
+      {
+            "scrambled": "Will / thinking / you / be / about / question / ? / the",
+            "answers": [
+                  "Will you be thinking about the question?"
+            ]
+      },
+      {
+            "scrambled": "first / be / will / She / . / going / in",
+            "answers": [
+                  "She will be going in first."
+            ]
+      },
+      {
+            "scrambled": "going / out / They / tonight / not / be / . / will",
+            "answers": [
+                  "They will not be going out tonight."
+            ]
+      },
+      {
+            "scrambled": "in / ? / Will / be / now / coming / he",
+            "answers": [
+                  "Will he be coming in now?"
+            ]
+      },
+      {
+            "scrambled": "sun / . / be / will / soon / coming / out / The",
+            "answers": [
+                  "The sun will be coming out soon."
+            ]
+      },
+      {
+            "scrambled": ". / getting / the / in / car / be / I / shall",
+            "answers": [
+                  "I shall be getting in the car."
+            ]
+      },
+      {
+            "scrambled": "be / the / taxi / of / will / getting / out / They / .",
+            "answers": [
+                  "They will be getting out of the taxi."
+            ]
+      },
+      {
+            "scrambled": "We / the / bus / on / be / getting / shall / .",
+            "answers": [
+                  "We shall be getting on the bus."
+            ]
+      },
+      {
+            "scrambled": "getting / off / ? / next / at / the / you / stop / Will / be",
+            "answers": [
+                  "Will you be getting off at the next stop?"
+            ]
+      },
+      {
+            "scrambled": "will / away / be / tomorrow / . / He / going",
+            "answers": [
+                  "He will be going away tomorrow."
+            ]
+      },
+      {
+            "scrambled": "be / later / will / She / back / coming / .",
+            "answers": [
+                  "She will be coming back later."
+            ]
+      },
+      {
+            "scrambled": "back / home / be / We / . / going / shall / not",
+            "answers": [
+                  "We shall not be going back home."
+            ]
+      },
+      {
+            "scrambled": "Will / be / ? / hurrying / they / now / up",
+            "answers": [
+                  "Will they be hurrying up now?"
+            ]
+      },
+      {
+            "scrambled": "slowing / will / driver / be / The / . / down / soon",
+            "answers": [
+                  "The driver will be slowing down soon."
+            ]
+      },
+      {
+            "scrambled": "the / will / on / The / up / highway / be / speeding / . / car",
+            "answers": [
+                  "The car will be speeding up on the highway."
+            ]
+      },
+      {
+            "scrambled": "danger / They / away / be / . / will / running / from",
+            "answers": [
+                  "They will be running away from danger."
+            ]
+      }
+];
+    const activity2 = [
+      {
+            "es": "Ella estará aceptando el nuevo acuerdo.",
+            "answers": [
+                  "She will be accepting the new agreement."
+            ]
+      },
+      {
+            "es": "Nosotros estaremos logrando mejores resultados.",
+            "answers": [
+                  "We will be achieving better results.",
+                  "We shall be achieving better results."
+            ]
+      },
+      {
+            "es": "¿Él estará actuando en la obra?",
+            "answers": [
+                  "Will he be acting in the play?"
+            ]
+      },
+      {
+            "es": "Yo estaré añadiendo más ejemplos.",
+            "answers": [
+                  "I will be adding more examples.",
+                  "I shall be adding more examples."
+            ]
+      },
+      {
+            "es": "Ella no estará admirando el paisaje.",
+            "answers": [
+                  "She will not be admiring the landscape.",
+                  "She will not be admiring the view."
+            ]
+      },
+      {
+            "es": "¿Estarás admitiendo la verdad?",
+            "answers": [
+                  "Will you be admitting the truth?"
+            ]
+      },
+      {
+            "es": "Él estará aconsejando al equipo.",
+            "answers": [
+                  "He will be advising the team."
+            ]
+      },
+      {
+            "es": "Nosotros no estaremos permitiendo esa conducta.",
+            "answers": [
+                  "We will not be allowing that behavior.",
+                  "We shall not be allowing that behavior.",
+                  "We will not be allowing that conduct.",
+                  "We shall not be allowing that conduct."
+            ]
+      },
+      {
+            "es": "Ella estará contestando las preguntas.",
+            "answers": [
+                  "She will be answering the questions."
+            ]
+      },
+      {
+            "es": "¿Él estará apareciendo en televisión?",
+            "answers": [
+                  "Will he be appearing on TV?",
+                  "Will he be appearing on television?"
+            ]
+      },
+      {
+            "es": "Ellos estarán llegando tarde.",
+            "answers": [
+                  "They will be arriving late."
+            ]
+      },
+      {
+            "es": "Yo estaré preguntando por ti.",
+            "answers": [
+                  "I will be asking for you.",
+                  "I shall be asking for you."
+            ]
+      },
+      {
+            "es": "La música estará atrayendo a muchas personas.",
+            "answers": [
+                  "The music will be attracting many people."
+            ]
+      },
+      {
+            "es": "¿Estarás evitando el problema?",
+            "answers": [
+                  "Will you be avoiding the problem?"
+            ]
+      },
+      {
+            "es": "Ellos estarán horneando pan.",
+            "answers": [
+                  "They will be baking bread."
+            ]
+      },
+      {
+            "es": "El equipo estará venciendo a su rival.",
+            "answers": [
+                  "The team will be beating its rival.",
+                  "The team will be beating their rival."
+            ]
+      },
+      {
+            "es": "El perro estará mordiendo el juguete.",
+            "answers": [
+                  "The dog will be biting the toy."
+            ]
+      },
+      {
+            "es": "Ella no estará culpando a nadie.",
+            "answers": [
+                  "She will not be blaming anyone."
+            ]
+      },
+      {
+            "es": "La herida estará sangrando.",
+            "answers": [
+                  "The wound will be bleeding."
+            ]
+      },
+      {
+            "es": "El viento estará soplando fuerte.",
+            "answers": [
+                  "The wind will be blowing hard.",
+                  "The wind will be blowing strongly."
+            ]
+      },
+      {
+            "es": "Él estará pidiendo prestado dinero.",
+            "answers": [
+                  "He will be borrowing money."
+            ]
+      },
+      {
+            "es": "Ellos no estarán molestando a los vecinos.",
+            "answers": [
+                  "They will not be bothering the neighbors.",
+                  "They will not be bothering the neighbours."
+            ]
+      },
+      {
+            "es": "¿Estarás rompiendo las reglas?",
+            "answers": [
+                  "Will you be breaking the rules?"
+            ]
+      },
+      {
+            "es": "El paciente estará respirando mejor.",
+            "answers": [
+                  "The patient will be breathing better."
+            ]
+      },
+      {
+            "es": "Nosotros estaremos trayendo comida.",
+            "answers": [
+                  "We will be bringing food.",
+                  "We shall be bringing food."
+            ]
+      },
+      {
+            "es": "Ella estará cepillando su cabello.",
+            "answers": [
+                  "She will be brushing her hair."
+            ]
+      },
+      {
+            "es": "Ellos estarán construyendo una casa.",
+            "answers": [
+                  "They will be building a house."
+            ]
+      },
+      {
+            "es": "La madera estará ardiendo.",
+            "answers": [
+                  "The wood will be burning."
+            ]
+      },
+      {
+            "es": "Yo estaré comprando materiales.",
+            "answers": [
+                  "I will be buying materials.",
+                  "I shall be buying materials."
+            ]
+      },
+      {
+            "es": "¿Ella estará llamando a su madre?",
+            "answers": [
+                  "Will she be calling her mother?"
+            ]
+      },
+      {
+            "es": "Nosotros no estaremos acampando este fin de semana.",
+            "answers": [
+                  "We will not be camping this weekend.",
+                  "We shall not be camping this weekend."
+            ]
+      },
+      {
+            "es": "Él estará cuidando a su mascota.",
+            "answers": [
+                  "He will be caring for his pet."
+            ]
+      },
+      {
+            "es": "Ellos estarán llevando las cajas.",
+            "answers": [
+                  "They will be carrying the boxes."
+            ]
+      },
+      {
+            "es": "¿Tú estarás atrapando la pelota?",
+            "answers": [
+                  "Will you be catching the ball?"
+            ]
+      },
+      {
+            "es": "Eso estará causando problemas.",
+            "answers": [
+                  "It will be causing problems."
+            ]
+      },
+      {
+            "es": "Ellos estarán celebrando la victoria.",
+            "answers": [
+                  "They will be celebrating the victory."
+            ]
+      },
+      {
+            "es": "Yo estaré cambiando mi plan.",
+            "answers": [
+                  "I will be changing my plan.",
+                  "I shall be changing my plan."
+            ]
+      },
+      {
+            "es": "Nosotros estaremos charlando sobre el proyecto.",
+            "answers": [
+                  "We will be chatting about the project.",
+                  "We shall be chatting about the project."
+            ]
+      },
+      {
+            "es": "Ella no estará revisando los mensajes.",
+            "answers": [
+                  "She will not be checking the messages."
+            ]
+      },
+      {
+            "es": "¿Él estará eligiendo el tema?",
+            "answers": [
+                  "Will he be choosing the topic?"
+            ]
+      },
+      {
+            "es": "Ellos estarán limpiando el aula.",
+            "answers": [
+                  "They will be cleaning the classroom."
+            ]
+      },
+      {
+            "es": "El cielo estará despejándose.",
+            "answers": [
+                  "The sky will be clearing."
+            ]
+      },
+      {
+            "es": "¿Estarás escalando la montaña mañana?",
+            "answers": [
+                  "Will you be climbing the mountain tomorrow?"
+            ]
+      },
+      {
+            "es": "Ella estará cerrando la puerta.",
+            "answers": [
+                  "She will be closing the door."
+            ]
+      },
+      {
+            "es": "Nosotros estaremos recolectando datos.",
+            "answers": [
+                  "We will be collecting data.",
+                  "We shall be collecting data."
+            ]
+      },
+      {
+            "es": "Ellos estarán comparando precios.",
+            "answers": [
+                  "They will be comparing prices."
+            ]
+      },
+      {
+            "es": "Él no estará quejándose del servicio.",
+            "answers": [
+                  "He will not be complaining about the service."
+            ]
+      },
+      {
+            "es": "Nosotros estaremos completando el formulario.",
+            "answers": [
+                  "We will be completing the form.",
+                  "We shall be completing the form."
+            ]
+      },
+      {
+            "es": "Ella estará confirmando la cita.",
+            "answers": [
+                  "She will be confirming the appointment."
+            ]
+      },
+      {
+            "es": "Ellos estarán conectando los cables.",
+            "answers": [
+                  "They will be connecting the cables."
+            ]
+      }
+];
+    const vocabulary = [
+      {
+            "type": "Phrasal verb",
+            "term": "wake up",
+            "ipa": "/wˈeɪk ˈʌp/",
+            "translation": "despertarse",
+            "audio": "wake up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "get up",
+            "ipa": "/ɡˈɛt ˈʌp/",
+            "translation": "levantarse",
+            "audio": "get up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "go to bed",
+            "ipa": "/ɡˈoʊ tə bˈɛd/",
+            "translation": "irse a la cama",
+            "audio": "go to bed"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "put on",
+            "ipa": "/pˈʊt ˈɑn/",
+            "translation": "ponerse",
+            "audio": "put on"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "take off",
+            "ipa": "/tˈeɪk ˈɔf/",
+            "translation": "quitarse / despegar",
+            "audio": "take off"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "wash up",
+            "ipa": "/wˈɑʃ ˈʌp/",
+            "translation": "lavarse / fregar",
+            "audio": "wash up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "clean up",
+            "ipa": "/klˈin ˈʌp/",
+            "translation": "limpiar / ordenar",
+            "audio": "clean up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "tidy up",
+            "ipa": "/tˈaɪdi ˈʌp/",
+            "translation": "ordenar",
+            "audio": "tidy up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "dress up",
+            "ipa": "/drˈɛs ˈʌp/",
+            "translation": "vestirse elegante",
+            "audio": "dress up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "turn on",
+            "ipa": "/tˈɝn ˈɑn/",
+            "translation": "encender",
+            "audio": "turn on"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "turn off",
+            "ipa": "/tˈɝn ˈɔf/",
+            "translation": "apagar",
+            "audio": "turn off"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "switch on",
+            "ipa": "/swˈɪtʃ ˈɑn/",
+            "translation": "encender",
+            "audio": "switch on"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "switch off",
+            "ipa": "/swˈɪtʃ ˈɔf/",
+            "translation": "apagar",
+            "audio": "switch off"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "plug in",
+            "ipa": "/plˈʌɡ ɪn/",
+            "translation": "conectar",
+            "audio": "plug in"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "blow out",
+            "ipa": "/blˈoʊ ˈaʊt/",
+            "translation": "apagar soplando",
+            "audio": "blow out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "sit down",
+            "ipa": "/sˈɪt dˈaʊn/",
+            "translation": "sentarse",
+            "audio": "sit down"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "stand up",
+            "ipa": "/stˈænd ˈʌp/",
+            "translation": "ponerse de pie",
+            "audio": "stand up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "look at",
+            "ipa": "/lˈʊk ˈæt/",
+            "translation": "mirar",
+            "audio": "look at"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "listen to",
+            "ipa": "/lˈɪsʌn tə/",
+            "translation": "escuchar",
+            "audio": "listen to"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "write down",
+            "ipa": "/rˈaɪt dˈaʊn/",
+            "translation": "anotar",
+            "audio": "write down"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "copy down",
+            "ipa": "/kˈɑpi dˈaʊn/",
+            "translation": "copiar / anotar",
+            "audio": "copy down"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "pick up",
+            "ipa": "/pˈɪk ˈʌp/",
+            "translation": "recoger",
+            "audio": "pick up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "put down",
+            "ipa": "/pˈʊt dˈaʊn/",
+            "translation": "dejar / poner abajo",
+            "audio": "put down"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "open up",
+            "ipa": "/ˈoʊpʌn ˈʌp/",
+            "translation": "abrir",
+            "audio": "open up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "close up",
+            "ipa": "/klˈoʊs ˈʌp/",
+            "translation": "cerrar",
+            "audio": "close up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "hand in",
+            "ipa": "/hˈænd ɪn/",
+            "translation": "entregar",
+            "audio": "hand in"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "hand out",
+            "ipa": "/hˈænd ˈaʊt/",
+            "translation": "repartir",
+            "audio": "hand out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "cross out",
+            "ipa": "/krˈɔs ˈaʊt/",
+            "translation": "tachar",
+            "audio": "cross out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "rub out",
+            "ipa": "/rˈʌb ˈaʊt/",
+            "translation": "borrar",
+            "audio": "rub out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "fill in",
+            "ipa": "/fˈɪl ɪn/",
+            "translation": "completar",
+            "audio": "fill in"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "fill out",
+            "ipa": "/fˈɪl ˈaʊt/",
+            "translation": "llenar un formulario",
+            "audio": "fill out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "find out",
+            "ipa": "/fˈaɪnd ˈaʊt/",
+            "translation": "averiguar",
+            "audio": "find out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "go over",
+            "ipa": "/ɡˈoʊ ˈoʊvɝ/",
+            "translation": "repasar",
+            "audio": "go over"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "look up",
+            "ipa": "/lˈʊk ˈʌp/",
+            "translation": "buscar",
+            "audio": "look up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "think about",
+            "ipa": "/θˈɪŋk ʌbˈaʊt/",
+            "translation": "pensar en",
+            "audio": "think about"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "go in",
+            "ipa": "/ɡˈoʊ ɪn/",
+            "translation": "entrar",
+            "audio": "go in"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "go out",
+            "ipa": "/ɡˈoʊ ˈaʊt/",
+            "translation": "salir",
+            "audio": "go out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "come in",
+            "ipa": "/kˈʌm ɪn/",
+            "translation": "entrar",
+            "audio": "come in"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "come out",
+            "ipa": "/kˈʌm ˈaʊt/",
+            "translation": "salir / aparecer",
+            "audio": "come out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "get in",
+            "ipa": "/ɡˈɛt ɪn/",
+            "translation": "entrar / subir",
+            "audio": "get in"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "get out",
+            "ipa": "/ɡˈɛt ˈaʊt/",
+            "translation": "salir / bajarse",
+            "audio": "get out"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "get on",
+            "ipa": "/ɡˈɛt ˈɑn/",
+            "translation": "subirse a",
+            "audio": "get on"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "get off",
+            "ipa": "/ɡˈɛt ˈɔf/",
+            "translation": "bajarse de",
+            "audio": "get off"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "go away",
+            "ipa": "/ɡˈoʊ ʌwˈeɪ/",
+            "translation": "irse",
+            "audio": "go away"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "come back",
+            "ipa": "/kˈʌm bˈæk/",
+            "translation": "regresar",
+            "audio": "come back"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "go back",
+            "ipa": "/ɡˈoʊ bˈæk/",
+            "translation": "volver",
+            "audio": "go back"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "hurry up",
+            "ipa": "/hˈɝi ˈʌp/",
+            "translation": "apresurarse",
+            "audio": "hurry up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "slow down",
+            "ipa": "/slˈoʊ dˈaʊn/",
+            "translation": "reducir la velocidad",
+            "audio": "slow down"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "speed up",
+            "ipa": "/spˈid ˈʌp/",
+            "translation": "acelerar",
+            "audio": "speed up"
+      },
+      {
+            "type": "Phrasal verb",
+            "term": "run away",
+            "ipa": "/rˈʌn ʌwˈeɪ/",
+            "translation": "huir",
+            "audio": "run away"
+      },
+      {
+            "type": "Verb",
+            "term": "accept",
+            "ipa": "/æksˈɛpt/",
+            "translation": "aceptar",
+            "audio": "accept"
+      },
+      {
+            "type": "Verb",
+            "term": "achieve",
+            "ipa": "/ʌtʃˈiv/",
+            "translation": "lograr",
+            "audio": "achieve"
+      },
+      {
+            "type": "Verb",
+            "term": "act",
+            "ipa": "/ˈækt/",
+            "translation": "actuar",
+            "audio": "act"
+      },
+      {
+            "type": "Verb",
+            "term": "add",
+            "ipa": "/ˈæd/",
+            "translation": "añadir",
+            "audio": "add"
+      },
+      {
+            "type": "Verb",
+            "term": "admire",
+            "ipa": "/ædmˈaɪr/",
+            "translation": "admirar",
+            "audio": "admire"
+      },
+      {
+            "type": "Verb",
+            "term": "admit",
+            "ipa": "/ʌdmˈɪt/",
+            "translation": "admitir",
+            "audio": "admit"
+      },
+      {
+            "type": "Verb",
+            "term": "advise",
+            "ipa": "/ædvˈaɪz/",
+            "translation": "aconsejar",
+            "audio": "advise"
+      },
+      {
+            "type": "Verb",
+            "term": "allow",
+            "ipa": "/ʌlˈaʊ/",
+            "translation": "permitir",
+            "audio": "allow"
+      },
+      {
+            "type": "Verb",
+            "term": "answer",
+            "ipa": "/ˈænsɝ/",
+            "translation": "contestar",
+            "audio": "answer"
+      },
+      {
+            "type": "Verb",
+            "term": "appear",
+            "ipa": "/ʌpˈɪr/",
+            "translation": "aparecer",
+            "audio": "appear"
+      },
+      {
+            "type": "Verb",
+            "term": "arrive",
+            "ipa": "/ɝˈaɪv/",
+            "translation": "llegar",
+            "audio": "arrive"
+      },
+      {
+            "type": "Verb",
+            "term": "ask",
+            "ipa": "/ˈæsk/",
+            "translation": "preguntar / pedir",
+            "audio": "ask"
+      },
+      {
+            "type": "Verb",
+            "term": "attract",
+            "ipa": "/ʌtrˈækt/",
+            "translation": "atraer",
+            "audio": "attract"
+      },
+      {
+            "type": "Verb",
+            "term": "avoid",
+            "ipa": "/ʌvˈɔɪd/",
+            "translation": "evitar",
+            "audio": "avoid"
+      },
+      {
+            "type": "Verb",
+            "term": "bake",
+            "ipa": "/bˈeɪk/",
+            "translation": "hornear",
+            "audio": "bake"
+      },
+      {
+            "type": "Verb",
+            "term": "beat",
+            "ipa": "/bˈit/",
+            "translation": "vencer / golpear",
+            "audio": "beat"
+      },
+      {
+            "type": "Verb",
+            "term": "bite",
+            "ipa": "/bˈaɪt/",
+            "translation": "morder",
+            "audio": "bite"
+      },
+      {
+            "type": "Verb",
+            "term": "blame",
+            "ipa": "/blˈeɪm/",
+            "translation": "culpar",
+            "audio": "blame"
+      },
+      {
+            "type": "Verb",
+            "term": "bleed",
+            "ipa": "/blˈid/",
+            "translation": "sangrar",
+            "audio": "bleed"
+      },
+      {
+            "type": "Verb",
+            "term": "blow",
+            "ipa": "/blˈoʊ/",
+            "translation": "soplar",
+            "audio": "blow"
+      },
+      {
+            "type": "Verb",
+            "term": "borrow",
+            "ipa": "/bˈɑrˌoʊ/",
+            "translation": "pedir prestado",
+            "audio": "borrow"
+      },
+      {
+            "type": "Verb",
+            "term": "bother",
+            "ipa": "/bˈɑðɝ/",
+            "translation": "molestar",
+            "audio": "bother"
+      },
+      {
+            "type": "Verb",
+            "term": "break",
+            "ipa": "/brˈeɪk/",
+            "translation": "romper",
+            "audio": "break"
+      },
+      {
+            "type": "Verb",
+            "term": "breathe",
+            "ipa": "/brˈið/",
+            "translation": "respirar",
+            "audio": "breathe"
+      },
+      {
+            "type": "Verb",
+            "term": "bring",
+            "ipa": "/brˈɪŋ/",
+            "translation": "traer",
+            "audio": "bring"
+      },
+      {
+            "type": "Verb",
+            "term": "brush",
+            "ipa": "/brˈʌʃ/",
+            "translation": "cepillar",
+            "audio": "brush"
+      },
+      {
+            "type": "Verb",
+            "term": "build",
+            "ipa": "/bˈɪld/",
+            "translation": "construir",
+            "audio": "build"
+      },
+      {
+            "type": "Verb",
+            "term": "burn",
+            "ipa": "/bˈɝn/",
+            "translation": "quemar / arder",
+            "audio": "burn"
+      },
+      {
+            "type": "Verb",
+            "term": "buy",
+            "ipa": "/bˈaɪ/",
+            "translation": "comprar",
+            "audio": "buy"
+      },
+      {
+            "type": "Verb",
+            "term": "call",
+            "ipa": "/kˈɔl/",
+            "translation": "llamar",
+            "audio": "call"
+      },
+      {
+            "type": "Verb",
+            "term": "camp",
+            "ipa": "/kˈæmp/",
+            "translation": "acampar",
+            "audio": "camp"
+      },
+      {
+            "type": "Verb",
+            "term": "care",
+            "ipa": "/kˈɛr/",
+            "translation": "cuidar / importar",
+            "audio": "care"
+      },
+      {
+            "type": "Verb",
+            "term": "carry",
+            "ipa": "/kˈæri/",
+            "translation": "llevar / cargar",
+            "audio": "carry"
+      },
+      {
+            "type": "Verb",
+            "term": "catch",
+            "ipa": "/kˈætʃ/",
+            "translation": "atrapar",
+            "audio": "catch"
+      },
+      {
+            "type": "Verb",
+            "term": "cause",
+            "ipa": "/kˈɑz/",
+            "translation": "causar",
+            "audio": "cause"
+      },
+      {
+            "type": "Verb",
+            "term": "celebrate",
+            "ipa": "/sˈɛlʌbrˌeɪt/",
+            "translation": "celebrar",
+            "audio": "celebrate"
+      },
+      {
+            "type": "Verb",
+            "term": "change",
+            "ipa": "/tʃˈeɪndʒ/",
+            "translation": "cambiar",
+            "audio": "change"
+      },
+      {
+            "type": "Verb",
+            "term": "chat",
+            "ipa": "/tʃˈæt/",
+            "translation": "charlar",
+            "audio": "chat"
+      },
+      {
+            "type": "Verb",
+            "term": "check",
+            "ipa": "/tʃˈɛk/",
+            "translation": "revisar",
+            "audio": "check"
+      },
+      {
+            "type": "Verb",
+            "term": "choose",
+            "ipa": "/tʃˈuz/",
+            "translation": "elegir",
+            "audio": "choose"
+      },
+      {
+            "type": "Verb",
+            "term": "clean",
+            "ipa": "/klˈin/",
+            "translation": "limpiar",
+            "audio": "clean"
+      },
+      {
+            "type": "Verb",
+            "term": "clear",
+            "ipa": "/klˈɪr/",
+            "translation": "despejar / aclarar",
+            "audio": "clear"
+      },
+      {
+            "type": "Verb",
+            "term": "climb",
+            "ipa": "/klˈaɪm/",
+            "translation": "escalar",
+            "audio": "climb"
+      },
+      {
+            "type": "Verb",
+            "term": "close",
+            "ipa": "/klˈoʊs/",
+            "translation": "cerrar",
+            "audio": "close"
+      },
+      {
+            "type": "Verb",
+            "term": "collect",
+            "ipa": "/kʌlˈɛkt/",
+            "translation": "recolectar",
+            "audio": "collect"
+      },
+      {
+            "type": "Verb",
+            "term": "compare",
+            "ipa": "/kʌmpˈɛr/",
+            "translation": "comparar",
+            "audio": "compare"
+      },
+      {
+            "type": "Verb",
+            "term": "complain",
+            "ipa": "/kʌmplˈeɪn/",
+            "translation": "quejarse",
+            "audio": "complain"
+      },
+      {
+            "type": "Verb",
+            "term": "complete",
+            "ipa": "/kʌmplˈit/",
+            "translation": "completar",
+            "audio": "complete"
+      },
+      {
+            "type": "Verb",
+            "term": "confirm",
+            "ipa": "/kʌnfˈɝm/",
+            "translation": "confirmar",
+            "audio": "confirm"
+      },
+      {
+            "type": "Verb",
+            "term": "connect",
+            "ipa": "/kʌnˈɛkt/",
+            "translation": "conectar",
+            "audio": "connect"
+      }
+];
+    const quiz = [
+      {
+            "q": "¿Cuál es la estructura positiva del futuro continuo?",
+            "options": [
+                  "Subject + will/shall + be + verb-ing + complement",
+                  "Subject + was/were + verb-ing + complement",
+                  "Subject + did + verb + complement",
+                  "Subject + will + verb base + complement"
+            ],
+            "answer": 0
+      },
+      {
+            "q": "¿Cuáles son los auxiliares/modales principales en este tema?",
+            "options": [
+                  "do/does",
+                  "was/were",
+                  "will/shall + be",
+                  "have/has"
+            ],
+            "answer": 2
+      },
+      {
+            "q": "¿Cómo se forma la negativa?",
+            "options": [
+                  "Subject + will/shall + not + be + verb-ing",
+                  "Subject + not + will + be + verb-ing",
+                  "Subject + do not + be + verb-ing",
+                  "Subject + will/shall + no + verb-ing"
+            ],
+            "answer": 0
+      },
+      {
+            "q": "¿Cómo se forma la pregunta?",
+            "options": [
+                  "Will/Shall + subject + be + verb-ing?",
+                  "Subject + will/shall + be + verb-ing?",
+                  "Do/Does + subject + be + verb-ing?",
+                  "Was/Were + subject + be + verb-ing?"
+            ],
+            "answer": 0
+      },
+      {
+            "q": "¿Con qué sujetos se usa “shall” de forma tradicional o formal?",
+            "options": [
+                  "He/She/It",
+                  "I/We",
+                  "You/They",
+                  "Todos obligatoriamente"
+            ],
+            "answer": 1
+      },
+      {
+            "q": "Si el verbo termina en -e, ¿qué se hace antes de añadir -ing?",
+            "options": [
+                  "Se conserva la e",
+                  "Se elimina la e",
+                  "Se añade -ying",
+                  "Se cambia e por i"
+            ],
+            "answer": 1
+      },
+      {
+            "q": "En un verbo CVC de una sílaba como “run”, ¿qué ocurre?",
+            "options": [
+                  "Se duplica la última consonante: running",
+                  "Se elimina la vocal",
+                  "Se agrega -ed",
+                  "No cambia nunca"
+            ],
+            "answer": 0
+      },
+      {
+            "q": "Si el verbo termina en -y, como “study”, ¿qué ocurre?",
+            "options": [
+                  "Se cambia y por i",
+                  "Se elimina la y",
+                  "Se conserva la y: studying",
+                  "Se añade -ed"
+            ],
+            "answer": 2
+      },
+      {
+            "q": "¿Cuál de estos verbos normalmente NO se usa en forma continua?",
+            "options": [
+                  "run",
+                  "build",
+                  "know",
+                  "clean"
+            ],
+            "answer": 2
+      },
+      {
+            "q": "¿Cuándo se usa el futuro continuo?",
+            "options": [
+                  "Para una acción en progreso en un momento futuro",
+                  "Para una acción terminada ayer",
+                  "Para hábitos del pasado",
+                  "Para verdades permanentes únicamente"
+            ],
+            "answer": 0
+      },
+      {
+            "q": "Selecciona la oración correcta.",
+            "options": [
+                  "She will be studying tomorrow.",
+                  "She will studying tomorrow.",
+                  "She will be study tomorrow.",
+                  "She be will studying tomorrow."
+            ],
+            "answer": 0
+      },
+      {
+            "q": "¿Cuál es la forma correcta con phrasal verb?",
+            "options": [
+                  "He will be putting on his coat.",
+                  "He will be puting on his coat.",
+                  "He will putting on his coat.",
+                  "He will be put on his coat."
+            ],
+            "answer": 0
+      }
+];
+    const state = { student: { name:'', career:'', year:'' }, a1: { index:0, mistakes:0, correct:0, complete:false }, a2: { index:0, mistakes:0, correct:0, complete:false }, quiz: { index:0, correct:0, selected:null, complete:false } };
+    const storageKey = 'futureContinuousGrammarResults_v1';
+
+    function $(id) { return document.getElementById(id); }
+    function normalize(text) {
+      return (text || '').toLowerCase().trim()
+        .replace(/won['’]?t/g, 'will not').replace(/shan['’]?t/g, 'shall not').replace(/can['’]?t/g, 'cannot')
+        .replace(/['’]/g, '').replace(/[¿?¡!.,;:]/g, '').replace(/\s+/g, ' ');
+    }
+    function isCorrect(input, answers) { const n = normalize(input); return answers.some(a => normalize(a) === n); }
+    function speak(text) {
+      if (!('speechSynthesis' in window)) { alert('Tu navegador no permite audio de voz.'); return; }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.86; window.speechSynthesis.speak(u);
+    }
+    function insertName() { const v = $('studentName').value.trim(); if(!v) return alert('Escribe el nombre completo.'); state.student.name = v; $('nameDisplay').textContent = '1. Nombre completo: ' + v; checkStudentReady(); }
+    function insertCareer() { const v = $('careerSelect').value; if(!v) return alert('Selecciona la carrera.'); state.student.career = v; $('careerDisplay').textContent = '2. Carrera: ' + v; checkStudentReady(); }
+    function insertYear() { const v = $('yearSelect').value; if(!v) return alert('Selecciona el año.'); state.student.year = v; $('yearDisplay').textContent = '3. Año: ' + v; checkStudentReady(); }
+    function checkStudentReady() {
+      const ready = state.student.name && state.student.career && state.student.year;
+      $('studentReady').classList.toggle('show', !ready); $('activitiesLock').classList.toggle('show', !ready); $('activitiesContent').classList.toggle('locked', !ready);
+    }
+    function renderVocab() {
+      const q = normalize($('vocabSearch').value || '');
+      const grid = $('vocabGrid'); grid.innerHTML = '';
+      vocabulary.filter(v => !q || normalize(v.term + ' ' + v.translation + ' ' + v.type).includes(q)).forEach(v => {
+        const card = document.createElement('div'); card.className = 'vocab-card';
+        card.innerHTML = `<span class="vocab-type">${v.type}</span><div class="vocab-term">${v.term}</div><div class="ipa">${v.ipa}</div><div class="translation">${v.translation}</div><button class="ghost-btn" type="button">🔊 Audio</button>`;
+        card.querySelector('button').onclick = () => speak(v.audio);
+        grid.appendChild(card);
+      });
+    }
+    function speakAllVisible() {
+      const q = normalize($('vocabSearch').value || '');
+      const items = vocabulary.filter(v => !q || normalize(v.term + ' ' + v.translation + ' ' + v.type).includes(q)).slice(0, 20);
+      if (!items.length) return;
+      speak(items.map(v => v.term).join('. '));
+    }
+    function updateActivity1() {
+      const s = state.a1; const item = activity1[Math.min(s.index, activity1.length-1)];
+      $('a1ProgressPill').textContent = `Pregunta ${Math.min(s.index+1, activity1.length)} de ${activity1.length}`;
+      $('a1MistakesPill').textContent = `Errores: ${s.mistakes} / 3`; $('a1ScorePill').textContent = `Puntaje: ${s.correct}`;
+      $('a1Bar').style.width = `${(s.index/activity1.length)*100}%`; $('a1Scramble').textContent = item ? item.scrambled : 'Actividad completada.';
+      $('a1Answer').disabled = s.complete; $('a1Check').disabled = s.complete;
+    }
+    function updateActivity2() {
+      const s = state.a2; const item = activity2[Math.min(s.index, activity2.length-1)];
+      $('a2ProgressPill').textContent = `Pregunta ${Math.min(s.index+1, activity2.length)} de ${activity2.length}`;
+      $('a2MistakesPill').textContent = `Errores: ${s.mistakes} / 3`; $('a2ScorePill').textContent = `Puntaje: ${s.correct}`;
+      $('a2Bar').style.width = `${(s.index/activity2.length)*100}%`; $('a2Prompt').textContent = item ? item.es : 'Actividad completada.';
+      $('a2Answer').disabled = s.complete; $('a2Check').disabled = s.complete;
+    }
+    function checkActivity1() {
+      if(state.a1.complete) return; const input = $('a1Answer').value; const item = activity1[state.a1.index];
+      if(isCorrect(input, item.answers)) { state.a1.correct++; state.a1.index++; $('a1Feedback').className='feedback good'; $('a1Feedback').textContent='✅ Correcto. +1 punto.'; $('a1Answer').value=''; }
+      else { state.a1.mistakes++; $('a1Feedback').className='feedback bad'; $('a1Feedback').textContent=`❌ Incorrecto. Te quedan ${Math.max(0,3-state.a1.mistakes)} oportunidades antes de reiniciar.`; }
+      if(state.a1.mistakes >= 3) { resetActivity1(false); $('a1Feedback').className='feedback bad'; $('a1Feedback').textContent='🔁 Llegaste a 3 errores. Actividad 1 reiniciada desde cero.'; }
+      if(state.a1.index >= activity1.length) { state.a1.complete = true; $('a1Bar').style.width='100%'; $('a1Feedback').className='feedback good'; $('a1Feedback').textContent='🏆 Actividad 1 completada: 50 puntos posibles.'; checkActivitiesComplete(); }
+      updateActivity1();
+    }
+    function checkActivity2() {
+      if(state.a2.complete) return; const input = $('a2Answer').value; const item = activity2[state.a2.index];
+      if(isCorrect(input, item.answers)) { state.a2.correct++; state.a2.index++; $('a2Feedback').className='feedback good'; $('a2Feedback').textContent='✅ Correcto. +1 punto.'; $('a2Answer').value=''; }
+      else { state.a2.mistakes++; $('a2Feedback').className='feedback bad'; $('a2Feedback').textContent=`❌ Incorrecto. Te quedan ${Math.max(0,3-state.a2.mistakes)} oportunidades antes de reiniciar.`; }
+      if(state.a2.mistakes >= 3) { resetActivity2(false); $('a2Feedback').className='feedback bad'; $('a2Feedback').textContent='🔁 Llegaste a 3 errores. Actividad 2 reiniciada desde cero.'; }
+      if(state.a2.index >= activity2.length) { state.a2.complete = true; $('a2Bar').style.width='100%'; $('a2Feedback').className='feedback good'; $('a2Feedback').textContent='🏆 Actividad 2 completada: 50 puntos posibles.'; checkActivitiesComplete(); }
+      updateActivity2();
+    }
+    function resetActivity1(manual) { state.a1 = { index:0, mistakes:0, correct:0, complete:false }; $('a1Answer').value=''; if(manual) { $('a1Feedback').className='feedback info'; $('a1Feedback').textContent='Actividad 1 reiniciada.'; } updateActivity1(); }
+    function resetActivity2(manual) { state.a2 = { index:0, mistakes:0, correct:0, complete:false }; $('a2Answer').value=''; if(manual) { $('a2Feedback').className='feedback info'; $('a2Feedback').textContent='Actividad 2 reiniciada.'; } updateActivity2(); }
+    function showHint(n) { const item = n===1 ? activity1[state.a1.index] : activity2[state.a2.index]; const answer = item.answers[0]; const target = n===1 ? $('a1Feedback') : $('a2Feedback'); target.className='feedback info'; target.textContent='💡 Pista: empieza así → ' + answer.split(' ').slice(0,3).join(' ') + '...'; }
+    function checkActivitiesComplete() { if(state.a1.complete && state.a2.complete) $('quizPromptModal').classList.add('show'); }
+    function declineQuiz() { $('quizPromptModal').classList.remove('show'); restartAllActivities(); location.hash = '#activity1'; }
+    function acceptQuiz() { $('quizPromptModal').classList.remove('show'); $('miniQuiz').classList.remove('hidden'); renderQuiz(); location.hash = '#miniQuiz'; }
+    function renderQuiz() {
+      const q = quiz[state.quiz.index]; $('quizProgress').textContent = `Pregunta ${Math.min(state.quiz.index+1, quiz.length)} de ${quiz.length}`; $('quizScore').textContent = `Correctas: ${state.quiz.correct}`; $('quizBar').style.width = `${(state.quiz.index/quiz.length)*100}%`;
+      $('quizQuestion').textContent = q.q; $('quizOptions').innerHTML = ''; $('quizNext').disabled = true; $('quizFeedback').textContent = ''; state.quiz.selected = null;
+      q.options.forEach((opt, idx) => { const btn = document.createElement('button'); btn.className='option-btn'; btn.textContent = opt; btn.onclick = () => selectQuizOption(idx, btn); $('quizOptions').appendChild(btn); });
+    }
+    function selectQuizOption(idx, btn) {
+      if(state.quiz.selected !== null) return; state.quiz.selected = idx; const q = quiz[state.quiz.index]; const buttons = [...document.querySelectorAll('#quizOptions .option-btn')];
+      buttons.forEach((b,i) => { if(i===q.answer) b.classList.add('correct'); if(i===idx && idx!==q.answer) b.classList.add('wrong'); b.disabled = true; });
+      if(idx === q.answer) { state.quiz.correct++; $('quizFeedback').className='feedback good'; $('quizFeedback').textContent='✅ Correcto.'; } else { $('quizFeedback').className='feedback bad'; $('quizFeedback').textContent='❌ Incorrecto. Respuesta correcta: ' + q.options[q.answer]; }
+      $('quizScore').textContent = `Correctas: ${state.quiz.correct}`; $('quizNext').disabled = false;
+    }
+    function nextQuizQuestion() {
+      state.quiz.index++;
+      if(state.quiz.index >= quiz.length) { state.quiz.complete = true; $('quizBar').style.width='100%'; $('quizQuestion').textContent='Mini prueba finalizada.'; $('quizOptions').innerHTML=''; $('quizNext').disabled=true; $('quizFeedback').className='feedback good'; $('quizFeedback').textContent='Resultado registrado en el cuadro superior.'; addResult(); return; }
+      renderQuiz();
+    }
+    function statusFromScore(score) { if(score >= 90) return 'AA - Excelente'; if(score >= 75) return 'AS - Satisfactorio'; if(score >= 50) return 'AF - Fundamental'; return 'AI - Inicial'; }
+    function addResult() {
+      const total = state.a1.correct + state.a2.correct; const row = { name:state.student.name, career:state.student.career, year:state.student.year, a1:state.a1.correct, a2:state.a2.correct, total, quiz: `${state.quiz.correct}/${quiz.length}`, date:new Date().toLocaleString(), status:statusFromScore(total) };
+      const rows = JSON.parse(localStorage.getItem(storageKey) || '[]'); rows.unshift(row); localStorage.setItem(storageKey, JSON.stringify(rows.slice(0,50))); renderResults();
+    }
+    function renderResults() {
+      const rows = JSON.parse(localStorage.getItem(storageKey) || '[]'); const body = $('resultsBody');
+      if(!rows.length) { body.innerHTML = '<tr><td colspan="9">Todavía no hay resultados registrados.</td></tr>'; return; }
+      body.innerHTML = rows.map(r => `<tr><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.career)}</td><td>${escapeHtml(r.year)}</td><td>${r.a1}</td><td>${r.a2}</td><td><strong>${r.total}/100</strong></td><td>${r.quiz}</td><td>${escapeHtml(r.date)}</td><td>${escapeHtml(r.status)}</td></tr>`).join('');
+    }
+    function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function clearResults() { if(confirm('¿Deseas borrar todos los resultados guardados en este navegador?')) { localStorage.removeItem(storageKey); renderResults(); } }
+    function restartAllActivities() { resetActivity1(false); resetActivity2(false); state.quiz = { index:0, correct:0, selected:null, complete:false }; $('miniQuiz').classList.add('hidden'); $('quizPromptModal').classList.remove('show'); }
+    document.addEventListener('DOMContentLoaded', () => { renderVocab(); updateActivity1(); updateActivity2(); renderResults(); });
+  </script>
+</body>
+</html>
