@@ -47,8 +47,8 @@
 <div class="wrap">
   <header class="hero">
     <h1>Laberinto fonético: primera vocal /ɑː/</h1>
-    <p>Actividad interactiva para descubrir el camino por pronunciación, marcar palabras en oraciones y escuchar cada palabra con el lector de voz.</p>
-    <div class="badge">🔊 Lector de voz integrado: pulsa Escuchar para oír palabras y oraciones en inglés</div>
+    <p>Actividad interactiva para descubrir el camino por pronunciación, marcar palabras en oraciones y escuchar audios cargados por el docente.</p>
+    <div class="badge">🔊 Audio personalizable: sube tu propia pronunciación en MP3, WAV, M4A u OGG</div>
   </header>
 
   <section class="card" id="studentPanel">
@@ -61,16 +61,23 @@
     </div>
     <p id="welcome" class="muted" style="margin-bottom:0">El laberinto se activará después de guardar el nombre.</p>
     <div class="chrome-note">Para abrirlo en Google Chrome: descarga este archivo HTML o el ZIP, haz clic derecho sobre el archivo y selecciona <strong>Abrir con → Google Chrome</strong>. La página funciona sin internet.</div>
-    <div class="audio-manager" id="teacherAudioPanel">
-      <strong>🔊 Lector de voz automático</strong>
-      <p class="help">No necesitas subir audios. Los botones <strong>Escuchar</strong> usan la voz inglesa disponible en Google Chrome.</p>
-      <div style="display:none" aria-hidden="true">
-        <select id="audioTargetSelect"></select><input id="audioFileInput" type="file" />
-        <button id="saveSelectedAudioBtn"></button><button id="playSelectedAudioBtn"></button>
-        <button id="exportHtmlBtn"></button><button id="exportPackBtn"></button>
-        <input id="importPackInput" type="file" /><span id="audioPanelStatus"></span>
+
+    <details class="audio-manager" id="teacherAudioPanel" open>
+      <summary>Panel del docente: subir o cambiar audios de pronunciación</summary>
+      <p class="help">Este link ya no depende de voces automáticas del navegador. Sube tus propios audios para cada palabra u oración. Después puedes usar <strong>Exportar HTML con audios</strong> para guardar una copia que conserve las pronunciaciones cargadas.</p>
+      <div class="row">
+        <select id="audioTargetSelect" aria-label="Seleccionar audio"></select>
+        <input id="audioFileInput" type="file" accept="audio/*" />
+        <button id="saveSelectedAudioBtn" class="btn-teal">Guardar audio</button>
+        <button id="playSelectedAudioBtn" class="btn-purple">Probar audio</button>
       </div>
-    </div>
+      <div class="row" style="margin-top:10px">
+        <button id="exportHtmlBtn" class="btn-yellow">Exportar HTML con audios</button>
+        <button id="exportPackBtn" class="btn-soft">Exportar paquete de audios</button>
+        <label class="btn-soft small" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">Importar paquete<input id="importPackInput" type="file" accept="application/json" style="display:none" /></label>
+      </div>
+      <p id="audioPanelStatus" class="help">Estado: puedes cargar audios ahora o hacerlo desde los botones de cada palabra y oración.</p>
+    </details>
   </section>
 
   <section class="card instructions hidden" id="instructionsPanel">
@@ -106,7 +113,7 @@
 
   <section class="card hidden" id="wordPanel">
     <h2>4. Palabras correctas y pronunciación</h2>
-    <p class="muted">Estas son las palabras del recorrido. Pulsa Escuchar para oír cada una con el lector de voz.</p>
+    <p class="muted">Estas son las palabras del recorrido. Sube un audio para cada una o escucha el audio ya cargado.</p>
     <div class="word-grid" id="wordList"></div>
     <div class="complete-banner">Laberinto completado. Ahora pasa a las oraciones.</div>
   </section>
@@ -121,7 +128,7 @@
 
   <section class="card hidden" id="sentencePronunciationPanel">
     <h2>6. Pronunciación de cada oración</h2>
-    <p class="muted">Pulsa el botón para escuchar la pronunciación completa de cada oración.</p>
+    <p class="muted">Sube o escucha la pronunciación completa de cada oración.</p>
     <div class="sentence-list" id="sentencePronunciationList"></div>
     <div class="complete-banner">Actividad completada. Baja a la explicación final para detectar el sonido por patrón de escritura.</div>
   </section>
@@ -136,13 +143,6 @@
       <div class="pattern-item"><strong>Advertencia inteligente</strong><br>La escritura en inglés no siempre garantiza el sonido. Por eso el estudiante debe confirmar con audio: <em>law, awful, broad, naughty</em> suelen pertenecer a /ɔː/, no a /ɑː/ en pronunciación estándar.</div>
     </div>
     <div class="important">Regla práctica: primero mira el patrón escrito, después confirma con el oído. En fonética inglesa manda la pronunciación, no solo la ortografía.</div>
-  </section>
-
-  <section class="card hidden" id="miniTestPanel">
-    <h2>8. Mini prueba auditiva</h2>
-    <p class="muted">Pulsa 🔊, escucha la palabra y decide si contiene el sonido estudiado.</p>
-    <div class="sentence-list" id="miniTestList"></div>
-    <div id="miniTestResult" class="complete-banner" style="display:none"></div>
   </section>
 
   <div class="footer">Lic. Wascar Enrique Sequeira Hurtado · Actividad de fonética interactiva</div>
@@ -162,7 +162,7 @@ const els = {
   namePill: document.getElementById('namePill'), mistakePill: document.getElementById('mistakePill'), progressPill: document.getElementById('progressPill'), resetMazeBtn: document.getElementById('resetMazeBtn'),
   wordPanel: document.getElementById('wordPanel'), wordList: document.getElementById('wordList'), sentencePanel: document.getElementById('sentencePanel'), sentenceList: document.getElementById('sentenceList'),
   sentenceProgressPill: document.getElementById('sentenceProgressPill'), sentenceMessage: document.getElementById('sentenceMessage'), resetSentencesBtn: document.getElementById('resetSentencesBtn'),
-  sentencePronunciationPanel: document.getElementById('sentencePronunciationPanel'), sentencePronunciationList: document.getElementById('sentencePronunciationList'), finalPatternPanel: document.getElementById('finalPatternPanel'), miniTestPanel: document.getElementById('miniTestPanel'), miniTestList: document.getElementById('miniTestList'), miniTestResult: document.getElementById('miniTestResult'),
+  sentencePronunciationPanel: document.getElementById('sentencePronunciationPanel'), sentencePronunciationList: document.getElementById('sentencePronunciationList'), finalPatternPanel: document.getElementById('finalPatternPanel'),
   audioTargetSelect: document.getElementById('audioTargetSelect'), audioFileInput: document.getElementById('audioFileInput'), saveSelectedAudioBtn: document.getElementById('saveSelectedAudioBtn'), playSelectedAudioBtn: document.getElementById('playSelectedAudioBtn'), audioPanelStatus: document.getElementById('audioPanelStatus'),
   exportHtmlBtn: document.getElementById('exportHtmlBtn'), exportPackBtn: document.getElementById('exportPackBtn'), importPackInput: document.getElementById('importPackInput'), toast: document.getElementById('toast')
 };
@@ -223,24 +223,13 @@ async function getAudioSrc(key){
   if(embeddedAudio && embeddedAudio[key]) return embeddedAudio[key];
   return null;
 }
-function textForSpeechKey(key){
-  if(key.startsWith('word:')) return key.slice(5);
-  if(key.startsWith('sentence:')){ const i=Number(key.slice(9))-1; return SENTENCES[i] || ''; }
-  return key;
-}
-function chooseEnglishVoice(){
-  const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-  return voices.find(v=>/^en-GB/i.test(v.lang)) || voices.find(v=>/^en-US/i.test(v.lang)) || voices.find(v=>/^en/i.test(v.lang)) || null;
-}
 async function playKey(key){
-  const text = textForSpeechKey(key);
-  if(!text || !('speechSynthesis' in window)){ toast('El lector de voz no está disponible en este navegador.', 'warn'); return; }
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text.toLowerCase());
-  utterance.lang = 'en-GB'; utterance.rate = 0.82; utterance.pitch = 1; utterance.volume = 1;
-  const voice = chooseEnglishVoice(); if(voice) utterance.voice = voice;
-  utterance.onerror = ()=>toast('No se pudo reproducir la voz. Prueba nuevamente en Google Chrome.', 'warn');
-  speechSynthesis.speak(utterance);
+  const src = await getAudioSrc(key);
+  if(!src){ toast('Aún no hay audio cargado para este elemento.', 'warn'); return; }
+  if(currentAudio){ currentAudio.pause(); currentAudio.currentTime = 0; }
+  currentAudio = new Audio(src);
+  currentAudio.volume = 1;
+  try{ await currentAudio.play(); }catch(err){ toast('Chrome bloqueó el audio. Haz clic otra vez en Escuchar.', 'warn'); }
 }
 
 function audioKeyWord(word){return `word:${word}`;} function audioKeySentence(i){return `sentence:${i+1}`;}
@@ -315,7 +304,7 @@ function handleMazeClick(r,c,cell){
     setTimeout(()=>cell.classList.remove('wrong'), 650);
   }
 }
-function resetMaze(){ step=0; mistakes=0; completedMaze=false; els.wordPanel.classList.add('hidden'); els.sentencePanel.classList.add('hidden'); els.sentencePronunciationPanel.classList.add('hidden'); els.finalPatternPanel.classList.add('hidden'); if(els.miniTestPanel) els.miniTestPanel.classList.add('hidden'); selectedSentenceKeys.clear(); lockedSentences=false; els.mazeMessage.textContent='Comienza en la casilla verde.'; paintMaze(); }
+function resetMaze(){ step=0; mistakes=0; completedMaze=false; els.wordPanel.classList.add('hidden'); els.sentencePanel.classList.add('hidden'); els.sentencePronunciationPanel.classList.add('hidden'); els.finalPatternPanel.classList.add('hidden'); selectedSentenceKeys.clear(); lockedSentences=false; els.mazeMessage.textContent='Comienza en la casilla verde.'; paintMaze(); }
 
 function renderWords(){
   els.wordList.innerHTML = WORDS_IN_PATH.map((w,idx)=>{
@@ -323,7 +312,9 @@ function renderWords(){
     return `<div class="word-card">
       <div><strong>${idx+1}. ${escapeHtml(w)}</strong> <span class="ipa">${escapeHtml(PRON[w]||'/ɑː/')}</span></div>
       <div class="upload-line">
-        <button class="small btn-purple" data-play="${escapeAttr(key)}">🔊 Escuchar</button>
+        <button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar</button>
+        <label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label>
+        <span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span>
       </div>
     </div>`;
   }).join('');
@@ -368,7 +359,7 @@ function handleTokenClick(tok){
     if(selectedSentenceKeys.size === totalSentenceTargets()){
       lockedSentences = true; els.sentenceList.querySelectorAll('.word-token').forEach(t=>t.classList.add('locked'));
       els.sentenceMessage.innerHTML = '<span class="audio-ok">Excelente. Marcaste todas las palabras con /ɑː/. Se desbloqueó la pronunciación de cada oración.</span>';
-      els.sentencePronunciationPanel.classList.remove('hidden'); renderSentencePronunciation(); els.finalPatternPanel.classList.remove('hidden'); els.miniTestPanel.classList.remove('hidden'); renderMiniTest(); setTimeout(()=>els.sentencePronunciationPanel.scrollIntoView({behavior:'smooth',block:'start'}),250);
+      els.sentencePronunciationPanel.classList.remove('hidden'); renderSentencePronunciation(); els.finalPatternPanel.classList.remove('hidden'); setTimeout(()=>els.sentencePronunciationPanel.scrollIntoView({behavior:'smooth',block:'start'}),250);
     }
   } else {
     tok.classList.add('bad'); els.sentenceMessage.innerHTML = '<span style="color:#991b1b;font-weight:950">Tocaste una palabra incorrecta. Las oraciones vuelven a cero.</span>';
@@ -382,38 +373,10 @@ function renderSentencePronunciation(){
       if(!/^[A-Za-z']+$/.test(part)) return escapeHtml(part);
       return isTargetToken(i,part) ? `<mark>${escapeHtml(part)}</mark>` : escapeHtml(part);
     }).join('');
-    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">🔊 Escuchar oración</button></div></div>`;
+    return `<div class="sentence-card"><div class="sentence-title">Oración ${i+1}</div><div style="line-height:1.7">${highlighted}</div><div class="upload-line" style="margin-top:10px"><button class="small btn-purple" data-play="${escapeAttr(key)}">Escuchar oración</button><label class="small btn-soft" style="cursor:pointer">Subir audio<input type="file" accept="audio/*" data-upload="${escapeAttr(key)}" style="display:none"></label><span data-audio-status-key="${escapeAttr(key)}" class="audio-missing">Sin audio cargado</span></div></div>`;
   }).join('');
   bindAudioButtons(els.sentencePronunciationList); refreshAudioStatus();
 }
-
-function buildMiniItems(){
-  const correct = [...WORDS_IN_PATH].slice(0,3).map(word=>({word,answer:true}));
-  const pathSet = new Set(WORDS_IN_PATH.map(w=>normalizeWord(w)));
-  const distractors = MAZE.flat().filter(w=>!pathSet.has(normalizeWord(w))).slice(0,3).map(word=>({word,answer:false}));
-  return [...correct,...distractors].sort(()=>Math.random()-0.5);
-}
-function renderMiniTest(){
-  if(!els.miniTestList) return;
-  const items=buildMiniItems(); let answered=0, score=0;
-  els.miniTestResult.style.display='none'; els.miniTestResult.textContent='';
-  els.miniTestList.innerHTML=items.map((item,i)=>`<div class="sentence-card" data-mini="${i}">
-    <div class="sentence-title">Pregunta ${i+1}</div>
-    <div class="row"><button class="small btn-purple" data-mini-speak="${escapeAttr(item.word)}">🔊 Escuchar palabra</button>
-    <button class="small btn-green" data-mini-answer="1">Sí contiene el sonido</button>
-    <button class="small btn-soft" data-mini-answer="0">No contiene el sonido</button></div>
-    <div class="muted" data-mini-feedback>Escucha antes de responder.</div></div>`).join('');
-  els.miniTestList.querySelectorAll('[data-mini-speak]').forEach(b=>b.addEventListener('click',()=>playKey('word:'+b.dataset.miniSpeak)));
-  els.miniTestList.querySelectorAll('[data-mini-answer]').forEach(b=>b.addEventListener('click',()=>{
-    const card=b.closest('[data-mini]'); if(card.dataset.done==='1') return;
-    const item=items[Number(card.dataset.mini)]; const chosen=b.dataset.miniAnswer==='1'; const ok=chosen===item.answer;
-    card.dataset.done='1'; answered++; if(ok) score++;
-    card.querySelector('[data-mini-feedback]').innerHTML=ok?'<span class="audio-ok">Correcto.</span>':`<span style="color:#991b1b;font-weight:900">Incorrecto. La palabra era <strong>${escapeHtml(item.word)}</strong>.</span>`;
-    card.querySelectorAll('[data-mini-answer]').forEach(x=>x.disabled=true);
-    if(answered===items.length){ els.miniTestResult.style.display='block'; els.miniTestResult.textContent=`Resultado de la mini prueba: ${score}/${items.length}.`; }
-  }));
-}
-
 function bindAudioButtons(root){
   root.querySelectorAll('[data-play]').forEach(btn=>btn.addEventListener('click',()=>playKey(btn.getAttribute('data-play'))));
   root.querySelectorAll('[data-upload]').forEach(input=>input.addEventListener('change',async()=>{ const key=input.getAttribute('data-upload'); const f=input.files[0]; await saveAudioFile(key,f); input.value=''; }));

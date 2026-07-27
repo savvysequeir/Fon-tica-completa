@@ -1,196 +1,267 @@
 
 (() => {
   'use strict';
-  const KEY = 'fonetica_resultados_v2';
+  const KEY = 'fonetica_resultados_uniformes_v1';
 
-  function getGlobal(name, fallback) {
+  function safeEval(name, fallback) {
     try {
-      return eval(`typeof ${name} !== 'undefined' ? ${name} : undefined`) ?? fallback;
+      const value = eval(`typeof ${name} !== 'undefined' ? ${name} : undefined`);
+      return value ?? fallback;
     } catch {
       return fallback;
     }
   }
 
-  function category() {
+  function inferCategory() {
     const file = location.pathname.toLowerCase();
-    if (file.includes('consonantes_')) return 'Consonantes';
+    if (file.includes('/consonants/') || file.includes('consonantes_')) return 'Consonantes';
     if (file.includes('blends_')) return 'Blends';
-    if (/aia_aua|eia_oia_oua/.test(file)) return 'Triptongos';
+    if (/aia|aua|eia|oia|oua/.test(file)) return 'Triptongos';
     if (/vocal_(ai|ei|ia|oi|ua|au|ea|ou|ju|rcolored)/.test(file)) return 'Diptongos';
     return 'Vocales';
   }
 
-  function topic() {
-    return document.querySelector('h1')?.textContent?.trim() || document.title;
+  function pageTopic() {
+    const h1 = document.querySelector('h1');
+    return (h1?.textContent || document.title || 'Actividad de fonética').trim();
   }
 
-  function getWords() {
-    let words =
-      getGlobal('WORDS_IN_PATH', null) ||
-      getGlobal('PATH_WORDS', null) ||
-      getGlobal('ALL_WORDS', []) ||
-      [];
+  function unique(list) {
+    return [...new Set(list.filter(Boolean).map(v => String(v).trim()).filter(Boolean))];
+  }
 
-    if (!Array.isArray(words)) words = [];
-
-    const sounds = getGlobal('WORD_SOUNDS', {});
-    const titleSound = (topic().match(/\/[^/]+\//) || [''])[0];
-
-    return [...new Set(words.map(item => {
+  function getMainWords() {
+    const candidates = [
+      safeEval('WORDS_IN_PATH', []),
+      safeEval('PATH_WORDS', []),
+      safeEval('ALL_WORDS', []),
+      safeEval('WORDS', []),
+      safeEval('VOCABULARY', [])
+    ];
+    const flat = candidates.flatMap(v => Array.isArray(v) ? v : []);
+    const words = flat.map(item => {
       if (typeof item === 'string') return item;
       if (item && typeof item.word === 'string') return item.word;
-      return String(item || '');
-    }).filter(Boolean))].map(word => ({
-      word,
-      ipa: sounds[word] || sounds[word.toUpperCase()] || titleSound
-    }));
+      if (item && typeof item.text === 'string') return item.text;
+      return '';
+    });
+    return unique(words);
   }
 
   function getSentences() {
-    const items = getGlobal('SENTENCES', []);
-    return Array.isArray(items) ? items.map(String) : [];
+    const candidates = [
+      safeEval('SENTENCES', []),
+      safeEval('PHRASES', []),
+      safeEval('EXAMPLE_SENTENCES', [])
+    ];
+    const flat = candidates.flatMap(v => Array.isArray(v) ? v : []);
+    return unique(flat.map(item => {
+      if (typeof item === 'string') return item;
+      if (item && typeof item.sentence === 'string') return item.sentence;
+      if (item && typeof item.text === 'string') return item.text;
+      return '';
+    }));
   }
 
-  function sentenceVocabulary(sentences) {
-    const excluded = new Set([
-      'a','an','the','and','or','but','in','on','at','to','of','for','with',
-      'is','are','was','were','be','been','being','it','its','this','that',
-      'these','those','my','your','his','her','our','their','i','you','he',
-      'she','we','they'
+  function extractSentenceVocabulary(sentences) {
+    const stop = new Set([
+      'a','an','the','and','or','but','so','for','nor','yet','in','on','at','to','of',
+      'from','with','by','as','is','are','was','were','be','been','being','am','do',
+      'does','did','have','has','had','it','its','this','that','these','those','i','you',
+      'he','she','we','they','my','your','his','her','our','their','me','him','us','them'
     ]);
-    const output = [];
-
+    const words = [];
     sentences.forEach(sentence => {
-      const words = sentence.match(/[A-Za-z]+(?:['’][A-Za-z]+)?/g) || [];
-      words.forEach(word => {
+      const found = sentence.match(/[A-Za-z]+(?:['’][A-Za-z]+)?/g) || [];
+      found.forEach(word => {
         const normalized = word.toLowerCase();
-        if (!excluded.has(normalized) &&
-            !output.some(saved => saved.toLowerCase() === normalized)) {
-          output.push(word);
-        }
+        if (!stop.has(normalized)) words.push(word);
       });
     });
-    return output;
+    return unique(words);
   }
 
-  function stats() {
-    const text = id => document.getElementById(id)?.textContent?.trim() || '';
-    let mazeCompleted = Boolean(getGlobal('completedMaze', false));
-    let sentencesCompleted = Boolean(getGlobal('lockedSentences', false));
+  function getIpaMap(words) {
+    const sounds = safeEval('WORD_SOUNDS', {});
+    const titleIpa = (pageTopic().match(/\/[^/]+\//) || [''])[0];
+    return words.map(word => ({
+      word,
+      ipa: sounds[word] || sounds[word.toUpperCase()] || sounds[word.toLowerCase()] || titleIpa || ''
+    }));
+  }
 
-    if (!mazeCompleted) mazeCompleted = Boolean(document.querySelector('.cell.finish'));
-
-    if (!sentencesCompleted) {
-      const message = document.getElementById('sentenceMessage')?.textContent || '';
-      sentencesCompleted = /excelente|desbloqueó|complet/i.test(message);
+  function getStudent() {
+    const selectors = ['#studentName','#nombreEstudiante','#nameInput','input[name="student"]'];
+    for (const selector of selectors) {
+      const value = document.querySelector(selector)?.value?.trim();
+      if (value) return value;
     }
+    return localStorage.getItem('studentName') || 'Estudiante';
+  }
 
+  function textOf(ids) {
+    for (const id of ids) {
+      const value = document.getElementById(id)?.textContent?.trim();
+      if (value) return value;
+    }
+    return '';
+  }
+
+  function collectStats() {
+    const mazeDone = Boolean(
+      safeEval('completedMaze', false) ||
+      document.querySelector('.finish.completed,.cell.finish.completed,[data-finished="true"]')
+    );
+    const sentenceMessage = textOf(['sentenceMessage','messageSentences','oracionesMensaje']);
+    const sentencesDone = Boolean(
+      safeEval('lockedSentences', false) ||
+      /excelente|complet|finaliz|desbloque/i.test(sentenceMessage)
+    );
     return {
-      mazeCompleted,
-      sentencesCompleted,
-      mazeErrors: text('mistakePill'),
-      progress: text('progressPill'),
-      sentenceProgress: text('sentenceProgressPill'),
-      score: (mazeCompleted ? 50 : 0) + (sentencesCompleted ? 50 : 0)
+      mazeDone,
+      sentencesDone,
+      progress: textOf(['progressPill','progress','mazeProgress']),
+      mistakes: textOf(['mistakePill','mistakes','errorCount']),
+      sentenceProgress: textOf(['sentenceProgressPill','sentenceProgress']),
+      score: (mazeDone ? 50 : 0) + (sentencesDone ? 50 : 0)
     };
   }
 
-  function studentName() {
-    return (
-      document.getElementById('studentName')?.value ||
-      getGlobal('student', '') ||
-      'Estudiante sin identificar'
-    ).trim();
-  }
-
-  function saveResult(showMessage = true) {
+  function saveResult(showToast = true) {
     const sentences = getSentences();
+    const mainWords = getMainWords();
     const record = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      student: studentName(),
-      category: category(),
-      topic: topic(),
-      title: document.title,
+      id: `${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+      student: getStudent(),
+      category: inferCategory(),
+      topic: pageTopic(),
       date: new Date().toISOString(),
-      words: getWords(),
-      sentenceVocabulary: sentenceVocabulary(sentences),
+      words: getIpaMap(mainWords),
+      sentenceVocabulary: extractSentenceVocabulary(sentences),
       sentences,
-      stats: stats(),
-      page: location.pathname
+      stats: collectStats(),
+      source: location.pathname
     };
 
-    let records = [];
-    try {
-      records = JSON.parse(localStorage.getItem(KEY) || '[]');
-    } catch {
-      records = [];
-    }
+    let history = [];
+    try { history = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch {}
+    history.unshift(record);
+    localStorage.setItem(KEY, JSON.stringify(history.slice(0, 300)));
 
-    records.unshift(record);
-    localStorage.setItem(KEY, JSON.stringify(records.slice(0, 300)));
-
-    if (showMessage) {
-      document.getElementById('resultsSavedToast')?.remove();
+    if (showToast) {
+      const old = document.getElementById('foneticaSavedToast');
+      if (old) old.remove();
       const toast = document.createElement('div');
-      toast.id = 'resultsSavedToast';
+      toast.id = 'foneticaSavedToast';
       toast.textContent = '✅ Resultado guardado';
-      toast.style.cssText =
-        'position:fixed;right:18px;bottom:88px;z-index:10001;' +
-        'background:#166534;color:white;padding:12px 16px;border-radius:14px;' +
-        'font-weight:900;box-shadow:0 10px 30px rgba(0,0,0,.28)';
+      toast.style.cssText = 'position:fixed;right:16px;bottom:84px;z-index:99999;background:#166534;color:#fff;padding:12px 16px;border-radius:14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.28)';
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2200);
     }
   }
 
-  function installButtons() {
-    if (document.getElementById('foneticaResultsTools')) return;
+  function addControls() {
+    if (document.getElementById('foneticaResultsControls')) return;
+    const box = document.createElement('div');
+    box.id = 'foneticaResultsControls';
+    box.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:99998;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end';
 
-    const container = document.createElement('div');
-    container.id = 'foneticaResultsTools';
-    container.style.cssText =
-      'position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;' +
-      'gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:95vw';
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.textContent = '💾 Guardar resultado';
+    save.style.cssText = 'border:0;border-radius:14px;padding:11px 14px;background:#0f766e;color:#fff;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.24)';
+    save.onclick = () => saveResult(true);
 
-    const saveButton = document.createElement('button');
-    saveButton.textContent = '💾 Guardar resultado';
-    saveButton.style.cssText =
-      'background:#0f766e;color:white;border:0;border-radius:14px;' +
-      'padding:11px 14px;font-weight:900;cursor:pointer;' +
-      'box-shadow:0 8px 24px rgba(0,0,0,.25)';
-    saveButton.addEventListener('click', () => saveResult(true));
-
-    const resultsButton = document.createElement('button');
-    resultsButton.textContent = '📊 Ver resultados';
-    resultsButton.style.cssText =
-      'background:#7c3aed;color:white;border:0;border-radius:14px;' +
-      'padding:11px 14px;font-weight:900;cursor:pointer;' +
-      'box-shadow:0 8px 24px rgba(0,0,0,.25)';
-    resultsButton.addEventListener('click', () => {
+    const view = document.createElement('button');
+    view.type = 'button';
+    view.textContent = '📊 Ver resultados';
+    view.style.cssText = 'border:0;border-radius:14px;padding:11px 14px;background:#7c3aed;color:#fff;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.24)';
+    view.onclick = () => {
       saveResult(false);
       location.href = '../RESULTADOS/index.html';
-    });
+    };
 
-    container.append(saveButton, resultsButton);
-    document.body.appendChild(container);
+    box.append(save, view);
+    document.body.appendChild(box);
+  }
 
-    const sentenceMessage = document.getElementById('sentenceMessage');
-    if (sentenceMessage) {
-      new MutationObserver(() => {
-        if (/excelente|desbloqueó|complet/i.test(sentenceMessage.textContent || '')) {
-          setTimeout(() => saveResult(false), 250);
-        }
-      }).observe(sentenceMessage, {
-        childList: true,
-        subtree: true,
-        characterData: true
+  function addSpeechButtons() {
+    const selectors = [
+      '[data-word]','[data-sentence]','.word','.vocab-word','.sentence',
+      '.example-sentence','.mini-test-word','.mini-word'
+    ];
+    const seen = new Set();
+    selectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => {
+        if (seen.has(el) || el.querySelector('.foneticaSpeakBtn')) return;
+        seen.add(el);
+        const text = (el.dataset.word || el.dataset.sentence || el.textContent || '').trim();
+        if (!text || text.length > 220) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'foneticaSpeakBtn';
+        btn.textContent = '🔊';
+        btn.title = 'Escuchar';
+        btn.style.cssText = 'margin-left:7px;border:0;border-radius:9px;padding:4px 8px;background:#e0f2fe;color:#075985;font-weight:800;cursor:pointer';
+        btn.onclick = ev => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          speechSynthesis.cancel();
+          const msg = new SpeechSynthesisUtterance(text);
+          msg.lang = 'en-US';
+          msg.rate = 0.82;
+          const voices = speechSynthesis.getVoices();
+          msg.voice = voices.find(v => /^en[-_](US|GB)/i.test(v.lang)) || voices.find(v => /^en/i.test(v.lang)) || null;
+          speechSynthesis.speak(msg);
+        };
+        el.appendChild(btn);
       });
-    }
+    });
+  }
+
+  function replaceUploadAudioText() {
+    document.querySelectorAll('button,label,a').forEach(el => {
+      const text = (el.textContent || '').trim();
+      if (/subir\s+audio/i.test(text)) {
+        const clone = el.cloneNode(true);
+        clone.textContent = '🔊 Escuchar';
+        clone.removeAttribute('for');
+        clone.onclick = ev => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const holder = el.closest('[data-word],[data-sentence],.word,.vocab-word,.sentence,.example-sentence,.mini-test-word,.mini-word') || el.parentElement;
+          const spoken = (holder?.dataset?.word || holder?.dataset?.sentence || holder?.textContent || '').replace(/🔊\s*Escuchar/gi,'').trim();
+          if (!spoken) return;
+          speechSynthesis.cancel();
+          const msg = new SpeechSynthesisUtterance(spoken);
+          msg.lang = 'en-US';
+          msg.rate = 0.82;
+          const voices = speechSynthesis.getVoices();
+          msg.voice = voices.find(v => /^en[-_](US|GB)/i.test(v.lang)) || voices.find(v => /^en/i.test(v.lang)) || null;
+          speechSynthesis.speak(msg);
+        };
+        el.replaceWith(clone);
+      }
+    });
+    document.querySelectorAll('input[type="file"][accept*="audio"]').forEach(input => {
+      input.style.display = 'none';
+      input.disabled = true;
+    });
+  }
+
+  function init() {
+    replaceUploadAudioText();
+    addSpeechButtons();
+    addControls();
+    setTimeout(() => {
+      replaceUploadAudioText();
+      addSpeechButtons();
+    }, 600);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', installButtons);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    installButtons();
+    init();
   }
 })();
