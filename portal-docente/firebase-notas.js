@@ -22,6 +22,7 @@ function cleanCode(code) {
 }
 
 async function publishRecords(records) {
+  await auth.authStateReady();
   const user = auth.currentUser;
   if (!user) throw new Error("Inicia sesión mediante el botón Nube antes de publicar.");
   if (user.uid !== TEACHER_UID) throw new Error("Esta cuenta no tiene permiso para publicar notas.");
