@@ -29,6 +29,26 @@
           ".write": "auth != null && auth.uid === 'aqks8iG8JDT4caWNXqnRyWGYaaG2'"
         }
       }
+    },
+    "qrAttendance": {
+      ".read": false,
+      ".write": false,
+      "sessions": {
+        "$sessionId": {
+          ".read": "auth != null && auth.uid === 'aqks8iG8JDT4caWNXqnRyWGYaaG2'",
+          ".write": "auth != null && auth.uid === 'aqks8iG8JDT4caWNXqnRyWGYaaG2'",
+          ".validate": "newData.hasChildren(['sourceSessionId','date','createdAt','expiresAt','createdBy','students']) && newData.child('expiresAt').isNumber() && newData.child('expiresAt').val() > now"
+        }
+      },
+      "checkins": {
+        "$sessionId": {
+          ".read": "auth != null && auth.uid === 'aqks8iG8JDT4caWNXqnRyWGYaaG2'",
+          "$cardKey": {
+            ".write": "!data.exists() && root.child('qrAttendance/sessions/'+$sessionId+'/expiresAt').val() > now && root.child('qrAttendance/sessions/'+$sessionId+'/students/'+$cardKey+'/card').val() === newData.child('card').val()",
+            ".validate": "newData.hasChildren(['card','at','method']) && newData.numChildren() === 3 && newData.child('card').isString() && newData.child('card').val().length > 0 && newData.child('card').val().length <= 60 && newData.child('at').isNumber() && newData.child('method').val() === 'QR Internet'"
+          }
+        }
+      }
     }
   }
 }
