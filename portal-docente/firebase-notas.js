@@ -27,17 +27,26 @@ async function publishRecords(records) {
   if (!user) throw new Error("Inicia sesión mediante el botón Nube antes de publicar.");
   if (user.uid !== TEACHER_UID) throw new Error("Esta cuenta no tiene permiso para publicar notas.");
   if (!Array.isArray(records) || !records.length) throw new Error("No hay notas para publicar.");
+  const token = await user.getIdToken(true);
 
   let published = 0;
   for (const record of records) {
     const code = cleanCode(record?.code);
     if (!code) continue;
-    await set(ref(db, `publishedGrades/${code}`), {
+    const response = await fetch(`${firebaseConfig.databaseURL}/publishedGrades/${code}.json?auth=${encodeURIComponent(token)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
       ...record,
       code,
       publishedBy: user.uid,
-      publishedAt: serverTimestamp()
+      publishedAt: Date.now()
+      })
     });
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error(`Firebase rechazó la publicación (${response.status}): ${detail}`);
+    }
     published++;
   }
   if (!published) throw new Error("Los estudiantes no tienen códigos válidos.");
