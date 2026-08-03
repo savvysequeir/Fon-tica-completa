@@ -136,10 +136,10 @@
       </div>
       <div class="hero-card">
         <h3>Ruta de trabajo</h3>
-        <p>Primero inserta los datos del estudiante. Luego estudia la explicación, practica el vocabulario y completa las actividades. Si llegas a 3 errores en una actividad, esa actividad se reinicia.</p>
+        <p>Primero inserta los datos del estudiante. Luego estudia la explicación, practica el vocabulario y completa las actividades. Si llegas a 12 errores en una actividad, esa actividad se reinicia.</p>
         <div class="status-line">
           <span class="pill ok">Audio</span>
-          <span class="pill warn">Máximo 3 errores</span>
+          <span class="pill warn">Máximo 12 errores</span>
           <span class="pill">1 punto por oración</span>
         </div>
       </div>
@@ -323,14 +323,14 @@
       <h2>IV. Actividades</h2>
       <div id="activitiesLock" class="lock-note show">🔒 Las actividades están bloqueadas hasta insertar nombre, carrera y año.</div>
       <div id="activitiesContent" class="locked">
-        <div class="note-box"><strong>Regla de trabajo:</strong> en cada actividad solo puedes cometer hasta 2 errores. Al llegar a 3 errores, la actividad vuelve a empezar desde la primera pregunta.</div>
+        <div class="note-box"><strong>Regla de trabajo:</strong> en cada actividad solo puedes cometer hasta 11 errores. Al llegar a 12 errores, la actividad vuelve a empezar desde la primera pregunta.</div>
 
         <div id="activity1" class="question-card">
           <h3>Actividad 1: Reordena las palabras</h3>
           <p>Instrucciones: Reordena las palabras para formar oraciones gramaticalmente correctas en presente continuo.</p>
           <div class="status-line">
             <span id="a1ProgressPill" class="pill">Pregunta 1 de 50</span>
-            <span id="a1MistakesPill" class="pill warn">Errores: 0 / 3</span>
+            <span id="a1MistakesPill" class="pill warn">Errores: 0 / 12</span>
             <span id="a1ScorePill" class="pill ok">Puntaje: 0</span>
           </div>
           <div class="progressbar"><span id="a1Bar"></span></div>
@@ -351,7 +351,7 @@
           <p>Instrucciones: Traduce las siguientes oraciones al inglés usando el presente continuo.</p>
           <div class="status-line">
             <span id="a2ProgressPill" class="pill">Pregunta 1 de 50</span>
-            <span id="a2MistakesPill" class="pill warn">Errores: 0 / 3</span>
+            <span id="a2MistakesPill" class="pill warn">Errores: 0 / 12</span>
             <span id="a2ScorePill" class="pill ok">Puntaje: 0</span>
           </div>
           <div class="progressbar"><span id="a2Bar"></span></div>
@@ -619,7 +619,7 @@
       const item = activity1[state.a1.index];
       document.getElementById('a1Scramble').textContent = item ? item.scrambled : 'Actividad completada.';
       document.getElementById('a1ProgressPill').textContent = `Pregunta ${Math.min(state.a1.index + 1, activity1.length)} de ${activity1.length}`;
-      document.getElementById('a1MistakesPill').textContent = `Errores: ${state.a1.mistakes} / 3`;
+      document.getElementById('a1MistakesPill').textContent = `Errores: ${state.a1.mistakes} / 12`;
       document.getElementById('a1ScorePill').textContent = `Puntaje: ${state.a1.correct}`;
       document.getElementById('a1Bar').style.width = `${(state.a1.correct / activity1.length) * 100}%`;
     }
@@ -650,9 +650,9 @@
         state.a1.mistakes++;
         feedback.className = 'feedback bad';
         feedback.textContent = `❌ Revisa la estructura. Recuerda: subject + am/is/are + verb-ing. Respuesta esperada: ${item.answers[0]}`;
-        if(state.a1.mistakes >= 3){
+        if(state.a1.mistakes >= 12){
           setTimeout(() => {
-            alert('Llegaste a 3 errores. La actividad 1 volverá a empezar.');
+            alert('Llegaste a 12 errores. La actividad 1 volverá a empezar.');
             resetActivity1(false);
           }, 250);
           return;
@@ -675,7 +675,7 @@
       const item = activity2[state.a2.index];
       document.getElementById('a2Prompt').textContent = item ? item.es : 'Actividad completada.';
       document.getElementById('a2ProgressPill').textContent = `Pregunta ${Math.min(state.a2.index + 1, activity2.length)} de ${activity2.length}`;
-      document.getElementById('a2MistakesPill').textContent = `Errores: ${state.a2.mistakes} / 3`;
+      document.getElementById('a2MistakesPill').textContent = `Errores: ${state.a2.mistakes} / 12`;
       document.getElementById('a2ScorePill').textContent = `Puntaje: ${state.a2.correct}`;
       document.getElementById('a2Bar').style.width = `${(state.a2.correct / activity2.length) * 100}%`;
     }
@@ -709,9 +709,9 @@
         state.a2.mistakes++;
         feedback.className = 'feedback bad';
         feedback.textContent = `❌ Revisa auxiliar, -ing o complemento. Respuesta esperada: ${item.answers[0]}`;
-        if(state.a2.mistakes >= 3){
+        if(state.a2.mistakes >= 12){
           setTimeout(() => {
-            alert('Llegaste a 3 errores. La actividad 2 volverá a empezar.');
+            alert('Llegaste a 12 errores. La actividad 2 volverá a empezar.');
             resetActivity2(false);
           }, 250);
           return;

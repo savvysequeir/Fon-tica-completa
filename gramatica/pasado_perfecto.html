@@ -75,14 +75,14 @@ section,.card,.quiz-question{background:linear-gradient(180deg,#111c31 0%,#0f172
   </div>
 </section>
 <section id="actividad1">
-  <div class="activity-head"><h2>IV. Actividad 1: ordenar oraciones</h2><span class="pill">Puntaje: <b id="a1Score">0</b> / 50 · Errores: <b id="a1Errors">0</b> / 3</span></div>
-  <p><b>Instrucciones:</b> Reordena las palabras para formar oraciones gramaticalmente correctas en pasado perfecto usando phrasal verbs. Si te equivocas 3 veces, la actividad vuelve a empezar.</p>
+  <div class="activity-head"><h2>IV. Actividad 1: ordenar oraciones</h2><span class="pill">Puntaje: <b id="a1Score">0</b> / 50 · Errores: <b id="a1Errors">0</b> / 12</span></div>
+  <p><b>Instrucciones:</b> Reordena las palabras para formar oraciones gramaticalmente correctas en pasado perfecto usando phrasal verbs. Si te equivocas 12 veces, la actividad vuelve a empezar.</p>
   <div class="progress"><div class="bar" id="a1Bar"></div></div><p class="note" id="a1ProgressText"></p>
   <div class="card"><h3 id="a1Prompt"></h3><div class="word-bank" id="wordBank"></div><div class="built" id="builtSentence"></div><div class="inline-actions"><button class="btn good" id="checkA1">Comprobar</button><button class="btn ghost" id="resetBuilt">Limpiar intento</button><button class="btn danger" id="restartA1">Reiniciar actividad</button></div><div id="a1Feedback" class="feedback"></div></div>
 </section>
 <section id="actividad2">
-  <div class="activity-head"><h2>Actividad 2: traducir</h2><span class="pill">Puntaje: <b id="a2Score">0</b> / 50 · Errores: <b id="a2Errors">0</b> / 3</span></div>
-  <p><b>Instrucciones:</b> Traduce las oraciones al inglés usando pasado perfecto. Si cometes 3 errores, la actividad vuelve a empezar.</p>
+  <div class="activity-head"><h2>Actividad 2: traducir</h2><span class="pill">Puntaje: <b id="a2Score">0</b> / 50 · Errores: <b id="a2Errors">0</b> / 12</span></div>
+  <p><b>Instrucciones:</b> Traduce las oraciones al inglés usando pasado perfecto. Si cometes 12 errores, la actividad vuelve a empezar.</p>
   <div class="progress"><div class="bar" id="a2Bar"></div></div><p class="note" id="a2ProgressText"></p>
   <div class="card"><h3 id="a2Prompt"></h3><input class="answer-input" id="translationInput" placeholder="Escribe tu traducción en inglés"><div class="inline-actions"><button class="btn good" id="checkA2">Comprobar</button><button class="btn danger" id="restartA2">Reiniciar actividad</button></div><div id="a2Feedback" class="feedback"></div></div>
 </section>
@@ -175,7 +175,7 @@ function resetAct1(full=false){ idx1=0; errors1=0; selected=[]; if(full) scores.
 function checkAct1(){
   const attempt=selected.join(' '), answer=activity1[idx1].answer;
   if(normalize(attempt)===normalize(answer)){ scores.a1++; idx1++; $('a1Feedback').textContent='Correcto: '+answer; $('a1Feedback').className='feedback ok'; updateResults(); setTimeout(renderAct1,650); }
-  else{ errors1++; $('a1Errors').textContent=errors1; $('a1Feedback').textContent='Incorrecto. Intenta de nuevo. Errores: '+errors1+' / 3'; $('a1Feedback').className='feedback bad'; if(errors1>=3){ alert('Llegaste a 3 errores. La actividad 1 volverá a empezar.'); resetAct1(true); } }
+  else{ errors1++; $('a1Errors').textContent=errors1; $('a1Feedback').textContent='Incorrecto. Intenta de nuevo. Errores: '+errors1+' / 12'; $('a1Feedback').className='feedback bad'; if(errors1>=12){ alert('Llegaste a 12 errores. La actividad 1 volverá a empezar.'); resetAct1(true); } }
 }
 function renderAct2(){
   $('a2Score').textContent=scores.a2; $('a2Errors').textContent=errors2; $('a2ProgressText').textContent=(idx2+1)+' / '+activity2.length; $('a2Bar').style.width=(idx2/activity2.length*100)+'%';
@@ -187,7 +187,7 @@ function resetAct2(full=false){ idx2=0; errors2=0; if(full) scores.a2=0; $('tran
 function checkAct2(){
   const attempt=$('translationInput').value, answer=activity2[idx2].answer;
   if(normalize(attempt)===normalize(answer)){ scores.a2++; idx2++; $('a2Feedback').textContent='Correcto: '+answer; $('a2Feedback').className='feedback ok'; updateResults(); setTimeout(renderAct2,650); }
-  else{ errors2++; $('a2Errors').textContent=errors2; $('a2Feedback').textContent='Incorrecto. Respuesta esperada: '+answer+'. Errores: '+errors2+' / 3'; $('a2Feedback').className='feedback bad'; if(errors2>=3){ alert('Llegaste a 3 errores. La actividad 2 volverá a empezar.'); resetAct2(true); } }
+  else{ errors2++; $('a2Errors').textContent=errors2; $('a2Feedback').textContent='Incorrecto. Respuesta esperada: '+answer+'. Errores: '+errors2+' / 12'; $('a2Feedback').className='feedback bad'; if(errors2>=12){ alert('Llegaste a 12 errores. La actividad 2 volverá a empezar.'); resetAct2(true); } }
 }
 function maybeUnlockMini(){ if(idx1>=activity1.length && idx2>=activity2.length){ $('miniGate').classList.remove('locked'); $('miniYes').disabled=false; $('miniNo').disabled=false; $('miniMsg').textContent='Actividades completadas. Puedes entrar a la mini prueba.'; } }
 function renderQuiz(){
