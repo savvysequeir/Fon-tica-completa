@@ -11,7 +11,7 @@
   const studiedSounds = unique(
     (document.querySelector("h1")?.textContent || document.title || "")
       .match(/\/[^/]+\//g) || []
-  );
+  ).map(canonicalSound);
   const NOT_STUDIED = "No contiene el sonido estudiado";
   const IPA_DISTRACTORS = [
     "/iː/", "/ɪ/", "/e/", "/æ/", "/ɑː/", "/ɒ/", "/ɔː/", "/ʊ/", "/uː/",
@@ -28,6 +28,9 @@
     return out;
   }
   function unique(items) { return [...new Set(items.filter(Boolean))]; }
+  function canonicalSound(sound) {
+    return String(sound || "").replace(/:/g, "ː");
+  }
   function esc(value) {
     return String(value ?? "").replace(/[&<>"']/g, c => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -42,12 +45,16 @@
     let mode = "sound";
     try {
       if (typeof WORD_SOUNDS !== "undefined" && WORD_SOUNDS) {
-        entries = Object.entries(WORD_SOUNDS).map(([word, answer]) => ({ word, answer }));
+        entries = Object.entries(WORD_SOUNDS).map(([word, answer]) => ({
+          word,
+          answer: canonicalSound(answer)
+        }));
       } else if (typeof PRON !== "undefined" && PRON) {
         mode = "phoneme";
         const correct = Object.entries(PRON).map(([word, ipa]) => {
+          const normalizedIpa = canonicalSound(ipa);
           const answer = studiedSounds.find(sound =>
-            String(ipa).includes(sound.replaceAll("/", ""))
+            normalizedIpa.includes(sound.replaceAll("/", ""))
           ) || studiedSounds[0] || ipa;
           return { word, ipa, answer };
         });
@@ -89,10 +96,8 @@
         ipa: item.ipa || "",
         answer: item.answer,
         prompt: mode === "blend"
-          ? `¿A qué blend o combinación pertenece “${item.word}”?`
-          : mode === "phoneme"
-            ? `Escucha “${item.word}”. ¿Qué sonido estudiado puedes identificar?`
-            : `Escucha “${item.word}”. ¿Qué sonido fonético puedes identificar?`,
+          ? "Escucha la palabra. ¿Qué blend o combinación consonántica contiene?"
+          : "Escucha la palabra. ¿Qué sonido contiene?",
         options
       };
     });
@@ -198,11 +203,11 @@
   section.className = "amina-q-locked";
   section.innerHTML = `
     <h2>8. Mini prueba · ¿Has entendido?</h2>
-    <p class="amina-q-intro">La prueba evalúa si puedes <strong>escuchar una palabra e identificar el sonido estudiado</strong>.</p>
+    <p class="amina-q-intro">La prueba evalúa si puedes <strong>reconocer de oído el sonido estudiado dentro de una palabra</strong>. La palabra escrita permanecerá oculta mientras respondes.</p>
     <div class="amina-q-lock">🔒 Completa el laberinto, las palabras, las oraciones y la explicación final para activar la mini prueba.</div>
     <button type="button" class="amina-q-open" disabled>🔒 ¿Has entendido? · Completa primero las actividades</button>
     <div class="amina-q-content">
-      <p class="amina-q-intro">Escucha cada palabra y selecciona su sonido. Son
+      <p class="amina-q-intro">Pulsa <strong>Escuchar palabra</strong>, concéntrate únicamente en el audio y selecciona el sonido que reconoces. Son
         <strong>${questions.length} preguntas</strong>; el resultado se calcula sobre 100 puntos y se guarda automáticamente.</p>
       <div class="amina-q-list"></div>
       <div class="amina-q-actions">
@@ -223,7 +228,7 @@
       <article class="amina-q" data-question="${index}">
         <div class="amina-q-title">
           <span>${index + 1}. ${esc(q.prompt)}</span>
-          <button type="button" class="amina-q-audio" data-speak="${esc(q.word)}">🔊 Escuchar</button>
+          <button type="button" class="amina-q-audio" data-speak="${esc(q.word)}" aria-label="Escuchar la palabra de la pregunta ${index + 1}">🔊 Escuchar palabra</button>
         </div>
         <div class="amina-q-options">
           ${q.options.map(option => `
@@ -297,10 +302,10 @@
       answered++;
       if (selected.value === q.answer) {
         correct++;
-        feedback.textContent = "✅ Correcto";
+        feedback.textContent = `✅ Correcto. La palabra era “${q.word}” y contiene ${q.answer}.`;
         card.classList.add("good");
       } else {
-        feedback.textContent = `❌ Respuesta correcta: ${q.answer}`;
+        feedback.textContent = `❌ La palabra era “${q.word}”. El sonido correcto es ${q.answer}.`;
         card.classList.add("bad");
       }
     });
