@@ -61,9 +61,21 @@ async function lookupCode(code) {
   return snapshot.val();
 }
 
+async function lookupExamResults(carnet) {
+  await auth.authStateReady();
+  const user = auth.currentUser;
+  if (!user) throw new Error("Inicia sesión mediante el botón Nube para consultar resultados de exámenes.");
+  if (user.uid !== TEACHER_UID) throw new Error("Esta cuenta no tiene permiso para consultar resultados.");
+  const key = cleanCode(carnet);
+  if (!key) throw new Error("Escribe el número de carnet.");
+  const snapshot = await get(ref(db, `examResults/${key}`));
+  return snapshot.exists() ? Object.values(snapshot.val()).sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0)) : [];
+}
+
 window.AminaFirebaseGrades = {
   publishRecords,
   lookupCode,
+  lookupExamResults,
   teacherReady: () => auth.currentUser?.uid === TEACHER_UID
 };
 window.dispatchEvent(new Event("amina-firebase-grades-ready"));

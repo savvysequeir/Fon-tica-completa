@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Examen integrado | Amina</title>
+  <link rel="stylesheet" href="exam.css">
+</head>
+<body>
+<header><div class="hero"><div><div class="eyebrow">Portal Educativo Amina · Examen <span id="examNumber"></span></div><h1>Fonética y gramática</h1><p class="subtitle">12 sonidos vocálicos · tiempos continuos · presente y pasado perfecto</p><nav class="navlinks"><a class="btn secondary" href="index.html">← Menú de exámenes</a><a class="btn secondary" href="#phonetics">Fonética</a><a class="btn secondary" href="#grammar">Gramática</a><button id="openResults" class="secondary">📊 Resultados</button></nav></div><div class="scorebox"><span>Puntaje</span><strong><span id="scoreValue">0</span>/50</strong><span>Examen <span id="titleNumber"></span></span></div></div></header>
+<main>
+  <section class="card" id="identification"><h2>Activación e identificación del estudiante</h2><p>El examen permanecerá bloqueado hasta completar los datos y pulsar <b>Activar examen</b>.</p><div class="profile"><div class="field"><label>Número de carnet</label><input id="studentCard" autocomplete="off" placeholder="Ej.: 23-00193"></div><div class="field"><label>Nombre completo</label><input id="studentName" autocomplete="name"></div><div class="field"><label>Carrera</label><select id="studentCareer"><option value="">Selecciona</option><option>Odontología</option><option>Medicina</option><option>Química Farmacéutica</option><option>Enfermería</option><option>Mecánica Dental</option><option>Veterinaria</option><option>Zootecnia</option><option>Agronomía</option><option>Agrícola</option><option>Ingeniería Forestal</option><option>Ingeniería en Agroindustria de los Alimentos</option><option>Agronegocios</option><option>Inglés</option></select></div><div class="field"><label>Año académico</label><select id="studentYear"><option value="">Selecciona</option><option>I año</option><option>II año</option><option>III año</option><option>IV año</option><option>V año</option></select></div><div class="field"><label>Grupo o sección</label><input id="studentGroup" placeholder="Ej.: A"></div></div><div class="toolbar"><button id="saveProfile" class="green">🔓 Activar examen</button><span id="profileMessage" class="feedback">🔒 Examen bloqueado.</span></div></section>
+
+  <section class="section" id="phonetics"><h2>I. Fonética</h2><p>Trabaja los sonidos <strong>/ɑː/, /ɒ/, /e/, /æ/, /ɜː/, /iː/, /ɪ/, /ɔː/, /ʌ/, /uː/, /ʊ/ y /ə/</strong>. Las grabaciones se reproducen únicamente cuando pulsas el botón.</p>
+    <h3>1. Escoge la palabra según el sonido</h3><div id="phoneticChoice"></div>
+    <h3>2. Escoge la palabra diferente</h3><div id="oddOneOut"></div>
+    <h3>3. Clasifica 20 palabras según su sonido</h3><p>Computadora: arrastra cada palabra. Celular: toca una palabra y después toca el cuadro del sonido.</p><div id="wordBank" class="wordbank"></div><div id="soundBuckets" class="buckets"></div><div id="sortingFeedback" class="feedback"></div>
+    <h3>4. Escucha y escoge el sonido correcto</h3><p class="hidden-word">La palabra escrita permanecerá oculta hasta calificar.</p><div id="listeningWords"></div>
+    <h3>5. Palabras con el mismo patrón fonético</h3><div id="patterns"></div>
+  </section>
+
+  <section class="section" id="grammar"><h2>II. Gramática</h2><p>Present, Past and Future Continuous · Present Perfect · Past Perfect.</p>
+    <div class="card"><strong>Phrasal verbs destacados de esta versión:</strong><p id="featuredPhrasals"></p></div>
+    <h3>1. Cambia la oración a negativa o interrogativa</h3><div id="transforms"></div>
+    <h3>2. Ordena 10 oraciones en los cinco tiempos</h3><p>Toca las palabras en el orden correcto. Usa “Borrar orden” para intentarlo nuevamente.</p><div id="ordering"></div>
+    <h3>3. Escucha y escribe 15 oraciones</h3><div id="dictation"></div>
+    <h3>4. Traduce las oraciones al inglés</h3><div id="translations"></div>
+    <h3>5. Usa cinco verbos en los tiempos indicados</h3><div id="sentences"></div>
+  </section>
+
+  <section class="section" id="results"><h2>Resultado final</h2><div class="progress"><span id="progressBar"></span></div><div class="summary"><div class="metric"><strong id="earnedMetric">0</strong>Respuestas correctas</div><div class="metric"><strong id="totalMetric">0</strong>Ejercicios</div><div class="metric"><strong id="percentMetric">0%</strong>Porcentaje</div><div class="metric"><strong id="stateMetric">AI</strong>Estado</div></div><div id="finalMessage" class="result-message">Completa el examen y pulsa “Calificar examen”.</div><div class="toolbar"><button id="gradeExam" class="green">✅ Calificar examen</button><button id="resetExam" class="secondary">Reiniciar</button><button onclick="print()" class="secondary">🖨️ Imprimir</button></div></section>
+  <button id="gradeExamFloating" class="green sticky-submit" onclick="document.getElementById('gradeExam').click()">✅ Calificar examen</button>
+</main>
+<dialog id="resultsDialog"><div class="dialog-head"><h2>Resultados del examen</h2><button id="closeResults" class="secondary">✕</button></div><div class="dialog-body"><div class="history"><table><thead><tr><th>Nombre</th><th>Carrera</th><th>Año</th><th>Grupo</th><th>Fecha</th><th>Puntaje</th><th>Estado</th></tr></thead><tbody id="historyBody"></tbody></table></div></div></dialog>
+<script>window.EXAM_VERSION = 5; window.EXAM_VERSION = Number(new URLSearchParams(location.search).get("version")) || window.EXAM_VERSION || 1;</script>
+<script src="exam-data.js"></script><script src="exam-app.js"></script>
+</body></html>
