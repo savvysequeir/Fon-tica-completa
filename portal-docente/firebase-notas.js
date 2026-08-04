@@ -33,7 +33,7 @@ async function publishRecords(records) {
   for (const record of records) {
     const code = cleanCode(record?.code);
     if (!code) continue;
-    const response = await fetch(`${firebaseConfig.databaseURL}/amina/admin/publishedGrades/${code}.json?auth=${encodeURIComponent(token)}`, {
+    const response = await fetch(`${firebaseConfig.databaseURL}/publishedGrades/${code}.json?auth=${encodeURIComponent(token)}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -56,7 +56,7 @@ async function publishRecords(records) {
 async function lookupCode(code) {
   const clean = cleanCode(code);
   if (!clean) throw new Error("Escriba el código proporcionado por el docente.");
-  const snapshot = await get(ref(db, `amina/admin/publishedGrades/${clean}`));
+  const snapshot = await get(ref(db, `publishedGrades/${clean}`));
   if (!snapshot.exists()) throw new Error("Código no encontrado. Verifique e intente nuevamente.");
   return snapshot.val();
 }
