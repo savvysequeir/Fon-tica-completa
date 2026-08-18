@@ -39,4 +39,5 @@ function checkMiniReady(){let ready=idx1>=activity1.length && idx2>=activity2.le
 $('miniNo').onclick=()=>document.querySelector('section.card:nth-of-type(5)').scrollIntoView({behavior:'smooth'});$('miniYes').onclick=()=>{$('quizSection').style.display='block';renderQuiz();};function renderQuiz(){let q=$('quizWrap');q.innerHTML='';quiz.forEach((item,i)=>{let d=document.createElement('div');d.className='mini-card';d.innerHTML=`<h3>${i+1}. ${item.q}</h3>`+item.options.map(o=>`<label><input type="radio" name="q${i}" value="${o}"> ${o}</label><br>`).join('');q.appendChild(d);});}
 $('submitQuiz').onclick=()=>{let points=0;quiz.forEach((item,i)=>{let checked=document.querySelector(`input[name="q${i}"]:checked`);if(checked&&checked.value===item.a)points+=1;});scores.quiz=points;$('quizResult').innerHTML='<span class="ok">Mini prueba: '+points+' / '+quiz.length+'</span>';updateResults();};
 renderVocab();renderA1();renderA2();buildGroups();renderFlash();placeFloating();updateResults();
-</script></body></html>
+</script>  <script src="../grammar-word-order.js"></script>
+</body></html>

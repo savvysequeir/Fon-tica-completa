@@ -60,4 +60,5 @@ function renderQuiz(){if(qi>=quiz.length){$('quizQ').textContent='Mini prueba te
 function checkQuiz(idx){if(idx===quiz[qi].a){qs++;$('quizScore').textContent=qs;$('quizFb').innerHTML='<span class="okText">Correcto.</span>';}else{$('quizFb').innerHTML='<span class="badText">Incorrecto.</span>';}qi++;setTimeout(renderQuiz,500);updateResults();}
 renderVocab();loadA1();loadA2();buildGroups();renderFlash();placeFloating();updateResults();
 </script>
+  <script src="../grammar-word-order.js"></script>
 </body></html>

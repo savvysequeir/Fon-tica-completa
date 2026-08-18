@@ -41,4 +41,5 @@ $('miniNo').onclick=()=>document.querySelector('section.card:nth-of-type(5)').sc
 $('submitQuiz').onclick=()=>{let points=0;quiz.forEach((item,i)=>{let checked=document.querySelector(`input[name="q${i}"]:checked`);if(checked&&checked.value===item.a)points+=1;});scores.quiz=points;$('quizResult').innerHTML='<span class="ok">Mini prueba: '+points+' / '+quiz.length+'</span>';updateResults();};
 renderVocab();renderA1();renderA2();buildGroups();renderFlash();placeFloating();updateResults();
 </script><script src="/Fon-tica-completa/shared-results.js"></script>
+  <script src="../grammar-word-order.js"></script>
 </body></html>

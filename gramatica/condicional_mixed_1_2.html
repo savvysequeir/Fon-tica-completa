@@ -49,4 +49,5 @@ $('miniYes').onclick=()=>{$('quizSection').style.display='block';renderQuiz();};
 function renderQuiz(){$('quizWrap').innerHTML=quiz.map((q,i)=>`<div class="mini-card"><h3>${i+1}. ${q.q}</h3>${q.options.map((o,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${o}</label>`).join('')}</div>`).join('');}
 $('submitQuiz').onclick=()=>{let pts=0;quiz.forEach((q,i)=>{let el=document.querySelector(`input[name=q${i}]:checked`);if(el&&Number(el.value)===q.a)pts++;});scores.quiz=pts;$('quizResult').innerHTML='<span class="ok">Mini prueba: '+pts+' / '+quiz.length+'</span>';updateResults();};
 renderVocab();renderA1();renderA2();makeGroups();renderFlash();renderFloatSet();updateResults();checkMini();
-</script></body></html>
+</script>  <script src="../grammar-word-order.js"></script>
+</body></html>
