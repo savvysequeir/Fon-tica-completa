@@ -10,4 +10,45 @@ function configureInstitution(){document.querySelector('header div').insertAdjac
 function deleteDidacticSession(id){let row=editableRows().find(x=>x.id===id);if(!row||!confirm(`¿Borrar la sesión ${row.number} del plan didáctico?`))return;if(id.startsWith('manual-'))localStorage.setItem('didacticManualRows',JSON.stringify(getManualRows().filter(x=>x.id!==id)));else localStorage.setItem('didacticExports',JSON.stringify(exportsList().filter(x=>x!==id)));let edits=getEdits();delete edits[id];localStorage.setItem('didacticCellEdits',JSON.stringify(edits));render();$('status').textContent=`Sesión ${row.number} borrada del plan didáctico.`}
 const editableBase=renderEditable;function renderWithActions(){editableBase();let first=$('sheet').querySelector('.matrix thead tr');if(first){let th=document.createElement('th');th.rowSpan=2;th.textContent='ACCIONES';th.className='date';first.appendChild(th)}let rows=editableRows();[...$('sheet').querySelectorAll('.matrix tbody tr')].forEach((tr,i)=>{if(!rows[i])return;let td=document.createElement('td');td.innerHTML=`<button class="delete-session" onclick="deleteDidacticSession('${rows[i].id}')">Borrar sesión</button>`;tr.appendChild(td)})}
 document.head.insertAdjacentHTML('beforeend','<style>.uni-logo{width:78px;height:78px;object-fit:contain;float:left;margin-right:14px;background:#fff;border-radius:10px;padding:4px}.matrix td[contenteditable="true"]{background:#fffef5;outline:none;min-height:55px}.matrix td[contenteditable="true"]:hover{background:#fff8d8;box-shadow:inset 0 0 0 2px #f5c451}.matrix td[contenteditable="true"]:focus{background:#fff3b5;box-shadow:inset 0 0 0 2px #155eef}.matrix td[contenteditable="true"]:empty:before{content:"Escribe aquí…";color:#98a2b3;font-style:italic}.delete-session{border:0;border-radius:7px;padding:7px;background:#fee4e2;color:#b42318;font-weight:700;cursor:pointer}@media print{.matrix td[contenteditable="true"]{background:#fff!important;box-shadow:none!important}.matrix td[contenteditable="true"]:empty:before{content:""}.delete-session,.matrix th:last-child,.matrix td:last-child{display:none}}</style>');configureInstitution();render=renderWithActions;let actions=document.querySelector('.actions');actions.insertAdjacentHTML('beforeend','<button class="btn" onclick="addManualSession()">Nueva sesión editable</button><button class="btn secondary" onclick="saveMatrixEdits()">Guardar cambios de la matriz</button>');loadMeta();$('university').value='Jean-Jacques Rousseau';$('teacher').value='Lic. Wascar Enrique Sequeira Hurtado';document.querySelectorAll('input,select').forEach(x=>x.addEventListener('change',render));render();
-</script><script type="module" src="firebase-sync.js"></script></body></html>
+</script><script type="module" src="firebase-sync.js"></script>
+<script>
+/* Contexto recibido desde el centro de carreras. No modifica los registros ni Firebase. */
+(function(){
+  function norm(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase()}
+  function setField(id,value){
+    const element=document.getElementById(id);if(!element||value==null||value==='')return;
+    if(element.tagName==='SELECT'){
+      let option=[...element.options].find(item=>norm(item.value)===norm(value)||norm(item.textContent)===norm(value));
+      if(!option){option=document.createElement('option');option.value=value;option.textContent=value;element.appendChild(option)}
+      element.value=option.value;
+    }else element.value=value;
+    element.dispatchEvent(new Event('input',{bubbles:true}));element.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  function readContext(){
+    let stored={};try{stored=JSON.parse(localStorage.getItem('aminaResourceContext')||'{}')}catch{}
+    const query=Object.fromEntries(new URLSearchParams(location.search));
+    return Object.assign({},stored,query);
+  }
+  function apply(){
+    const c=readContext();if(!c||!c.career)return;
+    const careerMap={'Odontología':'Odontología','Odontología II':'Odontología II','Farmacia':'Farmacia','Enfermería':'Enfermería'};
+    setField('career',careerMap[c.career]||c.career);
+    setField('teacher',c.teacher||'Lic. Wascar Enrique Sequeira Hurtado');
+    setField('university',c.university||'Universidad Jean-Jacques Rousseau');
+    setField('subject',c.subject);
+    setField('group',c.group);
+    setField('shift',c.modality);setField('modality',c.modality);
+    setField('semester',c.semester);
+    setField('year',c.academicYear);setField('academicYear',c.academicYear);
+    if(c.semester){setField('periodKind','Semestre');setField('term',/^II/i.test(c.semester)?'II':'I')}
+    const periodYear=(String(c.period||'').match(/20\d{2}/)||[new Date().getFullYear()])[0];
+    setField('periodYear',periodYear);
+    const periodText=[c.semester||'',periodYear].filter(Boolean).join(' ').toUpperCase();
+    if(periodText)setField('period',periodText);
+    if(typeof saveMeta==='function')try{saveMeta()}catch{}
+    if(typeof render==='function')try{render()}catch{}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,80));else setTimeout(apply,80);
+})();
+</script></body></html>
+

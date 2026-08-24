@@ -14,4 +14,45 @@ async function waitForGrades(){if(window.AminaFirebaseGrades)return window.Amina
 async function publishGrades(){if(!students.length)return message('No hay estudiantes para publicar.');message('Publicando notas en Firebase…');try{let grades=await waitForGrades(),result=await grades.publishRecords(students.map(publicRecord)),url=new URL('consultar-nota.html',location.href).href;saveAll(false);message(`${result.published} notas publicadas. Consulta estudiantil: ${url}`);if($('studentUrl'))$('studentUrl').textContent=url}catch(e){message('No se pudieron publicar las notas: '+(e.message||e))}}
 function exportRows(){let r=[['UNIVERSIDAD JEAN-JACQUES ROUSSEAU'],['FACULTAD DE CIENCIAS MÉDICAS'],[$('period').value],['CONTROL DE NOTAS'],[],['Asignatura',$('subject').value,'Docente',$('teacher').value,'Modalidad',$('modality').value],['Grupo',$('group').value,'Carrera',$('career').value,'Año académico',$('year').value],[],['No','Carnet','Sexo','Apellidos y Nombres']];let h2=['','','',''];defs.forEach(d=>{d.labels.forEach((l,i)=>{r[8].push(`${d.title} ${l}`);h2.push(`Máx ${d.tests[i]} · ${gradeDates[dateId(d.key,'test',i)]||'Sin fecha'}`)});r[8].push(`${d.title} Acu`,d.exam,`${d.title} Nota`);h2.push('50',`50 · ${gradeDates[dateId(d.key,'exam')]||'Sin fecha'}`,'100')});r[8].push('Nota Final');h2.push('100');r.push(h2);students.forEach((st,i)=>{let row=[i+1,st.card,st.sex,st.name];defs.forEach(d=>{let c=calc(st,d);row.push(...st.grades[d.key].tests,c.acu,st.grades[d.key].exam,c.total)});row.push(final(st));r.push(row)});return r}function exportExcel(){try{let book=XLSX.utils.book_new(),sheet=XLSX.utils.aoa_to_sheet(exportRows());sheet['!cols']=exportRows()[8].map((_,i)=>({wch:i===3?38:i<4?14:15}));XLSX.utils.book_append_sheet(book,sheet,'Notas');let auditRows=[['Fecha','Carnet','Estudiante','Evaluación','Nota anterior','Nota nueva','Motivo','Explicación','Docente'],...changeLog.map(x=>[new Date(x.at).toLocaleString('es-NI'),x.card,x.name,x.assessment,x.before,x.after,x.reason,x.detail,x.teacher])],auditSheet=XLSX.utils.aoa_to_sheet(auditRows);auditSheet['!cols']=[18,14,34,20,12,12,34,55,38].map(wch=>({wch}));XLSX.utils.book_append_sheet(book,auditSheet,'Historial de cambios');XLSX.writeFile(book,`Control_Notas_${$('career').value}_${$('subject').value}_${$('group').value}.xlsx`,{compression:true});message('Control de notas exportado a Excel.')}catch(e){message('No se pudo exportar: '+e.message)}}
 partitionIds.forEach(id=>$(id).addEventListener('change',()=>{saveMeta();loadCurrentList()}));metaIds.filter(id=>!partitionIds.includes(id)).forEach(id=>$(id).addEventListener('change',()=>{saveMeta();render()}));load();if(!students.length&&location.protocol!=='file:'&&!localStorage.getItem('gradesModelImported'))loadModel().then(()=>localStorage.setItem('gradesModelImported','1'));window.getGradesData=()=>students;
-</script><script type="module" src="firebase-sync.js"></script><script type="module" src="firebase-notas.js"></script><script src="exam-results-notas.js"></script></body></html>
+</script><script type="module" src="firebase-sync.js"></script><script type="module" src="firebase-notas.js"></script><script src="exam-results-notas.js"></script>
+<script>
+/* Contexto recibido desde el centro de carreras. No modifica los registros ni Firebase. */
+(function(){
+  function norm(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase()}
+  function setField(id,value){
+    const element=document.getElementById(id);if(!element||value==null||value==='')return;
+    if(element.tagName==='SELECT'){
+      let option=[...element.options].find(item=>norm(item.value)===norm(value)||norm(item.textContent)===norm(value));
+      if(!option){option=document.createElement('option');option.value=value;option.textContent=value;element.appendChild(option)}
+      element.value=option.value;
+    }else element.value=value;
+    element.dispatchEvent(new Event('input',{bubbles:true}));element.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  function readContext(){
+    let stored={};try{stored=JSON.parse(localStorage.getItem('aminaResourceContext')||'{}')}catch{}
+    const query=Object.fromEntries(new URLSearchParams(location.search));
+    return Object.assign({},stored,query);
+  }
+  function apply(){
+    const c=readContext();if(!c||!c.career)return;
+    const careerMap={'Odontología':'Odontología','Odontología II':'Odontología II','Farmacia':'Farmacia','Enfermería':'Enfermería'};
+    setField('career',careerMap[c.career]||c.career);
+    setField('teacher',c.teacher||'Lic. Wascar Enrique Sequeira Hurtado');
+    setField('university',c.university||'Universidad Jean-Jacques Rousseau');
+    setField('subject',c.subject);
+    setField('group',c.group);
+    setField('shift',c.modality);setField('modality',c.modality);
+    setField('semester',c.semester);
+    setField('year',c.academicYear);setField('academicYear',c.academicYear);
+    if(c.semester){setField('periodKind','Semestre');setField('term',/^II/i.test(c.semester)?'II':'I')}
+    const periodYear=(String(c.period||'').match(/20\d{2}/)||[new Date().getFullYear()])[0];
+    setField('periodYear',periodYear);
+    const periodText=[c.semester||'',periodYear].filter(Boolean).join(' ').toUpperCase();
+    if(periodText)setField('period',periodText);
+    if(typeof saveMeta==='function')try{saveMeta()}catch{}
+    if(typeof render==='function')try{render()}catch{}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,80));else setTimeout(apply,80);
+})();
+</script></body></html>
+
