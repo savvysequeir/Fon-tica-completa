@@ -1,0 +1,9 @@
+CARPETA LISTA PARA GITHUB PAGES
+
+1. Sube completa la carpeta AMINA_VOCABULARIO_80_FUTURO_PERFECTO en la raíz del repositorio.
+2. No separes index.html, app.js, styles.css ni la carpeta imagenes.
+3. El enlace será: https://TU-USUARIO.github.io/TU-REPOSITORIO/AMINA_VOCABULARIO_80_FUTURO_PERFECTO/
+4. Para enlazarla desde el portal usa: AMINA_VOCABULARIO_80_FUTURO_PERFECTO/index.html
+5. Clave docente: estoico01
+
+La actividad no modifica Firebase, notas, asistencias ni el planificador.
