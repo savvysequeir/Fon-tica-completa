@@ -171,6 +171,24 @@ footer{max-width:1100px;margin:24px auto 40px;padding:0 20px;color:var(--muted);
  <div class="section-title"><div><h2>No hay actividades habilitadas</h2><p>El docente todavía no ha habilitado ejercicios para esta asignación.</p></div></div>
 </section>
 
+
+<section id="studentAudioTransfer" class="card" style="margin-top:18px">
+  <div class="section-title">
+    <div>
+      <h2>Audios de la asignación</h2>
+      <p>Importa los audios exportados por el docente o descarga una copia de los audios disponibles en esta página.</p>
+    </div>
+  </div>
+  <div class="toolbar">
+    <label class="btn primary" style="cursor:pointer">
+      Importar audios del docente
+      <input id="studentImportAudioPackage" type="file" accept=".json,application/json" hidden>
+    </label>
+    <button class="btn good" id="studentExportAudioPackage">Exportar audios</button>
+  </div>
+  <div id="studentAudioTransferStatus" class="notice" style="margin-top:12px">No se ha importado ningún paquete en esta sesión.</div>
+</section>
+
 </main>
 
 <footer>WESH · AMINA‑VERSANT · Versión estudiante</footer>
@@ -244,6 +262,7 @@ const defaults={
 
 let data=JSON.parse(localStorage.getItem("aminaVersantData")||"null")||defaults;
 if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
+if(!data.sentenceAudioMeta)data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
 if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
 if(!data.openAudio)data.openAudio="";
 if(!data.openQuestions)data.openQuestions=["Open speaking question"];
@@ -383,7 +402,7 @@ function makeAudioList(containerId,items,audios,progressKey,originalIndexes=null
    const originalIndex=originalIndexes?originalIndexes[i]:i;
    const shownNumber=originalIndex+1;
    const row=document.createElement("div");row.className="audio-item";
-   row.innerHTML=`<b>${shownNumber}</b><div>${containerId==="#questionAudioList"?"Pregunta "+(i+1):containerId==="#openAudioList"?"Pregunta "+(i+1):"Oración "+shownNumber}</div>`;
+   row.innerHTML=`<b>${shownNumber}</b><div title="${String(txt||"").replace(/"/g,"&quot;")}">${containerId==="#questionAudioList"?"Pregunta "+(i+1):containerId==="#openAudioList"?"Pregunta "+(i+1):"Oración "+shownNumber}</div>`;
    if(src){
      const a=document.createElement("audio");a.controls=true;a.src=src;
      a.onplay=()=>{if(progressKey)studentProgress[progressKey][originalIndex]=true};
@@ -529,6 +548,82 @@ function applyAssignments(){
 }
 
 applyAssignments();
+
+function studentAudioPackage(){
+  return {
+    app:"AMINA-VERSANT",
+    kind:"student-audio-package",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    sentences:data.sentences.map((sentence,i)=>({
+      number:i+1,
+      sentence,
+      audio:data.sentenceAudio[i]||"",
+      meta:(data.sentenceAudioMeta||[])[i]||null
+    })),
+    questions:(data.questions||[]).map((question,i)=>({
+      number:i+1,
+      question,
+      audio:(data.questionAudio||[])[i]||""
+    })),
+    openQuestions:data.openQuestions||["Open speaking question"],
+    openAudio:data.openAudio||""
+  };
+}
+function studentDownloadJSON(filename,obj){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function studentApplyAudioPackage(pkg){
+  if(!pkg||pkg.kind!=="student-audio-package")throw new Error("El archivo no es un paquete de audio AMINA-VERSANT.");
+  if(!Array.isArray(data.sentenceAudioMeta))data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
+
+  (pkg.sentences||[]).forEach((x,i)=>{
+    if(i<data.sentences.length){
+      if(typeof x.audio==="string")data.sentenceAudio[i]=x.audio;
+      data.sentenceAudioMeta[i]=x.meta||null;
+    }
+  });
+  (pkg.questions||[]).forEach((x,i)=>{
+    if(i<data.questions.length && typeof x.audio==="string")data.questionAudio[i]=x.audio;
+  });
+  if(pkg.openAudio!==undefined)data.openAudio=pkg.openAudio;
+
+  localStorage.setItem("aminaVersantData",JSON.stringify(data));
+  if(typeof refreshAssignedAudioSections==="function")refreshAssignedAudioSections();
+  if(typeof makeAudioList==="function"){
+    makeAudioList("#questionAudioList",data.questions,data.questionAudio,"cPlayed");
+    let openAudios=[];
+    if(Array.isArray(data.openAudio))openAudios=data.openAudio;
+    else if(data.openAudio)openAudios=[data.openAudio];
+    else openAudios=[""];
+    let openItems=(data.openQuestions&&data.openQuestions.length)?data.openQuestions:["Open speaking question"];
+    while(openAudios.length<openItems.length)openAudios.push("");
+    makeAudioList("#openAudioList",openItems,openAudios,"gPlayed");
+  }
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  document.querySelector("#studentExportAudioPackage")?.addEventListener("click",()=>{
+    studentDownloadJSON("AMINA_VERSANT_AUDIOS_COPIA_ESTUDIANTE.json",studentAudioPackage());
+  });
+  document.querySelector("#studentImportAudioPackage")?.addEventListener("change",async e=>{
+    const f=e.target.files?.[0];if(!f)return;
+    const st=document.querySelector("#studentAudioTransferStatus");
+    try{
+      const pkg=JSON.parse(await f.text());
+      studentApplyAudioPackage(pkg);
+      if(st)st.textContent=`Audios importados correctamente desde ${f.name}.`;
+    }catch(err){
+      if(st)st.textContent="Error: "+err.message;
+      alert("No se pudieron importar los audios.");
+    }
+    e.target.value="";
+  });
+});
+
 </script>
 </body>
 </html>
