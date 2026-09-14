@@ -61,6 +61,52 @@ footer{max-width:1100px;margin:24px auto 40px;padding:0 20px;color:var(--muted);
 }
 #printArea{display:none}
 
+
+/* ===== AMINA UX V5 ===== */
+:root{
+  --amina-accent:#55b8ff;
+  --amina-good:#35d39a;
+  --amina-warn:#ffca55;
+}
+body{scroll-behavior:smooth}
+.card{backdrop-filter:blur(12px)}
+.num-grid{gap:10px!important}
+.num-btn{
+  min-width:48px!important;min-height:48px!important;border-radius:14px!important;
+  font-weight:900!important;position:relative;transition:.16s ease!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.18)
+}
+.num-btn:hover{transform:translateY(-2px) scale(1.03)}
+.num-btn.has-audio{border-color:var(--amina-good)!important;box-shadow:0 0 0 2px rgba(53,211,154,.12),0 8px 24px rgba(0,0,0,.22)!important}
+.num-btn.no-audio{opacity:.72}
+.num-btn .audio-dot{
+  position:absolute;right:-5px;top:-5px;width:20px;height:20px;border-radius:50%;
+  display:grid;place-items:center;font-size:11px;background:var(--amina-good);color:#06121d;
+  border:2px solid #0a1728
+}
+.sticky-nav{
+  position:sticky;top:8px;z-index:50;background:rgba(8,18,33,.9)!important;
+  backdrop-filter:blur(16px);box-shadow:0 8px 30px rgba(0,0,0,.2)
+}
+.audio-status-card{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#0a1728
+}
+.audio-status-card strong{color:var(--amina-good)}
+.assignment-summary{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:12px
+}
+.assignment-summary .mini{
+  border:1px solid var(--line);border-radius:13px;padding:10px;background:#09182a
+}
+.assignment-summary .mini b{display:block;font-size:1.25rem}
+@media(max-width:640px){
+  .num-grid{grid-template-columns:repeat(5,1fr)!important}
+  .num-btn{min-width:0!important;width:100%!important}
+  .toolbar{gap:8px!important}
+  .btn{width:100%;justify-content:center}
+}
+
 </style>
 </head>
 <body>
@@ -90,7 +136,17 @@ footer{max-width:1100px;margin:24px auto 40px;padding:0 20px;color:var(--muted);
  <div id="studentStatus" class="notice hidden" style="margin-top:12px"></div>
 </section>
 
-<div class="section-tabs">
+
+<section id="studentAssignmentSummary" class="card" style="margin-top:18px">
+ <div class="section-title"><div><h2>Mi asignación</h2><p>Después de iniciar sesión aquí verás cuántas actividades tienes habilitadas.</p></div></div>
+ <div class="assignment-summary">
+   <div class="mini"><span>Oraciones asignadas</span><b id="studentAssignedCount">—</b></div>
+   <div class="mini"><span>Audios disponibles</span><b id="studentAudioCount">—</b></div>
+   <div class="mini"><span>Secciones habilitadas</span><b id="studentSectionsCount">—</b></div>
+ </div>
+</section>
+
+<div class="section-tabs sticky-nav">
  <button data-sec="A" class="active">A</button>
  <button data-sec="B">B</button>
  <button data-sec="C">C</button>
@@ -105,7 +161,7 @@ footer{max-width:1100px;margin:24px auto 40px;padding:0 20px;color:var(--muted);
 
  <div class="grid grid-2">
   <div class="card" id="studentA1">
-   <h3>Ejercicio 1 · Oraciones</h3>
+   <h3>Ejercicio 1 · Read Aloud</h3><p class="sub">Toca el número para escuchar el audio y ver la oración en pantalla negra.</p>
    <div class="notice">Toca el número de una oración para verla en pantalla negra.</div>
    <div id="sentenceGrid" class="num-grid" style="margin-top:12px"></div>
   </div>
@@ -131,34 +187,44 @@ footer{max-width:1100px;margin:24px auto 40px;padding:0 20px;color:var(--muted);
 </section>
 
 <section id="secD" class="card app-section hidden">
- <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>Escucha los audios de las oraciones de la sección A.</p></div></div>
+ <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>Escucha los audios específicos cargados por el docente para esta sección.</p></div></div>
  <div id="buildAudioList" class="audio-list"></div>
 </section>
 
 <section id="secE" class="card app-section hidden">
- <div class="section-title"><div><h2>E · DICTATION</h2><p>Escucha únicamente los audios de las oraciones.</p></div></div>
+ <div class="section-title"><div><h2>E · DICTATION</h2><p>Toca el número para escuchar inmediatamente el audio importado desde A1.</p></div></div>
  <div id="dictationAudioList" class="audio-list"></div>
 </section>
 
 <section id="secF" class="card app-section hidden">
- <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Escucha o revisa la lectura asignada y escribe todo lo que entendiste.</p></div></div>
+ <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Escucha la historia. El texto de la lectura permanece oculto.</p></div></div>
  <div class="grid grid-2">
   <div>
-   <label>Lectura</label>
+   <label>Historia asignada</label>
    <select id="storySelect"></select>
-   <div id="storyText" class="notice" style="margin-top:12px;max-height:360px;overflow:auto"></div>
+   <div class="card" style="margin-top:12px;text-align:center">
+    <div style="font-size:44px">🎧</div>
+    <h3 id="storyAudioTitle">Story Retelling</h3>
+    <button class="btn primary" id="playStoryAudioStudent">▶ Escuchar historia</button>
+    <div id="storyAudioStudentStatus" class="notice" style="margin-top:10px">Selecciona una historia.</div>
+   </div>
   </div>
   <div>
    <label>Bloc de notas · Escribe todo lo que entendiste</label>
-   <textarea id="storyNotes" style="width:100%;min-height:360px;border-radius:14px;border:1px solid var(--line);background:#0b1526;color:var(--text);padding:14px;resize:vertical" placeholder="Escribe aquí, con tus propias palabras, todo lo que entendiste de la lectura..."></textarea>
+   <textarea id="storyNotes" style="width:100%;min-height:360px;border-radius:14px;border:1px solid var(--line);background:#0b1526;color:var(--text);padding:14px;resize:vertical" placeholder="Escribe aquí, con tus propias palabras, todo lo que entendiste del audio..."></textarea>
    <div class="notice" style="margin-top:10px">Tus notas se guardan automáticamente en este navegador.</div>
   </div>
  </div>
 </section>
 
 <section id="secG" class="card app-section hidden">
- <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>Escucha únicamente los audios de las preguntas.</p></div></div>
- <div id="openAudioList" class="audio-list"></div>
+ <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>La pregunta escrita no se muestra. El audio se reproduce automáticamente al entrar.</p></div></div>
+ <div class="card" style="text-align:center">
+  <div style="font-size:48px">🎧</div>
+  <h3>Escucha y responde oralmente</h3>
+  <button class="btn ghost" id="replayOpenAudio">▶ Repetir audio</button>
+  <div id="openStudentStatus" class="notice" style="margin-top:10px">Audio listo.</div>
+ </div>
 </section>
 
 <section class="card" style="margin-top:18px">
@@ -176,7 +242,7 @@ footer{max-width:1100px;margin:24px auto 40px;padding:0 20px;color:var(--muted);
   <div class="section-title">
     <div>
       <h2>Audios de la asignación</h2>
-      <p>Importa los audios exportados por el docente o descarga una copia de los audios disponibles en esta página.</p>
+      <p>Importa el paquete de audio del docente. Cada audio quedará asociado a su oración correspondiente.</p>
     </div>
   </div>
   <div class="toolbar">
@@ -265,6 +331,10 @@ if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
 if(!data.sentenceAudioMeta)data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
 if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
 if(!data.openAudio)data.openAudio="";
+if(!data.buildAudio)data.buildAudio=Array(data.sentences.length).fill("");
+if(!data.readingAudio)data.readingAudio=Array(data.readings.length).fill("");
+while(data.buildAudio.length<data.sentences.length)data.buildAudio.push("");
+while(data.readingAudio.length<data.readings.length)data.readingAudio.push("");
 if(!data.openQuestions)data.openQuestions=["Open speaking question"];
 let sessionStarted=false;
 let assignedSentenceIndexes=null;
@@ -291,6 +361,8 @@ function applyStudentSentenceAssignment(){
   assignedSentenceIndexes=Array.isArray(assignments[n])?assignments[n]:null;
   renderSentenceGrid();
   if(typeof refreshAssignedAudioSections==="function")refreshAssignedAudioSections();
+  if(typeof decorateStudentSentenceButtons==="function")decorateStudentSentenceButtons();
+  if(typeof updateStudentAssignmentSummary==="function")updateStudentAssignmentSummary();
 }
 
 function requireStudent(){
@@ -314,6 +386,7 @@ $$(".section-tabs button").forEach(b=>b.onclick=()=>{
  b.classList.add("active");
  $$(".app-section").forEach(s=>s.classList.add("hidden"));
  $("#sec"+b.dataset.sec).classList.remove("hidden");
+ if(b.dataset.sec==="G")playOpenSpeakingStudent();
 });
 
 
@@ -403,7 +476,7 @@ function assignedSentenceItems(){
 function refreshAssignedAudioSections(){
   const a=assignedSentenceItems();
   makeAudioList("#repeatAudioList",a.texts,a.audios,"bPlayed",a.indexes);
-  makeAudioList("#buildAudioList",a.texts,a.audios,"dPlayed",a.indexes);
+  makeAudioList("#buildAudioList",a.texts,a.indexes.map(i=>(data.buildAudio||[])[i]||""),"dPlayed",a.indexes);
   makeAudioList("#dictationAudioList",a.texts,a.audios,"ePlayed",a.indexes);
 }
 
@@ -450,30 +523,42 @@ renderReadings();
 refreshAssignedAudioSections();
 makeAudioList("#questionAudioList",data.questions,data.questionAudio,"cPlayed");
 
-let openAudios=[];
-if(Array.isArray(data.openAudio)) openAudios=data.openAudio;
-else if(data.openAudio) openAudios=[data.openAudio];
-else openAudios=[""];
-let openItems=(data.openQuestions&&data.openQuestions.length)?data.openQuestions:Array.from({length:openAudios.length||1},(_,i)=>`Pregunta ${i+1}`);
-while(openAudios.length<openItems.length)openAudios.push("");
-makeAudioList("#openAudioList",openItems,openAudios,"gPlayed");
+let currentOpenAudio=null;
+function playOpenSpeakingStudent(){
+ const src=Array.isArray(data.openAudio)?(data.openAudio[0]||""):data.openAudio;
+ const status=$("#openStudentStatus");
+ if(!src){if(status)status.textContent="El docente todavía no ha cargado el audio.";return}
+ if(currentOpenAudio){try{currentOpenAudio.pause()}catch(e){}}
+ currentOpenAudio=new Audio(src);
+ currentOpenAudio.onplay=()=>{studentProgress.gPlayed[0]=true;if(status)status.textContent="Reproduciendo audio…"};
+ currentOpenAudio.onended=()=>{if(status)status.textContent="Audio finalizado. Responde oralmente."};
+ currentOpenAudio.play().catch(()=>{if(status)status.textContent="Toca «Repetir audio» para reproducirlo."});
+}
+$("#replayOpenAudio").onclick=playOpenSpeakingStudent;
 
+let currentStoryAudio=null;
 function renderStorySection(){
  const sel=$("#storySelect");sel.innerHTML="";
  data.readings.forEach((r,i)=>{
-   let o=document.createElement("option");
-   o.value=i;o.textContent=`${i+1}. ${r.title||("Reading "+(i+1))}`;
-   sel.appendChild(o)
+   let o=document.createElement("option");o.value=i;o.textContent=`${i+1}. ${r.title||("Reading "+(i+1))}`;sel.appendChild(o)
  });
  loadStory(0);
 }
 function loadStory(i){
  const r=data.readings[i];
- $("#storyText").textContent=r?`${r.title}
-
-${r.text}`:"";
+ $("#storyAudioTitle").textContent=r?(r.title||`Reading ${i+1}`):"Story Retelling";
+ const has=!!(data.readingAudio&&data.readingAudio[i]);
+ $("#storyAudioStudentStatus").textContent=has?"Audio disponible. Toca «Escuchar historia».":"El docente todavía no ha cargado el audio de esta historia.";
  $("#storyNotes").value=studentProgress.storyNotes[i]||"";
 }
+function playStoryStudent(){
+ const i=+$("#storySelect").value,src=(data.readingAudio||[])[i]||"";
+ if(!src)return alert("Esta historia todavía no tiene audio.");
+ if(currentStoryAudio){try{currentStoryAudio.pause()}catch(e){}}
+ currentStoryAudio=new Audio(src);
+ currentStoryAudio.play().catch(()=>alert("No se pudo reproducir este audio."));
+}
+$("#playStoryAudioStudent").onclick=playStoryStudent;
 $("#storySelect").onchange=e=>loadStory(+e.target.value);
 $("#storyNotes").oninput=()=>{
  const i=+$("#storySelect").value;
@@ -619,6 +704,8 @@ function studentApplyAudioPackage(pkg){
       data.sentenceAudioMeta[i]=x.meta||null;
     }
   });
+  (pkg.buildAudio||[]).forEach((x,i)=>{if(i<data.buildAudio.length&&typeof x.audio==="string")data.buildAudio[i]=x.audio;});
+  (pkg.readings||[]).forEach((x,i)=>{if(i<data.readingAudio.length&&typeof x.audio==="string")data.readingAudio[i]=x.audio;});
   (pkg.questions||[]).forEach((x,i)=>{
     if(i<data.questions.length && typeof x.audio==="string")data.questionAudio[i]=x.audio;
   });
@@ -626,16 +713,8 @@ function studentApplyAudioPackage(pkg){
 
   localStorage.setItem("aminaVersantData",JSON.stringify(data));
   if(typeof refreshAssignedAudioSections==="function")refreshAssignedAudioSections();
-  if(typeof makeAudioList==="function"){
-    makeAudioList("#questionAudioList",data.questions,data.questionAudio,"cPlayed");
-    let openAudios=[];
-    if(Array.isArray(data.openAudio))openAudios=data.openAudio;
-    else if(data.openAudio)openAudios=[data.openAudio];
-    else openAudios=[""];
-    let openItems=(data.openQuestions&&data.openQuestions.length)?data.openQuestions:["Open speaking question"];
-    while(openAudios.length<openItems.length)openAudios.push("");
-    makeAudioList("#openAudioList",openItems,openAudios,"gPlayed");
-  }
+  if(typeof makeAudioList==="function")makeAudioList("#questionAudioList",data.questions,data.questionAudio,"cPlayed");
+  if(typeof renderStorySection==="function")renderStorySection();
 }
 document.addEventListener("DOMContentLoaded",()=>{
   document.querySelector("#studentExportAudioPackage")?.addEventListener("click",()=>{
@@ -646,7 +725,15 @@ document.addEventListener("DOMContentLoaded",()=>{
     const st=document.querySelector("#studentAudioTransferStatus");
     try{
       const pkg=JSON.parse(await f.text());
-      studentApplyAudioPackage(pkg);
+      if(pkg.kind==="story-audio-package"){
+        const i=Math.max(0,Math.min(data.readings.length-1,+pkg.readingIndex||0));
+        data.readingAudio[i]=pkg.audio||"";
+        if(pkg.title&&data.readings[i])data.readings[i].title=pkg.title;
+        localStorage.setItem("aminaVersantData",JSON.stringify(data));
+        renderStorySection();
+      }else{
+        studentApplyAudioPackage(pkg);
+      }
       if(st)st.textContent=`Audios importados correctamente desde ${f.name}.`;
     }catch(err){
       if(st)st.textContent="Error: "+err.message;
@@ -654,6 +741,38 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
     e.target.value="";
   });
+});
+
+
+function decorateStudentSentenceButtons(){
+  document.querySelectorAll(".num-btn").forEach(btn=>{
+    const raw=(btn.textContent||"").match(/\d+/);
+    if(!raw)return;
+    const i=Math.max(0,parseInt(raw[0],10)-1);
+    const has=!!(data.sentenceAudio&&data.sentenceAudio[i]);
+    btn.classList.toggle("has-audio",has);
+    btn.classList.toggle("no-audio",!has);
+    let dot=btn.querySelector(".audio-dot");
+    if(has&&!dot){
+      dot=document.createElement("span");dot.className="audio-dot";dot.textContent="🔊";
+      btn.appendChild(dot);
+    }
+    if(!has&&dot)dot.remove();
+  });
+}
+function updateStudentAssignmentSummary(){
+  const idxs=(Array.isArray(assignedSentenceIndexes)&&assignedSentenceIndexes.length)
+    ?assignedSentenceIndexes:data.sentences.map((_,i)=>i);
+  const audioCount=idxs.filter(i=>!!data.sentenceAudio[i]).length;
+  const a=getAssignments();
+  const enabled=["A1","A2","B","C","D","E","F","G"].filter(k=>a[k]).length;
+  const set=(id,v)=>{const el=document.querySelector(id);if(el)el.textContent=v};
+  set("#studentAssignedCount",idxs.length);
+  set("#studentAudioCount",audioCount);
+  set("#studentSectionsCount",enabled);
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  setTimeout(()=>{decorateStudentSentenceButtons();updateStudentAssignmentSummary()},80);
 });
 
 </script>
