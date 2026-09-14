@@ -106,6 +106,52 @@ footer{max-width:1200px;margin:22px auto 40px;padding:0 20px;color:var(--muted);
 body.teacher .teacher-only{display:block}
 body.teacher .teacher-inline{display:inline-flex}
 
+
+/* ===== AMINA UX V5 ===== */
+:root{
+  --amina-accent:#55b8ff;
+  --amina-good:#35d39a;
+  --amina-warn:#ffca55;
+}
+body{scroll-behavior:smooth}
+.card{backdrop-filter:blur(12px)}
+.num-grid{gap:10px!important}
+.num-btn{
+  min-width:48px!important;min-height:48px!important;border-radius:14px!important;
+  font-weight:900!important;position:relative;transition:.16s ease!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.18)
+}
+.num-btn:hover{transform:translateY(-2px) scale(1.03)}
+.num-btn.has-audio{border-color:var(--amina-good)!important;box-shadow:0 0 0 2px rgba(53,211,154,.12),0 8px 24px rgba(0,0,0,.22)!important}
+.num-btn.no-audio{opacity:.72}
+.num-btn .audio-dot{
+  position:absolute;right:-5px;top:-5px;width:20px;height:20px;border-radius:50%;
+  display:grid;place-items:center;font-size:11px;background:var(--amina-good);color:#06121d;
+  border:2px solid #0a1728
+}
+.sticky-nav{
+  position:sticky;top:8px;z-index:50;background:rgba(8,18,33,.9)!important;
+  backdrop-filter:blur(16px);box-shadow:0 8px 30px rgba(0,0,0,.2)
+}
+.audio-status-card{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#0a1728
+}
+.audio-status-card strong{color:var(--amina-good)}
+.assignment-summary{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:12px
+}
+.assignment-summary .mini{
+  border:1px solid var(--line);border-radius:13px;padding:10px;background:#09182a
+}
+.assignment-summary .mini b{display:block;font-size:1.25rem}
+@media(max-width:640px){
+  .num-grid{grid-template-columns:repeat(5,1fr)!important}
+  .num-btn{min-width:0!important;width:100%!important}
+  .toolbar{gap:8px!important}
+  .btn{width:100%;justify-content:center}
+}
+
 </style>
 </head>
 <body class="teacher">
@@ -173,7 +219,7 @@ body.teacher .teacher-inline{display:inline-flex}
   </div>
   <div class="card">
    <h3>Ejercicio 2 · Lectura</h3>
-   <p class="sub">Toca un número para abrir esa lectura directamente en la pantalla negra.</p>
+   <p class="sub">Toca un número para abrir esa lectura directamente en pantalla negra. Puedes editar título, texto, tiempo y velocidad antes de iniciar.</p>
    <div class="num-grid" id="readingGrid" style="margin-bottom:14px"></div>
    <div class="teacher-only">
     <div class="grid grid-2">
@@ -263,36 +309,58 @@ body.teacher .teacher-inline{display:inline-flex}
 </section>
 
 <section id="secD" class="card app-section hidden">
- <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>Cada oración de A se divide en tres partes para reconstruirla.</p></div><span class="pill" id="scoreD">Sin calificar</span></div>
+ <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>La oración se presenta desordenada. El audio se carga específicamente para esta sección.</p></div><span class="pill" id="scoreD">Sin calificar</span></div>
  <div class="grid grid-2">
-  <div><div class="num-grid" id="buildGrid"></div></div>
+  <div>
+   <div class="num-grid" id="buildGrid"></div>
+   <div id="buildAudioStatus" class="notice" style="margin-top:12px">Selecciona una oración para administrar su audio.</div>
+  </div>
   <div class="card">
    <div id="buildParts" class="grid grid-3"></div>
    <div id="buildAnswer" class="notice" style="margin-top:12px">Seleccione las partes en el orden correcto.</div>
-   <div class="toolbar teacher-only" style="margin-top:12px"><button class="btn good" id="buildCorrect">Correcta</button><button class="btn bad" id="buildWrong">Incorrecta</button><button class="btn ghost" id="buildReset">Reiniciar</button><button class="btn ghost" id="exportDAudio">Exportar A1 + audios</button></div>
-   <div id="exportDBox" class="export-box hidden teacher-only" style="margin-top:10px"></div>
+   <div class="grid grid-2 teacher-only" style="margin-top:12px">
+    <div><label>Audio local de Sentence Builds</label><input id="buildAudioFile" type="file" accept="audio/*"></div>
+    <div><label>URL directa del audio</label><input id="buildAudioUrl" placeholder="https://.../audio.mp3"></div>
+   </div>
+   <div class="toolbar teacher-only" style="margin-top:12px">
+    <button class="btn primary" id="saveBuildAudio">Guardar audio</button>
+    <button class="btn ghost" id="playBuildAudio">▶ Escuchar</button>
+    <button class="btn bad" id="removeBuildAudio">Eliminar audio</button>
+    <button class="btn good" id="buildCorrect">Correcta</button>
+    <button class="btn bad" id="buildWrong">Incorrecta</button>
+    <button class="btn ghost" id="buildReset">Reiniciar</button>
+   </div>
   </div>
  </div>
 </section>
 
 <section id="secE" class="card app-section hidden">
- <div class="section-title"><div><h2>E · DICTATION</h2><p>Dictado aleatorio de las 30 oraciones de A.</p></div><span class="pill" id="scoreE">Sin calificar</span></div>
+ <div class="section-title"><div><h2>E · DICTATION</h2><p>Los audios vienen directamente de A · Ejercicio 1. Toca el número y se reproducen al instante.</p></div><span class="pill" id="scoreE">Sin calificar</span></div>
  <div class="grid grid-2">
   <div class="card">
-   <div class="toolbar"><button class="btn primary teacher-only inline" id="nextDictation">Nueva oración aleatoria</button><button class="btn ghost teacher-only inline" id="exportEAudio">Exportar A1 + audios</button><span class="pill" id="dictationNumber">—</span></div>
-   <div id="exportEBox" class="export-box hidden teacher-only" style="margin-top:10px"></div>
-   <div class="teacher-only notice" id="dictationTeacherText" style="margin-top:12px">El docente verá aquí la oración.</div>
+   <div class="num-grid" id="dictationGrid"></div>
+   <div class="toolbar" style="margin-top:12px"><span class="pill" id="dictationNumber">—</span></div>
+   <div class="teacher-only notice" id="dictationTeacherText" style="margin-top:12px">Toca un número para seleccionar y escuchar.</div>
   </div>
   <div><label>Escriba lo que escucha</label><textarea id="dictationInput"></textarea><div class="toolbar teacher-only"><button class="btn good" id="dictationYes">Correcta</button><button class="btn bad" id="dictationNo">Incorrecta</button></div></div>
  </div>
 </section>
 
 <section id="secF" class="card app-section hidden">
- <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Se usan las lecturas almacenadas en A. El estudiante recuenta los puntos clave.</p></div><span class="pill" id="scoreF">Sin calificar</span></div>
+ <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Carga un audio para cada lectura. El estudiante recibirá el audio, pero no verá el texto.</p></div><span class="pill" id="scoreF">Sin calificar</span></div>
  <div class="grid grid-2">
   <div><label>Lectura</label><select id="storySelect"></select>
-   <div class="toolbar teacher-only" style="margin-top:8px"><button class="btn ghost" id="exportReadings">Exportar lecturas A2</button></div>
-   <div id="exportReadingsBox" class="export-box hidden teacher-only" style="margin-top:8px"></div>
+   <div class="grid grid-2 teacher-only" style="margin-top:10px">
+    <div><label>Audio local de la lectura</label><input id="storyAudioFile" type="file" accept="audio/*"></div>
+    <div><label>URL directa del audio</label><input id="storyAudioUrl" placeholder="https://.../audio.mp3"></div>
+   </div>
+   <div class="toolbar teacher-only" style="margin-top:8px">
+    <button class="btn primary" id="saveStoryAudio">Guardar audio</button>
+    <button class="btn ghost" id="playStoryAudio">▶ Escuchar</button>
+    <button class="btn bad" id="removeStoryAudio">Eliminar</button>
+    <button class="btn good" id="downloadStoryAudioPackage">Exportar audio para estudiante</button>
+   </div>
+   <div id="storyAudioStatus" class="notice" style="margin-top:8px">Sin audio.</div>
    <div class="card" id="storyText" style="margin-top:10px;max-height:340px;overflow:auto"></div></div>
   <div class="teacher-only">
    <label>Criterio del docente · puntos clave logrados (%)</label><input id="storyScoreInput" type="number" min="0" max="100" value="100">
@@ -303,16 +371,16 @@ body.teacher .teacher-inline{display:inline-flex}
 </section>
 
 <section id="secG" class="card app-section hidden">
- <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>Preguntas abiertas realizadas por el docente.</p></div><span class="pill" id="scoreG">Sin calificar</span></div>
+ <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>La pregunta escrita queda solo como referencia docente. El estudiante escuchará únicamente el audio.</p></div><span class="pill" id="scoreG">Sin calificar</span></div>
  <div class="grid grid-2">
-  <div class="teacher-only"><label>Pregunta abierta</label><textarea id="openQuestion" placeholder="Escriba la pregunta que hará al estudiante"></textarea>
+  <div class="teacher-only"><label>Pregunta del docente · no visible para el estudiante</label><textarea id="openQuestion" placeholder="Escribe la pregunta como referencia"></textarea>
   <div class="grid grid-2">
    <div><label>Audio local</label><input id="openAudioFile" type="file" accept="audio/*"></div>
    <div><label>URL directa del audio</label><input id="openAudioUrl" placeholder="https://.../audio.mp3"></div>
   </div>
-  <div class="toolbar" style="margin-top:10px"><button class="btn primary" id="showOpenQuestion">Mostrar pregunta</button><button class="btn ghost" id="playOpenAudio">▶ Audio</button></div>
+  <div class="toolbar" style="margin-top:10px"><button class="btn primary" id="saveOpenAudio">Guardar audio</button><button class="btn ghost" id="playOpenAudio">▶ Probar audio</button></div>
  </div>
-  <div class="card"><h3 id="openDisplay">La pregunta aparecerá aquí.</h3></div>
+  <div class="card"><h3>🎧 Solo audio</h3><p class="sub">Al entrar en G, el estudiante oirá el audio automáticamente.</p><div id="openAudioStatus" class="notice">Sin audio guardado.</div></div>
  </div>
  <div class="teacher-only" style="margin-top:14px">
   <label>Puntaje de la sección (%)</label><input id="openScoreInput" type="number" min="0" max="100" value="100">
@@ -322,6 +390,23 @@ body.teacher .teacher-inline{display:inline-flex}
 </section>
 
 <div id="printArea" class="hidden"></div>
+
+
+<section id="teacherDashboardSummary" class="card" style="margin-top:18px">
+  <div class="section-title">
+    <div>
+      <h2>Resumen docente</h2>
+      <p>Vista rápida del contenido disponible y los audios vinculados.</p>
+    </div>
+  </div>
+  <div class="assignment-summary">
+    <div class="mini"><span>Oraciones</span><b id="sumSentences">0</b></div>
+    <div class="mini"><span>Con audio</span><b id="sumSentenceAudio">0</b></div>
+    <div class="mini"><span>Lecturas</span><b id="sumReadings">0</b></div>
+    <div class="mini"><span>Preguntas</span><b id="sumQuestions">0</b></div>
+    <div class="mini"><span>Estudiantes asignados</span><b id="sumStudents">0</b></div>
+  </div>
+</section>
 
 <section id="assignmentManager" class="card" style="margin-top:18px">
   <div class="section-title">
@@ -461,7 +546,11 @@ if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
 if(!data.sentenceAudioMeta)data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
 if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
 if(!data.openAudio)data.openAudio="";
+if(!data.buildAudio)data.buildAudio=Array(data.sentences.length).fill("");
+if(!data.readingAudio)data.readingAudio=Array(data.readings.length).fill("");
 while(data.sentenceAudio.length<data.sentences.length)data.sentenceAudio.push("");
+while(data.buildAudio.length<data.sentences.length)data.buildAudio.push("");
+while(data.readingAudio.length<data.readings.length)data.readingAudio.push("");
 while(data.questionAudio.length<data.questions.length)data.questionAudio.push("");
 let session=null, timerInterval=null, selectedSentence=null, selectedQuestion=null, selectedRepeat=null, selectedBuild=null, dictationCurrent=null;
 let readingState={lastLine:0,total:0,score:null,time:0,durationSeconds:0,speed:1};
@@ -562,7 +651,7 @@ async function showSentence(text){
  let sec=Math.max(3,Math.min(20,parseInt($("#sentenceSeconds").value)||6));
  setTimeout(()=>ov.classList.add("hidden"),sec*1000)
 }
-$("#saveSentence").onclick=()=>{if(selectedSentence==null)return alert("Seleccione una oración.");data.sentences[selectedSentence]=$("#sentenceEditor").value.trim();persist();renderSentenceGrid();renderRepeatGrid();renderBuildGrid();alert("Oración guardada.")};
+$("#saveSentence").onclick=()=>{if(selectedSentence==null)return alert("Seleccione una oración.");data.sentences[selectedSentence]=$("#sentenceEditor").value.trim();persist();renderSentenceGrid();decorateSentenceButtons();renderRepeatGrid();decorateSentenceButtons();renderBuildGrid();decorateSentenceButtons();alert("Oración guardada.")};
 $("#resetSentences").onclick=()=>{if(confirm("¿Restaurar las 30 oraciones de ejemplo?")){data.sentences=[...defaults.sentences];persist();renderSentenceGrid();renderRepeatGrid();renderBuildGrid()}};
 $("#markYes").onclick=()=>{if(selectedSentence!=null){results.A1[selectedSentence]=true;renderSentenceGrid();updateScores()}};
 $("#markNo").onclick=()=>{if(selectedSentence!=null){results.A1[selectedSentence]=false;renderSentenceGrid();updateScores()}};
@@ -665,7 +754,11 @@ $("#readingSelect").onchange=e=>{
  $("#readingEditor").value=r.text;
  $("#readingTitle").value=r.title||`Reading ${i+1}`;
 };
-$("#storySelect").onchange=e=>$("#storyText").textContent=data.readings[+e.target.value].text;
+$("#storySelect").onchange=e=>{
+ const i=+e.target.value;
+ $("#storyText").textContent=data.readings[i].text;
+ updateStoryAudioUI(i);
+};
 $("#saveReading").onclick=()=>{
  let i=+$("#readingSelect").value;
  data.readings[i].title=$("#readingTitle").value.trim()||`Reading ${i+1}`;
@@ -839,32 +932,105 @@ $("#questionNo").onclick=()=>{if(selectedQuestion==null)return;results.C[selecte
 
 let buildOrder=[];
 function partsOf(s){let w=s.split(/\s+/),n=Math.ceil(w.length/3);return [w.slice(0,n).join(" "),w.slice(n,n*2).join(" "),w.slice(n*2).join(" ")].filter(Boolean)}
-function renderBuildGrid(){let g=$("#buildGrid");g.innerHTML="";data.sentences.forEach((s,i)=>{let b=document.createElement("button");b.className="num-btn";if(results.D[i]===true)b.classList.add("good");if(results.D[i]===false)b.classList.add("bad");b.innerHTML=`${i+1}${data.sentenceAudio[i]?'<span class="face">🔊</span>':""}`;b.onclick=()=>{selectBuild(i);playSentenceAudioByIndex(i)};g.appendChild(b)})}
-function selectBuild(i){selectedBuild=i;buildOrder=[];let p=partsOf(data.sentences[i]).sort(()=>Math.random()-.5);let c=$("#buildParts");c.innerHTML="";p.forEach(x=>{let b=document.createElement("button");b.className="btn ghost";b.textContent=x;b.onclick=()=>{buildOrder.push(x);b.disabled=true;$("#buildAnswer").textContent=buildOrder.join(" ")}});$("#buildAnswer").textContent="Seleccione las partes en el orden correcto."}
+function renderBuildGrid(){
+ let g=$("#buildGrid");g.innerHTML="";
+ data.sentences.forEach((sentence,i)=>{
+  let b=document.createElement("button");b.className="num-btn";
+  if(results.D[i]===true)b.classList.add("good");
+  if(results.D[i]===false)b.classList.add("bad");
+  b.innerHTML=`${i+1}${data.buildAudio[i]?'<span class="face">🔊</span>':""}`;
+  b.onclick=()=>selectBuild(i);
+  g.appendChild(b);
+ });
+}
+function updateBuildAudioUI(i){
+ const src=data.buildAudio[i]||"";
+ $("#buildAudioStatus").textContent=src?`Oración ${i+1} · audio guardado para Sentence Builds.`:`Oración ${i+1} · sin audio.`;
+ $("#buildAudioUrl").value=src.startsWith("http")?src:"";
+}
+function selectBuild(i){
+ selectedBuild=i;buildOrder=[];
+ let p=partsOf(data.sentences[i]).sort(()=>Math.random()-.5);
+ let c=$("#buildParts");c.innerHTML="";
+ p.forEach(x=>{let b=document.createElement("button");b.className="btn ghost";b.textContent=x;b.onclick=()=>{buildOrder.push(x);b.disabled=true;$("#buildAnswer").textContent=buildOrder.join(" ")}}); 
+ $("#buildAnswer").textContent="Seleccione las partes en el orden correcto.";
+ updateBuildAudioUI(i);
+}
+$("#saveBuildAudio").onclick=async()=>{
+ if(selectedBuild==null)return alert("Seleccione una oración.");
+ let file=$("#buildAudioFile").files[0],url=$("#buildAudioUrl").value.trim();
+ let src=file?await fileToDataURL(file):url;
+ if(!src)return alert("Seleccione un audio o escriba una URL.");
+ data.buildAudio[selectedBuild]=src;persist();renderBuildGrid();updateBuildAudioUI(selectedBuild);alert("Audio guardado.");
+};
+$("#playBuildAudio").onclick=()=>{if(selectedBuild==null)return alert("Seleccione una oración.");playAudioSource(data.buildAudio[selectedBuild])};
+$("#removeBuildAudio").onclick=()=>{if(selectedBuild==null)return;data.buildAudio[selectedBuild]="";persist();renderBuildGrid();updateBuildAudioUI(selectedBuild)};
 $("#buildCorrect").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=true;renderBuildGrid();updateScores()};
 $("#buildWrong").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=false;renderBuildGrid();updateScores()};
 $("#buildReset").onclick=()=>{if(selectedBuild!=null)selectBuild(selectedBuild)};
-$("#exportDAudio").onclick=()=>showExport("#exportDBox",exportA1Payload().map(x=>({...x,partes:partsOf(x.oracion)})));
 
-$("#nextDictation").onclick=()=>{dictationCurrent=Math.floor(Math.random()*30);$("#dictationNumber").textContent=`Oración ${dictationCurrent+1}`;$("#dictationTeacherText").textContent=data.sentences[dictationCurrent];$("#dictationInput").value=""};
-$("#dictationYes").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=true;updateScores()};
-$("#dictationNo").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=false;updateScores()};
-$("#exportEAudio").onclick=()=>showExport("#exportEBox",exportA1Payload());
 
+function renderDictationGrid(){
+ const g=$("#dictationGrid");g.innerHTML="";
+ data.sentences.forEach((sentence,i)=>{
+  const b=document.createElement("button");b.className="num-btn";
+  if(results.E[i]===true)b.classList.add("good");
+  if(results.E[i]===false)b.classList.add("bad");
+  b.innerHTML=`${i+1}${data.sentenceAudio[i]?'<span class="face">🔊</span>':""}`;
+  b.title=data.sentenceAudio[i]?`Oración ${i+1} · tocar para escuchar`:`Oración ${i+1} · sin audio en A1`;
+  b.onclick=()=>{
+   dictationCurrent=i;
+   $("#dictationNumber").textContent=`Oración ${i+1}`;
+   $("#dictationTeacherText").textContent=data.sentences[i];
+   $("#dictationInput").value="";
+   playSentenceAudioByIndex(i);
+  };
+  g.appendChild(b);
+ });
+}
+$("#dictationYes").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=true;renderDictationGrid();updateScores()};
+$("#dictationNo").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=false;renderDictationGrid();updateScores()};
+
+
+function updateStoryAudioUI(i){
+ const src=data.readingAudio[i]||"";
+ $("#storyAudioStatus").textContent=src?`Lectura ${i+1} · audio guardado.`:`Lectura ${i+1} · sin audio.`;
+ $("#storyAudioUrl").value=src.startsWith("http")?src:"";
+}
+$("#saveStoryAudio").onclick=async()=>{
+ const i=+$("#storySelect").value;
+ let file=$("#storyAudioFile").files[0],url=$("#storyAudioUrl").value.trim();
+ let src=file?await fileToDataURL(file):url;
+ if(!src)return alert("Seleccione un audio o escriba una URL.");
+ data.readingAudio[i]=src;persist();updateStoryAudioUI(i);alert("Audio de la lectura guardado.");
+};
+$("#playStoryAudio").onclick=()=>playAudioSource(data.readingAudio[+$("#storySelect").value]);
+$("#removeStoryAudio").onclick=()=>{const i=+$("#storySelect").value;data.readingAudio[i]="";persist();updateStoryAudioUI(i)};
+$("#downloadStoryAudioPackage").onclick=()=>{
+ const i=+$("#storySelect").value,r=data.readings[i];
+ downloadJSONFile(`AMINA_F_LECTURA_${i+1}_AUDIO.json`,{
+  app:"AMINA-VERSANT",kind:"story-audio-package",version:1,
+  readingIndex:i,title:r.title||`Reading ${i+1}`,audio:data.readingAudio[i]||""
+ });
+};
 $("#saveStoryScore").onclick=()=>{results.F=Math.max(0,Math.min(100,+$("#storyScoreInput").value||0));updateScores()};
-$("#exportReadings").onclick=()=>showExport("#exportReadingsBox",data.readings.map((r,i)=>({numero:i+1,titulo:r.title,texto:r.text})));
-$("#showOpenQuestion").onclick=async()=>{
- $("#openDisplay").textContent=$("#openQuestion").value.trim()||"Pregunta abierta";
+
+function updateOpenAudioStatus(){
+ $("#openAudioStatus").textContent=data.openAudio?"Audio guardado · listo para reproducción automática.":"Sin audio guardado.";
+}
+$("#saveOpenAudio").onclick=async()=>{
  let file=$("#openAudioFile").files[0],url=$("#openAudioUrl").value.trim();
  if(file)data.openAudio=await fileToDataURL(file);
  else if(url)data.openAudio=url;
- persist();
+ data.openQuestion=$("#openQuestion").value.trim();
+ persist();updateOpenAudioStatus();alert("Audio guardado.");
 };
 $("#playOpenAudio").onclick=()=>playAudioSource(data.openAudio);
 $("#saveOpenScore").onclick=()=>{results.G=Math.max(0,Math.min(100,+$("#openScoreInput").value||0));updateScores()};
 
+
 function renderAllStatus(){
- renderSentenceGrid();renderRepeatGrid();renderQuestionGrid();renderBuildGrid();
+ renderSentenceGrid();renderRepeatGrid();renderQuestionGrid();renderBuildGrid();renderDictationGrid();
 }
 function sectionScores(){
  const a1=pct(results.A1),a2=readingState.score;
@@ -930,7 +1096,7 @@ function createReadingReport(){
 function fmt(v){return v===true?"Correcta":v===false?"Incorrecta":"—"}
 function esc(t){return String(t??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 renderReadingOptions();
-renderReadingGrid();renderAllStatus();updateScores();
+renderReadingGrid();renderAllStatus();updateStoryAudioUI(+$("#storySelect").value||0);updateOpenAudioStatus();updateScores();
 
 const assignmentDefaults={A1:true,A2:true,B:true,C:true,D:true,E:true,F:true,G:true};
 function loadAssignments(){
@@ -1075,12 +1241,13 @@ function buildStudentAudioPackage(){
       audio:data.sentenceAudio[i]||"",
       meta:data.sentenceAudioMeta[i]||null
     })),
+    buildAudio:(data.buildAudio||[]).map((audio,i)=>({number:i+1,audio:audio||""})),
+    readings:(data.readings||[]).map((r,i)=>({number:i+1,title:r.title||`Reading ${i+1}`,audio:(data.readingAudio||[])[i]||""})),
     questions:(data.questions||[]).map((question,i)=>({
       number:i+1,
       question,
       audio:(data.questionAudio||[])[i]||""
     })),
-    openQuestions:data.openQuestions||["Open speaking question"],
     openAudio:data.openAudio||""
   };
 }
@@ -1094,6 +1261,8 @@ function applyStudentAudioPackage(pkg){
       }
     });
   }
+  if(Array.isArray(pkg.buildAudio))pkg.buildAudio.forEach((x,i)=>{if(i<data.buildAudio.length&&typeof x.audio==="string")data.buildAudio[i]=x.audio;});
+  if(Array.isArray(pkg.readings))pkg.readings.forEach((x,i)=>{if(i<data.readingAudio.length&&typeof x.audio==="string")data.readingAudio[i]=x.audio;});
   if(Array.isArray(pkg.questions)){
     pkg.questions.forEach((x,i)=>{
       if(i<data.questions.length && typeof x.audio==="string")data.questionAudio[i]=x.audio;
@@ -1120,6 +1289,40 @@ document.addEventListener("DOMContentLoaded",()=>{
     }catch(err){alert("No se pudo importar: "+err.message)}
     e.target.value="";
   });
+});
+
+
+function decorateSentenceButtons(){
+  ["#sentenceGrid","#repeatGrid","#buildGrid"].forEach(sel=>{
+    const grid=document.querySelector(sel);
+    if(!grid)return;
+    [...grid.querySelectorAll(".num-btn")].forEach((btn,visibleIndex)=>{
+      const raw=(btn.textContent||"").match(/\d+/);
+      const i=raw?Math.max(0,parseInt(raw[0],10)-1):visibleIndex;
+      const has=!!(data.sentenceAudio&&data.sentenceAudio[i]);
+      btn.classList.toggle("has-audio",has);
+      btn.classList.toggle("no-audio",!has);
+      let dot=btn.querySelector(".audio-dot");
+      if(has&&!dot){
+        dot=document.createElement("span");dot.className="audio-dot";dot.textContent="🔊";
+        btn.appendChild(dot);
+      }
+      if(!has&&dot)dot.remove();
+      btn.title=has?`Oración ${i+1} · tocar para escuchar`:`Oración ${i+1} · sin audio`;
+    });
+  });
+}
+function updateTeacherSummary(){
+  const set=(id,v)=>{const el=document.querySelector(id);if(el)el.textContent=v};
+  set("#sumSentences",(data.sentences||[]).length);
+  set("#sumSentenceAudio",(data.sentenceAudio||[]).filter(Boolean).length);
+  set("#sumReadings",(data.readings||[]).length);
+  set("#sumQuestions",(data.questions||[]).length);
+  const a=JSON.parse(localStorage.getItem("aminaStudentSentenceAssignments")||"{}");
+  set("#sumStudents",Object.keys(a).length);
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  setTimeout(()=>{decorateSentenceButtons();updateTeacherSummary()},50);
 });
 
 </script>
