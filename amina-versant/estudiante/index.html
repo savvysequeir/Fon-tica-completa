@@ -316,6 +316,18 @@ $$(".section-tabs button").forEach(b=>b.onclick=()=>{
  $("#sec"+b.dataset.sec).classList.remove("hidden");
 });
 
+
+function playStudentSentenceAudio(i){
+  const src=(data.sentenceAudio||[])[i]||"";
+  if(!src){
+    alert("Esta oración todavía no tiene audio disponible.");
+    return false;
+  }
+  const a=new Audio(src);
+  a.play().catch(()=>alert("No se pudo reproducir este audio."));
+  return true;
+}
+
 function renderSentenceGrid(){
  let g=$("#sentenceGrid");g.innerHTML="";
  let indexes=assignedSentenceIndexes;
@@ -326,7 +338,7 @@ function renderSentenceGrid(){
    const s=data.sentences[i];
    const b=document.createElement("button");
    b.className="num-btn";b.textContent=i+1;
-   b.onclick=()=>{if(requireStudent()){studentProgress.openedSentences[i]=true;showSentence(s)}};
+   b.onclick=()=>{if(requireStudent()){studentProgress.openedSentences[i]=true;playStudentSentenceAudio(i);showSentence(s)}};
    g.appendChild(b)
  });
 }
@@ -402,7 +414,27 @@ function makeAudioList(containerId,items,audios,progressKey,originalIndexes=null
    const originalIndex=originalIndexes?originalIndexes[i]:i;
    const shownNumber=originalIndex+1;
    const row=document.createElement("div");row.className="audio-item";
-   row.innerHTML=`<b>${shownNumber}</b><div title="${String(txt||"").replace(/"/g,"&quot;")}">${containerId==="#questionAudioList"?"Pregunta "+(i+1):containerId==="#openAudioList"?"Pregunta "+(i+1):"Oración "+shownNumber}</div>`;
+   const numberBtn=document.createElement("button");
+   numberBtn.className="num-btn";
+   numberBtn.style.width="44px";
+   numberBtn.style.height="44px";
+   numberBtn.style.aspectRatio="1";
+   numberBtn.textContent=shownNumber;
+   numberBtn.title=src?"Tocar para escuchar el audio":"Sin audio disponible";
+   numberBtn.onclick=()=>{
+     if(!src){alert("Este ejercicio todavía no tiene audio disponible.");return}
+     const audio=row.querySelector("audio");
+     if(audio){
+       audio.currentTime=0;
+       audio.play().catch(()=>alert("No se pudo reproducir este audio."));
+       if(progressKey)studentProgress[progressKey][originalIndex]=true;
+     }
+   };
+   row.appendChild(numberBtn);
+   const label=document.createElement("div");
+   label.title=String(txt||"");
+   label.textContent=containerId==="#questionAudioList"?"Pregunta "+(i+1):containerId==="#openAudioList"?"Pregunta "+(i+1):"Oración "+shownNumber;
+   row.appendChild(label);
    if(src){
      const a=document.createElement("audio");a.controls=true;a.src=src;
      a.onplay=()=>{if(progressKey)studentProgress[progressKey][originalIndex]=true};
