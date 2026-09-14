@@ -522,6 +522,18 @@ $("#exitTeacherBtn").onclick=()=>{};
 
 $$(".section-tabs button").forEach(b=>b.onclick=()=>{$$(".section-tabs button").forEach(x=>x.classList.remove("active"));b.classList.add("active");$$(".app-section").forEach(s=>s.classList.add("hidden"));$("#sec"+b.dataset.sec).classList.remove("hidden")});
 
+
+function playSentenceAudioByIndex(i){
+  const src=(data.sentenceAudio||[])[i]||"";
+  if(!src){
+    alert("La oración "+(i+1)+" todavía no tiene audio guardado.");
+    return false;
+  }
+  playAudioSource(src);
+  if(typeof updateSentenceAudioIdentity==="function")updateSentenceAudioIdentity(i);
+  return true;
+}
+
 function renderSentenceGrid(){
  let g=$("#sentenceGrid");g.innerHTML="";
  data.sentences.forEach((s,i)=>{
@@ -537,7 +549,10 @@ function renderSentenceGrid(){
  })
 }
 function selectSentence(i){
- selectedSentence=i; $("#sentenceEditor").value=data.sentences[i]; $("#markYes").disabled=false;$("#markNo").disabled=false;
+ selectedSentence=i;
+ $("#sentenceEditor").value=data.sentences[i];
+ $("#markYes").disabled=false;$("#markNo").disabled=false;
+ playSentenceAudioByIndex(i);
  if(requireSession()&&requireTeacher())showSentence(data.sentences[i]);
 }
 async function showSentence(text){
@@ -743,6 +758,7 @@ function renderRepeatGrid(){
      $("#repeatPrompt").textContent=`Oración ${i+1}: ${s}`;
      $("#repeatAudioUrl").value=(data.sentenceAudio[i]||"").startsWith("http")?data.sentenceAudio[i]:"";
      updateSentenceAudioIdentity(i);
+     playSentenceAudioByIndex(i);
    };
    g.appendChild(b)
  })
@@ -823,7 +839,7 @@ $("#questionNo").onclick=()=>{if(selectedQuestion==null)return;results.C[selecte
 
 let buildOrder=[];
 function partsOf(s){let w=s.split(/\s+/),n=Math.ceil(w.length/3);return [w.slice(0,n).join(" "),w.slice(n,n*2).join(" "),w.slice(n*2).join(" ")].filter(Boolean)}
-function renderBuildGrid(){let g=$("#buildGrid");g.innerHTML="";data.sentences.forEach((s,i)=>{let b=document.createElement("button");b.className="num-btn";if(results.D[i]===true)b.classList.add("good");if(results.D[i]===false)b.classList.add("bad");b.textContent=i+1;b.onclick=()=>selectBuild(i);g.appendChild(b)})}
+function renderBuildGrid(){let g=$("#buildGrid");g.innerHTML="";data.sentences.forEach((s,i)=>{let b=document.createElement("button");b.className="num-btn";if(results.D[i]===true)b.classList.add("good");if(results.D[i]===false)b.classList.add("bad");b.innerHTML=`${i+1}${data.sentenceAudio[i]?'<span class="face">🔊</span>':""}`;b.onclick=()=>{selectBuild(i);playSentenceAudioByIndex(i)};g.appendChild(b)})}
 function selectBuild(i){selectedBuild=i;buildOrder=[];let p=partsOf(data.sentences[i]).sort(()=>Math.random()-.5);let c=$("#buildParts");c.innerHTML="";p.forEach(x=>{let b=document.createElement("button");b.className="btn ghost";b.textContent=x;b.onclick=()=>{buildOrder.push(x);b.disabled=true;$("#buildAnswer").textContent=buildOrder.join(" ")}});$("#buildAnswer").textContent="Seleccione las partes en el orden correcto."}
 $("#buildCorrect").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=true;renderBuildGrid();updateScores()};
 $("#buildWrong").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=false;renderBuildGrid();updateScores()};
