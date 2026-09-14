@@ -159,6 +159,166 @@ body{scroll-behavior:smooth}
   color:white!important;
   box-shadow:0 0 0 4px rgba(88,166,255,.16),0 10px 28px rgba(0,0,0,.28)!important;
 }
+
+/* ===== AMINA VISUAL V8 · DOCENTE ===== */
+:root{
+  --page-max:1480px;
+  --panel-soft:#0c182a;
+  --panel-raised:#13223a;
+  --line-soft:#263b59;
+}
+body{
+  background:
+    radial-gradient(circle at 15% 0%,rgba(52,126,255,.09),transparent 32rem),
+    radial-gradient(circle at 90% 15%,rgba(102,82,255,.08),transparent 28rem),
+    linear-gradient(180deg,#07101d,#0b1423 55%,#08111f);
+}
+.topbar,main,footer{max-width:var(--page-max)}
+main{padding:24px 28px 48px}
+.card{
+  border-radius:22px;
+  padding:24px;
+  border-color:var(--line-soft);
+  box-shadow:0 18px 50px rgba(0,0,0,.18);
+}
+.card .card{
+  background:linear-gradient(180deg,rgba(17,32,55,.96),rgba(13,25,43,.96));
+  box-shadow:none;
+  border-radius:18px;
+}
+.section-tabs{
+  position:sticky;
+  top:78px;
+  z-index:60;
+  padding:10px;
+  border:1px solid var(--line-soft);
+  border-radius:18px;
+  background:rgba(7,16,29,.90);
+  backdrop-filter:blur(18px);
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+  margin:18px 0 22px;
+}
+.section-tabs button{
+  min-height:52px;
+  border-radius:14px;
+  font-size:1rem;
+}
+.section-title{
+  align-items:center;
+  border-bottom:1px solid rgba(65,91,126,.28);
+  padding-bottom:16px;
+  margin-bottom:20px;
+}
+.section-title h2{font-size:clamp(1.35rem,2vw,1.8rem);letter-spacing:.01em}
+.section-title p{font-size:.96rem;line-height:1.5;max-width:900px}
+.grid{gap:18px}
+.grid-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+label{font-size:.9rem;margin-bottom:7px}
+input,select,textarea{
+  min-height:48px;
+  border-radius:14px;
+  border-color:#314764;
+  padding:12px 14px;
+}
+textarea{min-height:120px}
+input[type="file"]{
+  padding:9px 10px;
+  background:#0b1729;
+}
+input[type="file"]::file-selector-button{
+  border:0;border-radius:10px;padding:9px 12px;margin-right:10px;
+  background:#253a58;color:#fff;font-weight:800;cursor:pointer;
+}
+.toolbar{gap:10px}
+.btn{min-height:46px;border-radius:13px;padding:11px 16px}
+.notice{padding:13px 15px;border-radius:14px;line-height:1.45}
+.num-grid{
+  grid-template-columns:repeat(10,minmax(48px,1fr));
+  gap:10px!important;
+}
+.num-btn{
+  width:100%!important;
+  min-width:0!important;
+  min-height:58px!important;
+  aspect-ratio:auto!important;
+  border-radius:15px!important;
+  font-size:1rem;
+  background:linear-gradient(180deg,#162842,#122039)!important;
+}
+.num-btn:hover{border-color:#5da9ff!important}
+.num-btn.good{background:linear-gradient(180deg,#137a55,#0f6547)!important}
+.num-btn.bad{background:linear-gradient(180deg,#93414a,#74333a)!important}
+.num-btn.current,.num-btn.active-dictation{
+  outline:2px solid #7bc0ff!important;
+  outline-offset:2px;
+}
+.num-btn .face{font-size:1rem;margin-top:4px}
+
+/* A: keep both exercises balanced and prevent number overflow. */
+#secA>.grid-2{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)}
+#secA>.grid-2>.card{min-width:0}
+#secA #sentenceGrid,
+#secA #readingGrid{grid-template-columns:repeat(5,minmax(0,1fr))}
+#secA #sentenceEditor{min-height:108px}
+#secA #readingEditor{min-height:220px}
+#secA .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+/* B */
+#secB #repeatGrid{grid-template-columns:repeat(10,minmax(0,1fr))}
+#secB .teacher-only.card{margin-top:20px!important}
+
+/* C: give the editor more useful width. */
+#secC>.grid-2{grid-template-columns:minmax(420px,.9fr) minmax(520px,1.1fr)}
+#secC #questionGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+#secC #questionEditor{min-height:132px}
+#secC #questionDisplay{display:block;min-height:28px}
+
+/* D */
+#secD>.grid-2{grid-template-columns:minmax(430px,.9fr) minmax(560px,1.1fr)}
+#secD #buildGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+#secD #buildParts{gap:10px}
+#secD #buildParts .btn{min-height:54px}
+#secD #buildAudioStatus{margin-top:16px!important}
+
+/* E */
+#secE>.grid-2{grid-template-columns:minmax(520px,.95fr) minmax(500px,1.05fr)}
+#secE #dictationGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+#secE #dictationInput{min-height:220px}
+#secE .card{align-self:start}
+
+/* F */
+#secF>.grid-2{grid-template-columns:minmax(620px,1.15fr) minmax(420px,.85fr)}
+#secF #storyText{max-height:300px!important;line-height:1.58}
+#secF #storyNotes{min-height:180px}
+
+/* G */
+#secG{max-width:1120px;margin-left:auto;margin-right:auto}
+#secG #openQuestion{min-height:130px}
+#secG #openNotes{min-height:130px}
+
+/* Prevent long strings / audio URLs from forcing horizontal scrolling. */
+.card,.notice,.export-box,textarea,input,select{min-width:0;max-width:100%}
+.export-box{overflow-wrap:anywhere}
+
+@media(max-width:1180px){
+  #secA>.grid-2,#secC>.grid-2,#secD>.grid-2,#secE>.grid-2,#secF>.grid-2{grid-template-columns:1fr}
+  #secA #sentenceGrid,#secA #readingGrid,
+  #secC #questionGrid,#secD #buildGrid,#secE #dictationGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  main{padding:16px 12px 36px}
+  .card{padding:16px;border-radius:17px}
+  .section-tabs{top:70px;grid-template-columns:repeat(4,1fr);padding:8px}
+  .section-tabs button{min-height:46px}
+  .section-title{align-items:flex-start}
+  .pill{flex-shrink:0}
+  #secA #sentenceGrid,#secA #readingGrid,
+  #secB #repeatGrid,#secC #questionGrid,#secD #buildGrid,#secE #dictationGrid,
+  .num-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .num-btn{min-height:50px!important}
+  .stats{grid-template-columns:repeat(2,1fr)!important}
+}
+
 </style>
 </head>
 <body class="teacher">
@@ -201,7 +361,7 @@ body{scroll-behavior:smooth}
  </div>
 </section>
 
-<div class="section-tabs" id="tabs">
+<div class="section-tabs sticky-nav" id="tabs">
  <button data-sec="A" class="active">A</button><button data-sec="B">B</button><button data-sec="C">C</button>
  <button data-sec="D">D</button><button data-sec="E">E</button><button data-sec="F">F</button><button data-sec="G">G</button>
 </div>
@@ -352,7 +512,7 @@ body{scroll-behavior:smooth}
  </div>
 </section>
 
-<section id="secE"<section id="secE" class="card app-section hidden">
+<section id="secE" class="card app-section hidden">
  <div class="section-title"><div><h2>E · DICTATION</h2><p>Los audios provienen de A · Ejercicio 1. Toca un número para escucharlo o usa una oración aleatoria.</p></div><span class="pill" id="scoreE">Sin calificar</span></div>
  <div class="grid grid-2">
   <div class="card">
@@ -374,7 +534,7 @@ body{scroll-behavior:smooth}
  </div>
 </section>
 
-<section id="secF"<section id="secF" class="card app-section hidden">
+<section id="secF" class="card app-section hidden">
  <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Selecciona una lectura y carga el audio correspondiente. El texto queda visible únicamente para el docente.</p></div><span class="pill" id="scoreF">Sin calificar</span></div>
  <div class="grid grid-2">
   <div>
@@ -412,7 +572,7 @@ body{scroll-behavior:smooth}
  </div>
 </section>
 
-<section id="secG"<section id="secG" class="card app-section hidden">
+<section id="secG" class="card app-section hidden">
  <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>La pregunta escrita queda solo como referencia del docente. No se muestra en pantalla como ejercicio.</p></div><span class="pill" id="scoreG">Sin calificar</span></div>
 
  <div class="teacher-only">
