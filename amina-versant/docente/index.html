@@ -209,6 +209,9 @@ body.teacher .teacher-inline{display:inline-flex}
  <div class="teacher-only card" style="margin-top:14px">
   <label>Oración seleccionada</label>
   <div class="notice" id="repeatPrompt">Seleccione una oración</div>
+  <div class="notice" id="sentenceAudioIdentity" style="margin-top:8px">
+    <b>Audio:</b> <span id="sentenceAudioIdentityText">Selecciona una oración para identificar su audio.</span>
+  </div>
   <div class="grid grid-2" style="margin-top:10px">
    <div><label>Audio local (WhatsApp u otro archivo)</label><input id="repeatAudioFile" type="file" accept="audio/*"></div>
    <div><label>URL directa del audio</label><input id="repeatAudioUrl" class="small-input" placeholder="https://.../audio.mp3"></div>
@@ -221,6 +224,10 @@ body.teacher .teacher-inline{display:inline-flex}
   </div>
   <div class="toolbar" style="margin-top:10px">
    <button class="btn ghost" id="exportA1Audio">Exportar A1 + audios</button>
+
+<button class="btn good" id="downloadSentenceAudioPackage">Descargar audios para estudiantes</button>
+<input type="file" id="importSentenceAudioPackageTeacher" accept=".json,application/json" class="teacher-only">
+
   </div>
   <div id="exportA1Box" class="export-box hidden"></div>
  </div>
@@ -451,6 +458,7 @@ const defaults={
 }; 
 let data=JSON.parse(localStorage.getItem("aminaVersantData")||"null")||defaults;
 if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
+if(!data.sentenceAudioMeta)data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
 if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
 if(!data.openAudio)data.openAudio="";
 while(data.sentenceAudio.length<data.sentences.length)data.sentenceAudio.push("");
@@ -732,8 +740,9 @@ function renderRepeatGrid(){
    b.innerHTML=`${i+1}${data.sentenceAudio[i]?'<span class="face">🔊</span>':""}`;
    b.onclick=()=>{
      selectedRepeat=i;
-     $("#repeatPrompt").textContent=s;
+     $("#repeatPrompt").textContent=`Oración ${i+1}: ${s}`;
      $("#repeatAudioUrl").value=(data.sentenceAudio[i]||"").startsWith("http")?data.sentenceAudio[i]:"";
+     updateSentenceAudioIdentity(i);
    };
    g.appendChild(b)
  })
@@ -747,9 +756,22 @@ $("#saveRepeatAudio").onclick=async()=>{
  let src=file?await fileToDataURL(file):url;
  if(!src)return alert("Seleccione un archivo de audio o escriba una URL.");
  data.sentenceAudio[selectedRepeat]=src;
- persist();renderRepeatGrid();alert("Audio guardado en la oración "+(selectedRepeat+1)+".");
+ ensureAudioMeta();
+ data.sentenceAudioMeta[selectedRepeat]=file
+   ? {name:file.name,type:file.type||"audio",source:"archivo"}
+   : {name:(url.split("/").pop()||"enlace"),type:"url",source:"enlace"};
+ persist();
+ renderRepeatGrid();
+ refreshRepeatGridAudioBadges();
+ updateSentenceAudioIdentity(selectedRepeat);
+ alert("Audio guardado en la oración "+(selectedRepeat+1)+".");
 };
-$("#playRepeatAudio").onclick=()=>{if(selectedRepeat==null)return alert("Seleccione una oración.");playAudioSource(data.sentenceAudio[selectedRepeat])};
+$("#playRepeatAudio").onclick=()=>{
+ if(selectedRepeat==null)return alert("Seleccione una oración.");
+ if(!data.sentenceAudio[selectedRepeat])return alert("La oración "+(selectedRepeat+1)+" todavía no tiene audio.");
+ updateSentenceAudioIdentity(selectedRepeat);
+ playAudioSource(data.sentenceAudio[selectedRepeat]);
+};
 $("#exportA1Audio").onclick=()=>showExport("#exportA1Box",exportA1Payload());
 
 
@@ -978,6 +1000,109 @@ document.addEventListener("DOMContentLoaded",()=>{
     localStorage.removeItem("aminaStudentSentenceAssignments");
     const box=document.querySelector("#studentAssignmentsBox");
     if(box){box.textContent="Asignaciones borradas.";box.classList.remove("hidden");}
+  });
+});
+
+
+function ensureAudioMeta(){
+  if(!Array.isArray(data.sentenceAudioMeta)) data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
+  while(data.sentenceAudioMeta.length<data.sentences.length)data.sentenceAudioMeta.push(null);
+  while(data.sentenceAudio.length<data.sentences.length)data.sentenceAudio.push("");
+}
+function sentenceAudioInfo(i){
+  ensureAudioMeta();
+  const meta=data.sentenceAudioMeta[i]||{};
+  return {
+    index:i,
+    number:i+1,
+    sentence:data.sentences[i]||"",
+    audio:data.sentenceAudio[i]||"",
+    name:meta.name||"",
+    type:meta.type||"",
+    source:meta.source||""
+  };
+}
+function updateSentenceAudioIdentity(i){
+  const el=document.querySelector("#sentenceAudioIdentityText");
+  if(!el)return;
+  const info=sentenceAudioInfo(i);
+  el.textContent=info.audio
+    ? `Oración ${info.number}: ${info.sentence} · Audio: ${info.name||"guardado"}`
+    : `Oración ${info.number}: ${info.sentence} · Sin audio guardado`;
+}
+function refreshRepeatGridAudioBadges(){
+  const grid=document.querySelector("#repeatGrid");
+  if(!grid)return;
+  [...grid.children].forEach((btn,i)=>{
+    const has=!!data.sentenceAudio[i];
+    btn.innerHTML=`${i+1}${has?' <span title="Audio guardado">🔊</span>':''}`;
+    btn.title=has?`Oración ${i+1} · Audio guardado`:`Oración ${i+1} · Sin audio`;
+  });
+}
+function downloadJSONFile(filename,obj){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function buildStudentAudioPackage(){
+  ensureAudioMeta();
+  return {
+    app:"AMINA-VERSANT",
+    kind:"student-audio-package",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    sentences:data.sentences.map((sentence,i)=>({
+      number:i+1,
+      sentence,
+      audio:data.sentenceAudio[i]||"",
+      meta:data.sentenceAudioMeta[i]||null
+    })),
+    questions:(data.questions||[]).map((question,i)=>({
+      number:i+1,
+      question,
+      audio:(data.questionAudio||[])[i]||""
+    })),
+    openQuestions:data.openQuestions||["Open speaking question"],
+    openAudio:data.openAudio||""
+  };
+}
+function applyStudentAudioPackage(pkg){
+  if(!pkg||pkg.kind!=="student-audio-package")throw new Error("Archivo no válido.");
+  if(Array.isArray(pkg.sentences)){
+    pkg.sentences.forEach((x,i)=>{
+      if(i<data.sentences.length){
+        if(typeof x.audio==="string")data.sentenceAudio[i]=x.audio;
+        data.sentenceAudioMeta[i]=x.meta||null;
+      }
+    });
+  }
+  if(Array.isArray(pkg.questions)){
+    pkg.questions.forEach((x,i)=>{
+      if(i<data.questions.length && typeof x.audio==="string")data.questionAudio[i]=x.audio;
+    });
+  }
+  if(pkg.openAudio!==undefined)data.openAudio=pkg.openAudio;
+  persist();
+  renderRepeatGrid();
+  refreshRepeatGridAudioBadges();
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  ensureAudioMeta();
+  refreshRepeatGridAudioBadges();
+
+  document.querySelector("#downloadSentenceAudioPackage")?.addEventListener("click",()=>{
+    downloadJSONFile("AMINA_VERSANT_AUDIOS_ESTUDIANTES.json",buildStudentAudioPackage());
+  });
+
+  document.querySelector("#importSentenceAudioPackageTeacher")?.addEventListener("change",async e=>{
+    const f=e.target.files?.[0]; if(!f)return;
+    try{
+      applyStudentAudioPackage(JSON.parse(await f.text()));
+      alert("Audios importados correctamente.");
+    }catch(err){alert("No se pudo importar: "+err.message)}
+    e.target.value="";
   });
 });
 
