@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMINA-VERSANT · Estudiante</title>
+<style>
+:root{
+  --bg:#08111f;--panel:#101b2f;--text:#eef4ff;--muted:#aab7cc;--accent:#57a6ff;
+  --line:#2c3d59;--good:#27c483;--bad:#ff6470
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#07101d,#0d1626);color:var(--text);min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:rgba(7,16,29,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.topbar{max-width:1100px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#70b8ff,#7b61ff);display:grid;place-items:center;font-weight:900;color:#06101c}
+h1{font-size:1.1rem;margin:0}.sub{font-size:.8rem;color:var(--muted)}
+main{max-width:1100px;margin:auto;padding:20px}
+.card{background:rgba(16,27,47,.94);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.grid{display:grid;gap:14px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+label{display:block;color:var(--muted);font-size:.84rem;margin-bottom:5px}
+input,select{width:100%;border-radius:12px;border:1px solid var(--line);background:#0b1526;color:var(--text);padding:11px 12px}
+.btn{border:0;border-radius:12px;padding:11px 14px;background:#233754;color:#fff;font-weight:800;cursor:pointer}
+.btn.primary{background:linear-gradient(135deg,#3193ff,#5f72ff)}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.section-tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:18px 0}
+.section-tabs button{padding:13px 8px;border-radius:12px;border:1px solid var(--line);background:#101b2f;color:#fff;font-weight:900;cursor:pointer}
+.section-tabs button.active{background:linear-gradient(135deg,#2f8fff,#675dff)}
+.hidden{display:none!important}
+.section-title{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:14px}
+.section-title h2{margin:0 0 4px;font-size:1.3rem}.section-title p{margin:0;color:var(--muted)}
+.num-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.num-btn{aspect-ratio:1;border-radius:11px;border:1px solid var(--line);background:#13223a;color:white;font-weight:800;cursor:pointer}
+.notice{padding:10px 12px;border-radius:12px;background:#0d2238;border:1px solid #224c72;color:#cfe8ff}
+.black-screen{position:fixed;inset:0;background:#000;color:#fff;z-index:1000;display:flex;align-items:center;justify-content:center;padding:5vw;text-align:center}
+.countdown{font-size:clamp(4rem,15vw,11rem);font-weight:1000}
+.sentence-display{font-size:clamp(2rem,5vw,5rem);font-weight:800;line-height:1.2}
+.reading-display{position:fixed;inset:0;background:#000;color:#fff;z-index:1001;overflow:hidden}
+.reading-title{position:fixed;top:8vh;left:50%;transform:translateX(-50%);z-index:1003;font-size:clamp(1.8rem,4.3vw,3.8rem);font-weight:1000;white-space:nowrap;max-width:88vw;overflow:hidden;text-overflow:ellipsis}
+.reading-inner{position:absolute;left:7vw;right:7vw;top:100vh;font-size:clamp(1.2rem,2vw,1.9rem);line-height:1.65}
+.timerbox{position:fixed;top:18px;right:24px;z-index:1004;background:#111;border:1px solid #444;padding:8px 12px;border-radius:10px;font-weight:800}
+.audio-list{display:grid;gap:10px}
+.audio-item{display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;background:#0c1628;border:1px solid var(--line);border-radius:12px;padding:10px}
+.audio-item audio{max-width:260px;width:100%}
+footer{max-width:1100px;margin:24px auto 40px;padding:0 20px;color:var(--muted);text-align:center}
+@media(max-width:800px){
+ .grid-2,.grid-4{grid-template-columns:1fr}
+ .num-grid{grid-template-columns:repeat(5,1fr)}
+ .audio-item{grid-template-columns:42px 1fr}
+ .audio-item audio{grid-column:1 / -1;max-width:100%}
+}
+
+@media print{
+ body{background:#fff;color:#000}
+ header,main,footer,.section-tabs,#sentenceOverlay,#readingOverlay{display:none!important}
+ #printArea{display:block!important;color:#000;background:#fff}
+ #printArea table{width:100%;border-collapse:collapse;margin:10px 0}
+ #printArea th,#printArea td{border:1px solid #999;padding:6px;text-align:left;vertical-align:top}
+ #printArea h1,#printArea h2,#printArea h3{color:#000}
+}
+#printArea{display:none}
+
+</style>
+</head>
+<body>
+<header>
+ <div class="topbar">
+  <div class="brand">
+   <div class="logo">WESH</div>
+   <div><h1>AMINA‑VERSANT · ESTUDIANTE</h1><div class="sub">Práctica de lectura, repetición y comprensión auditiva</div></div>
+  </div>
+  <span class="sub">Lic. Wascar Enrique Sequeira Hurtado</span>
+ </div>
+</header>
+
+<main>
+<section class="card">
+ <div class="section-title">
+  <div><h2>Datos del estudiante</h2><p>Complete todos los campos antes de iniciar.</p></div>
+ </div>
+ <div class="grid grid-4">
+  <div><label>Estudiante asignado</label><select id="studentNumber"><option value="">Seleccionar</option></select></div>
+  <div><label>Nombre y apellidos</label><input id="studentName" placeholder="Nombre completo"></div>
+  <div><label>Carnet</label><input id="studentId" placeholder="Carnet"></div>
+  <div><label>Género</label><select id="studentGender"><option value="">Seleccionar</option><option>Masculino</option><option>Femenino</option><option>Otro</option></select></div>
+  <div><label>Carrera</label><input id="studentCareer" placeholder="Carrera"></div>
+ </div>
+ <div style="margin-top:12px"><button class="btn primary" id="startBtn">Iniciar</button></div>
+ <div id="studentStatus" class="notice hidden" style="margin-top:12px"></div>
+</section>
+
+<div class="section-tabs">
+ <button data-sec="A" class="active">A</button>
+ <button data-sec="B">B</button>
+ <button data-sec="C">C</button>
+ <button data-sec="D">D</button>
+ <button data-sec="E">E</button>
+ <button data-sec="F">F</button>
+ <button data-sec="G">G</button>
+</div>
+
+<section id="secA" class="card app-section">
+ <div class="section-title"><div><h2>A · READ ALOUD</h2><p>Ejercicio 1: oraciones en pantalla negra. Ejercicio 2: lectura desplazándose hacia arriba.</p></div></div>
+
+ <div class="grid grid-2">
+  <div class="card" id="studentA1">
+   <h3>Ejercicio 1 · Oraciones</h3>
+   <div class="notice">Toca el número de una oración para verla en pantalla negra.</div>
+   <div id="sentenceGrid" class="num-grid" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card" id="studentA2">
+   <h3>Ejercicio 2 · Lectura</h3>
+   <label>Selecciona una lectura</label>
+   <select id="readingSelect"></select>
+   <div style="margin-top:12px"><button class="btn primary" id="startReading">Iniciar lectura</button></div>
+   <div id="readingPreview" class="notice" style="margin-top:12px"></div>
+  </div>
+ </div>
+</section>
+
+<section id="secB" class="card app-section hidden">
+ <div class="section-title"><div><h2>B · REPEAT</h2><p>Escucha los audios de las oraciones.</p></div></div>
+ <div id="repeatAudioList" class="audio-list"></div>
+</section>
+
+<section id="secC" class="card app-section hidden">
+ <div class="section-title"><div><h2>C · SHORT ANSWER</h2><p>Escucha únicamente el audio de cada pregunta.</p></div></div>
+ <div id="questionAudioList" class="audio-list"></div>
+</section>
+
+<section id="secD" class="card app-section hidden">
+ <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>Escucha los audios de las oraciones de la sección A.</p></div></div>
+ <div id="buildAudioList" class="audio-list"></div>
+</section>
+
+<section id="secE" class="card app-section hidden">
+ <div class="section-title"><div><h2>E · DICTATION</h2><p>Escucha únicamente los audios de las oraciones.</p></div></div>
+ <div id="dictationAudioList" class="audio-list"></div>
+</section>
+
+<section id="secF" class="card app-section hidden">
+ <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Escucha o revisa la lectura asignada y escribe todo lo que entendiste.</p></div></div>
+ <div class="grid grid-2">
+  <div>
+   <label>Lectura</label>
+   <select id="storySelect"></select>
+   <div id="storyText" class="notice" style="margin-top:12px;max-height:360px;overflow:auto"></div>
+  </div>
+  <div>
+   <label>Bloc de notas · Escribe todo lo que entendiste</label>
+   <textarea id="storyNotes" style="width:100%;min-height:360px;border-radius:14px;border:1px solid var(--line);background:#0b1526;color:var(--text);padding:14px;resize:vertical" placeholder="Escribe aquí, con tus propias palabras, todo lo que entendiste de la lectura..."></textarea>
+   <div class="notice" style="margin-top:10px">Tus notas se guardan automáticamente en este navegador.</div>
+  </div>
+ </div>
+</section>
+
+<section id="secG" class="card app-section hidden">
+ <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>Escucha únicamente los audios de las preguntas.</p></div></div>
+ <div id="openAudioList" class="audio-list"></div>
+</section>
+
+<section class="card" style="margin-top:18px">
+ <div class="section-title"><div><h2>Reporte final</h2><p>Genera un PDF con tus datos y las actividades realizadas.</p></div></div>
+ <button class="btn primary" id="finalPdfBtn">Generar PDF de mis actividades</button>
+</section>
+
+
+<section id="noAssignments" class="card hidden" style="margin-top:18px">
+ <div class="section-title"><div><h2>No hay actividades habilitadas</h2><p>El docente todavía no ha habilitado ejercicios para esta asignación.</p></div></div>
+</section>
+
+</main>
+
+<footer>WESH · AMINA‑VERSANT · Versión estudiante</footer>
+<div id="printArea"></div>
+
+<div id="sentenceOverlay" class="black-screen hidden">
+ <div>
+  <div id="countdown" class="countdown">ONE</div>
+  <div id="sentenceDisplay" class="sentence-display hidden"></div>
+ </div>
+</div>
+
+<div id="readingOverlay" class="reading-display hidden">
+ <div id="readingTitle" class="reading-title"></div>
+ <div id="readingClock" class="timerbox">00:00</div>
+ <div id="readingInner" class="reading-inner"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+function populateStudentNumbers(){
+ const sel=document.querySelector("#studentNumber");
+ if(!sel)return;
+ for(let i=1;i<=40;i++){
+   const o=document.createElement("option");
+   o.value=String(i);o.textContent=`Estudiante ${i}`;sel.appendChild(o);
+ }
+}
+populateStudentNumbers();
+
+const defaults={
+ sentences:[
+ "The student reads the sentence clearly and confidently.",
+ "Learning a language requires patience, practice, and attention.",
+ "My classmates usually arrive before the lesson begins.",
+ "She has been studying English for several months.",
+ "We visited the museum after finishing our morning class.",
+ "Please remember to bring your notebook tomorrow morning.",
+ "The teacher explained the exercise in a very simple way.",
+ "They are preparing an important presentation for next week.",
+ "I would rather practice speaking than memorize isolated rules.",
+ "Good pronunciation helps listeners understand your message clearly.",
+ "The weather changed suddenly while we were walking home.",
+ "He has already completed the first part of the assignment.",
+ "Could you repeat that sentence a little more slowly?",
+ "Everyone should respect different opinions during a discussion.",
+ "The students were working quietly when the bell rang.",
+ "I might travel next month if I finish my work.",
+ "Reading aloud can improve rhythm, stress, and fluency.",
+ "She used to study at night when she was younger.",
+ "They have never visited a place like this before.",
+ "The doctor asked the patient several important questions.",
+ "We will have finished the project by Friday afternoon.",
+ "You should listen carefully before answering the question.",
+ "My family enjoys spending time together on weekends.",
+ "The meeting had already started when we arrived.",
+ "If I had more time, I would read another chapter.",
+ "He is going to explain the results to the group.",
+ "Please speak naturally and keep a steady reading pace.",
+ "The children were excited because the trip was finally happening.",
+ "I have learned many useful expressions in this course.",
+ "Effective communication depends on clarity, confidence, and practice."
+ ],
+ questions:Array.from({length:30},(_,i)=>`Question ${i+1}: Tell me something about your daily life.`),
+ readings:Array.from({length:30},(_,i)=>({
+   title:`Reading ${i+1}`,
+   text:`Reading ${i+1}. Learning a language is a gradual process that combines attention, repetition, understanding, and meaningful use. Students often begin by recognizing words visually and connecting them with sounds. Later, they learn how those words function in sentences and real situations. A strong reader does not simply pronounce every word; the reader also follows ideas, notices punctuation, controls rhythm, and anticipates meaning. Practice becomes more effective when the learner receives immediate feedback and has a clear goal. In class, short reading activities can help students develop confidence before moving to longer texts. The teacher may first model a sentence, then ask students to read it, identify difficult sounds, and repeat the sentence with better stress and intonation. Over time, learners become faster and more accurate. They also begin to notice patterns in spelling and pronunciation. This awareness makes new vocabulary easier to recognize. Another important skill is comprehension. Readers should be able to explain the main idea, identify supporting details, and connect the text with their own knowledge. Timed reading can be useful when it is used carefully. The purpose is not only speed, but controlled fluency. A student who reads quickly without understanding the text has not completed the task successfully. For that reason, teachers should consider both accuracy and comprehension. Regular practice, useful feedback, and repeated exposure create stronger reading habits. When students see their progress, motivation usually increases. They become more willing to read aloud, participate in class, and use English in unfamiliar situations. This type of practice can support pronunciation, vocabulary, grammar, and speaking at the same time.`
+ }))
+};
+
+let data=JSON.parse(localStorage.getItem("aminaVersantData")||"null")||defaults;
+if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
+if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
+if(!data.openAudio)data.openAudio="";
+if(!data.openQuestions)data.openQuestions=["Open speaking question"];
+let sessionStarted=false;
+let assignedSentenceIndexes=null;
+let studentSession={name:"",id:"",gender:"",career:"",startedAt:null};
+let studentProgress={
+  openedSentences:{},
+  readingStarted:false,
+  bPlayed:{},
+  cPlayed:{},
+  dPlayed:{},
+  ePlayed:{},
+  gPlayed:{},
+  storyNotes:JSON.parse(localStorage.getItem("aminaStudentStoryNotes")||"{}")
+};
+
+
+function getStudentSentenceAssignments(){
+  return JSON.parse(localStorage.getItem("aminaStudentSentenceAssignments")||"{}");
+}
+function applyStudentSentenceAssignment(){
+  const n=studentSession.studentNumber;
+  if(!n)return;
+  const assignments=getStudentSentenceAssignments();
+  assignedSentenceIndexes=Array.isArray(assignments[n])?assignments[n]:null;
+  renderSentenceGrid();
+  if(typeof refreshAssignedAudioSections==="function")refreshAssignedAudioSections();
+}
+
+function requireStudent(){
+ if(!sessionStarted){alert("Primero completa tus datos y pulsa Iniciar.");return false}
+ return true;
+}
+$("#startBtn").onclick=()=>{
+ const studentNumber=$("#studentNumber").value;
+ const name=$("#studentName").value.trim(), id=$("#studentId").value.trim(), gender=$("#studentGender").value, career=$("#studentCareer").value.trim();
+ if(!studentNumber||!name||!id||!gender||!career){alert("Completa todos los datos y selecciona tu número de estudiante.");return}
+ sessionStarted=true;
+ studentSession={studentNumber,name,id,gender,career,startedAt:new Date()};
+ applyStudentSentenceAssignment();
+ $("#studentStatus").textContent=`Sesión iniciada: ${name} · ${id} · ${career}`;
+ $("#studentStatus").classList.remove("hidden");
+};
+
+$$(".section-tabs button").forEach(b=>b.onclick=()=>{
+ if(b.classList.contains("hidden"))return;
+ $$(".section-tabs button").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");
+ $$(".app-section").forEach(s=>s.classList.add("hidden"));
+ $("#sec"+b.dataset.sec).classList.remove("hidden");
+});
+
+function renderSentenceGrid(){
+ let g=$("#sentenceGrid");g.innerHTML="";
+ let indexes=assignedSentenceIndexes;
+ if(!Array.isArray(indexes)||!indexes.length){
+   indexes=data.sentences.map((_,i)=>i);
+ }
+ indexes.forEach((i)=>{
+   const s=data.sentences[i];
+   const b=document.createElement("button");
+   b.className="num-btn";b.textContent=i+1;
+   b.onclick=()=>{if(requireStudent()){studentProgress.openedSentences[i]=true;showSentence(s)}};
+   g.appendChild(b)
+ });
+}
+async function showSentence(text){
+ const ov=$("#sentenceOverlay"),cd=$("#countdown"),sd=$("#sentenceDisplay");
+ ov.classList.remove("hidden");sd.classList.add("hidden");cd.classList.remove("hidden");
+ for(const w of ["ONE","TWO","THREE"]){cd.textContent=w;await new Promise(r=>setTimeout(r,700))}
+ cd.classList.add("hidden");sd.classList.remove("hidden");sd.textContent=text;
+ setTimeout(()=>ov.classList.add("hidden"),6000);
+}
+
+function readingLines(text){
+ const words=text.trim().split(/\s+/),lines=[];
+ for(let i=0;i<words.length;i+=11)lines.push(words.slice(i,i+11).join(" "));
+ return lines;
+}
+function renderReadings(){
+ const sel=$("#readingSelect");sel.innerHTML="";
+ data.readings.forEach((r,i)=>{
+   let o=document.createElement("option");o.value=i;o.textContent=`${i+1}. ${r.title||("Reading "+(i+1))}`;sel.appendChild(o)
+ });
+ updateReadingPreview();
+}
+function updateReadingPreview(){
+ const r=data.readings[+$("#readingSelect").value]||data.readings[0];
+ $("#readingPreview").textContent=r?`${r.title} · ${readingLines(r.text).length} líneas`:"";
+}
+$("#readingSelect").onchange=updateReadingPreview;
+$("#startReading").onclick=()=>{
+ if(!requireStudent())return;
+ studentProgress.readingStarted=true;
+ const r=data.readings[+$("#readingSelect").value];
+ const lines=readingLines(r.text);
+ const total=300; // 5 minutes default in student view
+ const ov=$("#readingOverlay"), inner=$("#readingInner");
+ $("#readingTitle").textContent=r.title||"Lectura";
+ inner.innerHTML=lines.map((l,i)=>`<div>${i+1}. ${l}</div>`).join("");
+ ov.classList.remove("hidden");
+ inner.style.transition="none";inner.style.transform="translateY(0)";inner.style.top="100vh";
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   const dist=window.innerHeight+inner.scrollHeight+80;
+   inner.style.transition=`transform ${total}s linear`;
+   inner.style.transform=`translateY(-${dist}px)`;
+   let rem=total;$("#readingClock").textContent=formatMMSS(rem);
+   const t=setInterval(()=>{
+     rem--;$("#readingClock").textContent=formatMMSS(Math.max(0,rem));
+     if(rem<=0){clearInterval(t);ov.classList.add("hidden")}
+   },1000);
+ }));
+};
+function formatMMSS(s){return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
+
+
+function assignedSentenceItems(){
+  const idxs=(Array.isArray(assignedSentenceIndexes)&&assignedSentenceIndexes.length)?assignedSentenceIndexes:data.sentences.map((_,i)=>i);
+  return {
+    texts:idxs.map(i=>data.sentences[i]),
+    audios:idxs.map(i=>data.sentenceAudio[i]||""),
+    indexes:idxs
+  };
+}
+function refreshAssignedAudioSections(){
+  const a=assignedSentenceItems();
+  makeAudioList("#repeatAudioList",a.texts,a.audios,"bPlayed",a.indexes);
+  makeAudioList("#buildAudioList",a.texts,a.audios,"dPlayed",a.indexes);
+  makeAudioList("#dictationAudioList",a.texts,a.audios,"ePlayed",a.indexes);
+}
+
+function makeAudioList(containerId,items,audios,progressKey,originalIndexes=null){
+ const c=$(containerId);c.innerHTML="";
+ items.forEach((txt,i)=>{
+   const src=audios[i]||"";
+   const originalIndex=originalIndexes?originalIndexes[i]:i;
+   const shownNumber=originalIndex+1;
+   const row=document.createElement("div");row.className="audio-item";
+   row.innerHTML=`<b>${shownNumber}</b><div>${containerId==="#questionAudioList"?"Pregunta "+(i+1):containerId==="#openAudioList"?"Pregunta "+(i+1):"Oración "+shownNumber}</div>`;
+   if(src){
+     const a=document.createElement("audio");a.controls=true;a.src=src;
+     a.onplay=()=>{if(progressKey)studentProgress[progressKey][originalIndex]=true};
+     row.appendChild(a)
+   }else{
+     const span=document.createElement("span");span.className="sub";span.textContent="Sin audio";row.appendChild(span)
+   }
+   c.appendChild(row)
+ });
+}
+renderSentenceGrid();
+renderReadings();
+refreshAssignedAudioSections();
+makeAudioList("#questionAudioList",data.questions,data.questionAudio,"cPlayed");
+
+let openAudios=[];
+if(Array.isArray(data.openAudio)) openAudios=data.openAudio;
+else if(data.openAudio) openAudios=[data.openAudio];
+else openAudios=[""];
+let openItems=(data.openQuestions&&data.openQuestions.length)?data.openQuestions:Array.from({length:openAudios.length||1},(_,i)=>`Pregunta ${i+1}`);
+while(openAudios.length<openItems.length)openAudios.push("");
+makeAudioList("#openAudioList",openItems,openAudios,"gPlayed");
+
+function renderStorySection(){
+ const sel=$("#storySelect");sel.innerHTML="";
+ data.readings.forEach((r,i)=>{
+   let o=document.createElement("option");
+   o.value=i;o.textContent=`${i+1}. ${r.title||("Reading "+(i+1))}`;
+   sel.appendChild(o)
+ });
+ loadStory(0);
+}
+function loadStory(i){
+ const r=data.readings[i];
+ $("#storyText").textContent=r?`${r.title}
+
+${r.text}`:"";
+ $("#storyNotes").value=studentProgress.storyNotes[i]||"";
+}
+$("#storySelect").onchange=e=>loadStory(+e.target.value);
+$("#storyNotes").oninput=()=>{
+ const i=+$("#storySelect").value;
+ studentProgress.storyNotes[i]=$("#storyNotes").value;
+ localStorage.setItem("aminaStudentStoryNotes",JSON.stringify(studentProgress.storyNotes));
+};
+renderStorySection();
+
+function countPlayed(obj){return Object.values(obj).filter(Boolean).length}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+$("#finalPdfBtn").onclick=()=>{
+ if(!requireStudent())return;
+ const notesRows=Object.entries(studentProgress.storyNotes)
+   .filter(([k,v])=>String(v).trim())
+   .map(([k,v])=>{
+     const r=data.readings[+k];
+     return `<h3>${esc(r?.title||("Reading "+(+k+1)))}</h3><p style="white-space:pre-wrap">${esc(v)}</p>`;
+   }).join("")||"<p>No escribió notas en la sección F.</p>";
+
+ const aRows=data.sentences.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s)}</td><td>${studentProgress.openedSentences[i]?"Vista":"No vista"}</td></tr>`).join("");
+
+ $("#printArea").innerHTML=`<div style="padding:24px;font-family:Arial,sans-serif">
+  <h1>AMINA‑VERSANT · Reporte del estudiante</h1>
+  <p><b>Número asignado:</b> Estudiante ${esc(studentSession.studentNumber||"—")}<br>
+  <b>Estudiante:</b> ${esc(studentSession.name)}<br>
+  <b>Carnet:</b> ${esc(studentSession.id)}<br>
+  <b>Género:</b> ${esc(studentSession.gender)}<br>
+  <b>Carrera:</b> ${esc(studentSession.career)}<br>
+  <b>Inicio:</b> ${studentSession.startedAt?studentSession.startedAt.toLocaleString():"—"}<br>
+  <b>Generado:</b> ${new Date().toLocaleString()}</p>
+
+  <h2>Sección A · Ejercicio 1</h2>
+  <table><tr><th>#</th><th>Oración</th><th>Actividad</th></tr>${aRows}</table>
+
+  <h2>Sección A · Ejercicio 2</h2>
+  <p>${studentProgress.readingStarted?"La lectura fue iniciada.":"La lectura no fue iniciada."}</p>
+
+  <h2>Sección B</h2><p>Audios escuchados: ${countPlayed(studentProgress.bPlayed)} de ${data.sentences.length}</p>
+  <h2>Sección C</h2><p>Audios escuchados: ${countPlayed(studentProgress.cPlayed)} de ${data.questions.length}</p>
+  <h2>Sección D</h2><p>Audios escuchados: ${countPlayed(studentProgress.dPlayed)} de ${data.sentences.length}</p>
+  <h2>Sección E</h2><p>Audios escuchados: ${countPlayed(studentProgress.ePlayed)} de ${data.sentences.length}</p>
+
+  <h2>Sección F · Lo que entendí</h2>
+  ${notesRows}
+
+  <h2>Sección G</h2><p>Audios escuchados: ${countPlayed(studentProgress.gPlayed)} de ${openItems.length}</p>
+
+  <p style="margin-top:30px"><b>WESH · Lic. Wascar Enrique Sequeira Hurtado</b></p>
+ </div>`;
+ window.print();
+};
+
+const assignmentDefaults={A1:true,A2:true,B:true,C:true,D:true,E:true,F:true,G:true};
+function getAssignmentsFromQuery(){
+  const q=new URLSearchParams(location.search).get("assign");
+  if(!q)return null;
+  try{return JSON.parse(decodeURIComponent(escape(atob(q))))}catch(e){return null}
+}
+function getAssignments(){
+  const fromQuery=getAssignmentsFromQuery();
+  if(fromQuery){
+    localStorage.setItem("aminaVersantAssignments",JSON.stringify(fromQuery));
+    return {...assignmentDefaults,...fromQuery};
+  }
+  const stored=JSON.parse(localStorage.getItem("aminaVersantAssignments")||"null");
+  return {...assignmentDefaults,...(stored||{})};
+}
+function applyAssignments(){
+  const a=getAssignments();
+
+  const a1=document.querySelector("#studentA1");
+  const a2=document.querySelector("#studentA2");
+  if(a1)a1.classList.toggle("hidden",!a.A1);
+  if(a2)a2.classList.toggle("hidden",!a.A2);
+
+  const map={B:"#secB",C:"#secC",D:"#secD",E:"#secE",F:"#secF",G:"#secG"};
+  Object.entries(map).forEach(([k,sel])=>{
+    const sec=document.querySelector(sel);
+    if(sec)sec.dataset.assignmentEnabled=a[k]?"1":"0";
+  });
+
+  document.querySelectorAll(".section-tabs button").forEach(btn=>{
+    const k=btn.dataset.sec;
+    let enabled = k==="A" ? (a.A1||a.A2) : !!a[k];
+    btn.classList.toggle("hidden",!enabled);
+  });
+
+  ["B","C","D","E","F","G"].forEach(k=>{
+    const sec=document.querySelector("#sec"+k);
+    if(sec && !a[k])sec.classList.add("hidden");
+  });
+
+  const any=a.A1||a.A2||a.B||a.C||a.D||a.E||a.F||a.G;
+  document.querySelector("#noAssignments")?.classList.toggle("hidden",any);
+
+  const first=document.querySelector(".section-tabs button:not(.hidden)");
+  if(first){
+    document.querySelectorAll(".section-tabs button").forEach(x=>x.classList.remove("active"));
+    first.classList.add("active");
+    document.querySelectorAll(".app-section").forEach(x=>x.classList.add("hidden"));
+    const target=document.querySelector("#sec"+first.dataset.sec);
+    if(target)target.classList.remove("hidden");
+  }
+}
+
+applyAssignments();
+</script>
+</body>
+</html>

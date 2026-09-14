@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMINA-VERSANT | WESH</title>
+<style>
+:root{
+  --bg:#08111f;--panel:#101b2f;--panel2:#16243c;--text:#eef4ff;--muted:#aab7cc;
+  --accent:#57a6ff;--good:#27c483;--bad:#ff6470;--warn:#ffc857;--line:#2c3d59;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#07101d,#0d1626);color:var(--text);min-height:100vh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:rgba(7,16,29,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar{max-width:1200px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#70b8ff,#7b61ff);display:grid;place-items:center;font-weight:900;color:#06101c}
+h1{font-size:1.12rem;margin:0}.sub{font-size:.78rem;color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:20px}
+.card{background:rgba(16,27,47,.92);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.grid{display:grid;gap:14px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+label{display:block;color:var(--muted);font-size:.84rem;margin-bottom:5px}
+input,select,textarea{width:100%;border-radius:12px;border:1px solid var(--line);background:#0b1526;color:var(--text);padding:11px 12px;outline:none}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.btn{border:0;border-radius:12px;padding:11px 14px;background:#233754;color:white;font-weight:700}
+.btn.primary{background:linear-gradient(135deg,#3193ff,#5f72ff)}
+.btn.good{background:#14895d}.btn.bad{background:#b83e49}.btn.warn{background:#9c7319}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.section-tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:18px 0}
+.section-tabs button{padding:13px 8px;border-radius:12px;border:1px solid var(--line);background:#101b2f;color:white;font-weight:800}
+.section-tabs button.active{background:linear-gradient(135deg,#2f8fff,#675dff)}
+.hidden{display:none!important}
+.section-title{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:14px}
+.section-title h2{margin:0 0 4px;font-size:1.35rem}.section-title p{margin:0;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#15233a;border:1px solid var(--line);font-size:.8rem}
+.num-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.num-btn{aspect-ratio:1;border-radius:11px;border:1px solid var(--line);background:#13223a;color:white;font-weight:800}
+.num-btn.good{background:#0f6d4a}.num-btn.bad{background:#88323a}.num-btn.current{outline:2px solid var(--accent)}
+.num-btn .face{display:block;font-size:1.15rem;line-height:1;margin-top:3px}
+.speed-btn{width:32px;height:32px;padding:0;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px}
+.read-line.read{background:#0c6a46;color:#fff}
+.read-line.unread{background:#53171c;color:#fff}
+.read-line .mark{display:inline-block;width:26px;font-weight:900}
+.teacher-only{display:none}
+body.teacher .teacher-only{display:block}
+body.teacher .teacher-only.inline{display:inline-flex}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.stat{background:#0c1628;border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat b{display:block;font-size:1.2rem}.stat small{color:var(--muted)}
+.black-screen{position:fixed;inset:0;background:#000;color:#fff;z-index:1000;display:flex;align-items:center;justify-content:center;padding:5vw;text-align:center}
+.black-screen .content{width:min(1100px,94vw)}
+.countdown{font-size:clamp(4rem,15vw,11rem);font-weight:1000;letter-spacing:.02em}
+.sentence-display{font-size:clamp(2rem,5vw,5.5rem);font-weight:800;line-height:1.18}
+.reading-display{position:fixed;inset:0;background:#000;color:#fff;z-index:1001;overflow:hidden;padding:5vh 7vw}
+.reading-inner{position:absolute;left:7vw;right:7vw;top:100vh;font-size:clamp(1.2rem,2.2vw,2rem);line-height:1.65;will-change:transform}
+.read-line{padding:4px 7px;border-radius:7px;cursor:pointer}
+.read-line:hover{background:#1e1e1e}.read-line.selected{background:#314c80}
+.reading-controls{position:fixed;top:18px;right:24px;z-index:1003;display:flex;align-items:center;gap:8px}
+.timerbox{background:#111;border:1px solid #444;padding:8px 12px;border-radius:10px;font-weight:800;min-width:74px;text-align:center}
+.close-overlay{width:30px;height:30px;min-width:30px;padding:0;border:0;border-radius:50%;background:#e3212d;color:#fff;font-size:18px;font-weight:900;line-height:30px;display:grid;place-items:center;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.close-overlay:hover{background:#ff3340}
+.report{font-family:Arial,sans-serif;color:#111;background:#fff;padding:28px;max-width:900px;margin:auto}
+.report h1,.report h2{color:#111}.report table{width:100%;border-collapse:collapse}.report th,.report td{border:1px solid #bbb;padding:7px;text-align:left;font-size:13px}
+.notice{padding:10px 12px;border-radius:12px;background:#0d2238;border:1px solid #224c72;color:#cfe8ff}
+footer{max-width:1200px;margin:22px auto 40px;padding:0 20px;color:var(--muted);text-align:center}
+@media(max-width:800px){
+ .grid-2,.grid-3,.grid-4,.stats{grid-template-columns:1fr}
+ .section-tabs{grid-template-columns:repeat(4,1fr)}
+ .num-grid{grid-template-columns:repeat(5,1fr)}
+ .topbar{align-items:flex-start}.brand{align-items:flex-start}
+}
+@media print{
+ body>*:not(#printArea){display:none!important}
+ #printArea{display:block!important}
+}
+
+.reading-title-overlay{
+ position:fixed;left:50%;top:10vh;transform:translateX(-50%);
+ z-index:1004;font-size:clamp(1.8rem,4.4vw,4rem);font-weight:1000;
+ white-space:nowrap;max-width:88vw;overflow:hidden;text-overflow:ellipsis;
+ text-align:center;color:#fff;letter-spacing:.01em;pointer-events:none
+}
+.audio-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.audio-row audio{max-width:100%;height:36px}
+.small-input{padding:8px 10px}
+.compact-card{background:#0c1628;border:1px solid var(--line);border-radius:12px;padding:10px}
+.export-box{white-space:pre-wrap;max-height:260px;overflow:auto;background:#07101d;border:1px solid var(--line);padding:10px;border-radius:10px;font-family:ui-monospace,monospace;font-size:.8rem}
+.question-row{display:grid;grid-template-columns:52px 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+
+
+#teacherStudentData{display:none!important}
+#startBtn{display:none!important}
+</style>
+</head>
+<body>
+<header>
+ <div class="topbar">
+  <div class="brand">
+   <div class="logo">WESH</div>
+   <div><h1>AMINA‑VERSANT</h1><div class="sub">Evaluación oral y lingüística · WESH</div></div>
+  </div>
+  <div class="toolbar">
+   <span class="pill" id="modePill">Modo estudiante</span>
+   <button class="btn ghost" id="teacherBtn">Docente</button>
+   <button class="btn ghost teacher-only inline" id="exitTeacherBtn">Salir docente</button>
+  </div>
+ </div>
+</header>
+
+<main>
+<section class="card hidden" id="teacherStudentData" id="studentCard">
+ <div class="section-title">
+  <div><h2>Datos del estudiante</h2><p>Complete estos datos antes de iniciar una evaluación.</p></div>
+  <span class="pill" id="sessionStatus">Sin sesión</span>
+ </div>
+ <div class="grid grid-4">
+  <div><label>Nombre y apellidos</label><input id="studentName" placeholder="Nombre completo"></div>
+  <div><label>Carnet</label><input id="studentId" placeholder="Carnet"></div>
+  <div><label>Género</label><select id="studentGender"><option value="">Seleccionar</option><option>Masculino</option><option>Femenino</option><option>Otro</option></select></div>
+  <div><label>Carrera</label><input id="studentCareer" placeholder="Carrera"></div>
+ </div>
+ <div class="toolbar" style="margin-top:14px">
+  <button class="btn primary" id="startSession">Empezar evaluación</button>
+  <button class="btn bad" id="finishSession" disabled>Finalizar evaluación</button>
+  <button class="btn ghost" id="printFullReport" disabled>Reporte / PDF</button>
+ </div>
+ <div class="stats">
+  <div class="stat"><b id="elapsed">00:00:00</b><small>Tiempo de sesión</small></div>
+  <div class="stat"><b id="overallScore">—</b><small>Promedio global</small></div>
+  <div class="stat"><b id="completedSections">0/7</b><small>Secciones con resultado</small></div>
+  <div class="stat"><b id="currentUser">—</b><small>Estudiante</small></div>
+ </div>
+</section>
+
+<div class="section-tabs" id="tabs">
+ <button data-sec="A" class="active">A</button><button data-sec="B">B</button><button data-sec="C">C</button>
+ <button data-sec="D">D</button><button data-sec="E">E</button><button data-sec="F">F</button><button data-sec="G">G</button>
+</div>
+
+<section id="secA" class="card app-section">
+ <div class="section-title"><div><h2>A · READ ALOUD</h2><p>Ejercicio 1: lectura de oraciones · Ejercicio 2: lectura cronometrada.</p></div><span class="pill" id="scoreA">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div class="card">
+   <h3>Ejercicio 1 · 30 oraciones</h3>
+   <p class="sub">El docente selecciona un número. Aparece ONE · TWO · THREE y luego la oración.</p>
+   <div class="grid grid-3 teacher-only" style="margin-bottom:12px">
+    <div><label>Segundos en pantalla</label><input id="sentenceSeconds" type="number" min="3" max="20" value="6"></div>
+    <div style="grid-column:span 2"><label>Editar oración seleccionada</label><textarea id="sentenceEditor" placeholder="Seleccione un número"></textarea></div>
+   </div>
+   <div class="toolbar teacher-only" style="margin-bottom:12px"><button class="btn primary" id="saveSentence">Guardar oración</button><button class="btn ghost" id="resetSentences">Restaurar ejemplo</button></div>
+   <div class="num-grid" id="sentenceGrid"></div>
+   <div class="toolbar teacher-only" style="margin-top:14px">
+    <button class="btn good" id="markYes" disabled>YES · correcta</button>
+    <button class="btn bad" id="markNo" disabled>NO · incorrecta</button>
+    <span class="pill" id="a1progress">0/30 evaluadas</span>
+   </div>
+  </div>
+  <div class="card">
+   <h3>Ejercicio 2 · Lectura</h3>
+   <div class="teacher-only">
+    <div class="grid grid-2">
+     <div><label>Lectura</label><select id="readingSelect"></select></div>
+     <div><label>Título de la lectura</label><input id="readingTitle" placeholder="Título de la lectura"></div>
+    </div>
+    <div class="grid grid-2" style="margin-top:10px">
+     <div><label>Minutos (1–10)</label><input id="readingMinutes" type="number" min="1" max="10" step="1" value="5"></div>
+     <div><label>Segundos (0–59)</label><input id="readingSeconds" type="number" min="0" max="59" step="1" value="0"></div>
+    </div>
+    <label style="margin-top:10px">Texto (350–500 palabras recomendado)</label>
+    <textarea id="readingEditor" style="min-height:180px"></textarea>
+    <div class="toolbar" style="margin-top:10px">
+     <button class="btn primary" id="saveReading">Guardar lectura</button>
+     <button class="btn good" id="launchReading">Iniciar lectura</button>
+     <button class="btn ghost" id="printReading">PDF Sección A completa</button>
+    </div>
+   </div>
+   <div class="notice" style="margin-top:12px">Durante la lectura, cada línea se numera. El docente puede marcar la última línea alcanzada; la puntuación se calcula según el avance.</div>
+   <div class="stats">
+    <div class="stat"><b id="readingLinesTotal">0</b><small>Líneas</small></div>
+    <div class="stat"><b id="readingLastLine">0</b><small>Última línea</small></div>
+    <div class="stat"><b id="readingScore">—</b><small>Puntaje lectura</small></div>
+    <div class="stat"><b id="readingTime">—</b><small>Límite</small></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="secB" class="card app-section hidden">
+ <div class="section-title"><div><h2>B · REPEAT</h2><p>Usa las mismas oraciones de A1 y permite asociar una voz a cada oración.</p></div><span class="pill" id="scoreB">Sin calificar</span></div>
+ <div class="num-grid" id="repeatGrid"></div>
+ <div class="teacher-only card" style="margin-top:14px">
+  <label>Oración seleccionada</label>
+  <div class="notice" id="repeatPrompt">Seleccione una oración</div>
+  <div class="grid grid-2" style="margin-top:10px">
+   <div><label>Audio local (WhatsApp u otro archivo)</label><input id="repeatAudioFile" type="file" accept="audio/*"></div>
+   <div><label>URL directa del audio</label><input id="repeatAudioUrl" class="small-input" placeholder="https://.../audio.mp3"></div>
+  </div>
+  <div class="audio-row">
+   <button class="btn primary" id="saveRepeatAudio">Guardar audio en esta oración</button>
+   <button class="btn ghost" id="playRepeatAudio">▶ Reproducir</button>
+   <button class="btn good" id="repeatYes">YES</button>
+   <button class="btn bad" id="repeatNo">NO</button>
+  </div>
+  <div class="toolbar" style="margin-top:10px">
+   <button class="btn ghost" id="exportA1Audio">Exportar A1 + audios</button>
+  </div>
+  <div id="exportA1Box" class="export-box hidden"></div>
+ </div>
+</section>
+
+<section id="secC" class="card app-section hidden">
+ <div class="section-title"><div><h2>C · SHORT ANSWER</h2><p>Preguntas editables, con audio local o por URL. Puede añadir o quitar preguntas.</p></div><span class="pill" id="scoreC">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div>
+   <div class="toolbar teacher-only" style="margin-bottom:10px">
+    <button class="btn primary" id="addQuestion">+ Añadir pregunta</button>
+    <button class="btn bad" id="removeQuestion">− Quitar seleccionada</button>
+   </div>
+   <div class="num-grid" id="questionGrid"></div>
+  </div>
+  <div>
+   <div class="teacher-only">
+    <label>Pregunta seleccionada</label><textarea id="questionEditor"></textarea>
+    <div class="grid grid-2">
+     <div><label>Audio local</label><input id="questionAudioFile" type="file" accept="audio/*"></div>
+     <div><label>URL directa del audio</label><input id="questionAudioUrl" placeholder="https://.../audio.mp3"></div>
+    </div>
+    <div class="toolbar" style="margin-top:10px">
+     <button class="btn primary" id="saveQuestion">Guardar pregunta/audio</button>
+     <button class="btn ghost" id="playQuestionAudio">▶ Audio</button>
+     <button class="btn good" id="questionYes">Correcta</button>
+     <button class="btn bad" id="questionNo">Incorrecta</button>
+    </div>
+   </div>
+   <div class="card" style="margin-top:12px"><b id="questionDisplay">Seleccione una pregunta</b></div>
+  </div>
+ </div>
+</section>
+
+<section id="secD" class="card app-section hidden">
+ <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>Cada oración de A se divide en tres partes para reconstruirla.</p></div><span class="pill" id="scoreD">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div><div class="num-grid" id="buildGrid"></div></div>
+  <div class="card">
+   <div id="buildParts" class="grid grid-3"></div>
+   <div id="buildAnswer" class="notice" style="margin-top:12px">Seleccione las partes en el orden correcto.</div>
+   <div class="toolbar teacher-only" style="margin-top:12px"><button class="btn good" id="buildCorrect">Correcta</button><button class="btn bad" id="buildWrong">Incorrecta</button><button class="btn ghost" id="buildReset">Reiniciar</button><button class="btn ghost" id="exportDAudio">Exportar A1 + audios</button></div>
+   <div id="exportDBox" class="export-box hidden teacher-only" style="margin-top:10px"></div>
+  </div>
+ </div>
+</section>
+
+<section id="secE" class="card app-section hidden">
+ <div class="section-title"><div><h2>E · DICTATION</h2><p>Dictado aleatorio de las 30 oraciones de A.</p></div><span class="pill" id="scoreE">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div class="card">
+   <div class="toolbar"><button class="btn primary teacher-only inline" id="nextDictation">Nueva oración aleatoria</button><button class="btn ghost teacher-only inline" id="exportEAudio">Exportar A1 + audios</button><span class="pill" id="dictationNumber">—</span></div>
+   <div id="exportEBox" class="export-box hidden teacher-only" style="margin-top:10px"></div>
+   <div class="teacher-only notice" id="dictationTeacherText" style="margin-top:12px">El docente verá aquí la oración.</div>
+  </div>
+  <div><label>Escriba lo que escucha</label><textarea id="dictationInput"></textarea><div class="toolbar teacher-only"><button class="btn good" id="dictationYes">Correcta</button><button class="btn bad" id="dictationNo">Incorrecta</button></div></div>
+ </div>
+</section>
+
+<section id="secF" class="card app-section hidden">
+ <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Se usan las lecturas almacenadas en A. El estudiante recuenta los puntos clave.</p></div><span class="pill" id="scoreF">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div><label>Lectura</label><select id="storySelect"></select>
+   <div class="toolbar teacher-only" style="margin-top:8px"><button class="btn ghost" id="exportReadings">Exportar lecturas A2</button></div>
+   <div id="exportReadingsBox" class="export-box hidden teacher-only" style="margin-top:8px"></div>
+   <div class="card" id="storyText" style="margin-top:10px;max-height:340px;overflow:auto"></div></div>
+  <div class="teacher-only">
+   <label>Criterio del docente · puntos clave logrados (%)</label><input id="storyScoreInput" type="number" min="0" max="100" value="100">
+   <label style="margin-top:10px">Observaciones</label><textarea id="storyNotes"></textarea>
+   <button class="btn primary" id="saveStoryScore">Guardar calificación</button>
+  </div>
+ </div>
+</section>
+
+<section id="secG" class="card app-section hidden">
+ <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>Preguntas abiertas realizadas por el docente.</p></div><span class="pill" id="scoreG">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div class="teacher-only"><label>Pregunta abierta</label><textarea id="openQuestion" placeholder="Escriba la pregunta que hará al estudiante"></textarea>
+  <div class="grid grid-2">
+   <div><label>Audio local</label><input id="openAudioFile" type="file" accept="audio/*"></div>
+   <div><label>URL directa del audio</label><input id="openAudioUrl" placeholder="https://.../audio.mp3"></div>
+  </div>
+  <div class="toolbar" style="margin-top:10px"><button class="btn primary" id="showOpenQuestion">Mostrar pregunta</button><button class="btn ghost" id="playOpenAudio">▶ Audio</button></div>
+ </div>
+  <div class="card"><h3 id="openDisplay">La pregunta aparecerá aquí.</h3></div>
+ </div>
+ <div class="teacher-only" style="margin-top:14px">
+  <label>Puntaje de la sección (%)</label><input id="openScoreInput" type="number" min="0" max="100" value="100">
+  <label style="margin-top:10px">Observaciones</label><textarea id="openNotes"></textarea>
+  <button class="btn primary" id="saveOpenScore">Guardar calificación</button>
+ </div>
+</section>
+
+<div id="printArea" class="hidden"></div>
+
+<section id="assignmentManager" class="card" style="margin-top:18px">
+  <div class="section-title">
+    <div>
+      <h2>Asignaciones para estudiantes</h2>
+      <p>Activa únicamente las partes que quieres que aparezcan en la página del estudiante.</p>
+    </div>
+    <span class="pill" id="assignmentStatus">Configuración local</span>
+  </div>
+
+  <div class="grid grid-2">
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="A1"> A · Ejercicio 1 · Read Aloud</label>
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="A2"> A · Ejercicio 2 · Lectura</label>
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="B"> B · Repeat</label>
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="C"> C · Short Answer</label>
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="D"> D · Sentence Builds</label>
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="E"> E · Dictation</label>
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="F"> F · Story Retelling</label>
+    <label class="compact-card"><input type="checkbox" class="assignToggle" data-key="G"> G · Open Speaking</label>
+  </div>
+
+  <div class="toolbar" style="margin-top:14px">
+    <button class="btn primary" id="saveAssignments">Guardar asignación</button>
+    <button class="btn good" id="enableAllAssignments">Habilitar todo</button>
+    <button class="btn bad" id="disableAllAssignments">Deshabilitar todo</button>
+    <button class="btn ghost" id="copyAssignmentLink">Copiar configuración</button>
+  </div>
+
+  <div class="notice" style="margin-top:12px">
+    Esta configuración controla qué ejercicios aparecen en la versión estudiante cuando ambas páginas están publicadas bajo el mismo sitio.
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="section-title">
+      <div>
+        <h3>Asignación aleatoria de oraciones por estudiante</h3>
+        <p>Genera automáticamente las oraciones que le corresponden a cada estudiante del 1 al 40.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-4">
+      <div>
+        <label>Cantidad de estudiantes</label>
+        <input id="studentCountAssign" type="number" min="1" max="40" value="40">
+      </div>
+      <div>
+        <label>Oraciones por estudiante</label>
+        <input id="sentencesPerStudent" type="number" min="1" max="30" value="5">
+      </div>
+      <div>
+        <label>Desde la oración</label>
+        <input id="sentenceRangeStart" type="number" min="1" max="30" value="1">
+      </div>
+      <div>
+        <label>Hasta la oración</label>
+        <input id="sentenceRangeEnd" type="number" min="1" max="30" value="30">
+      </div>
+    </div>
+
+    <div class="toolbar" style="margin-top:12px">
+      <button class="btn primary" id="generateStudentAssignments">Generar asignación aleatoria</button>
+      <button class="btn ghost" id="showStudentAssignments">Ver asignaciones</button>
+      <button class="btn bad" id="clearStudentAssignments">Borrar asignaciones</button>
+    </div>
+
+    <div id="studentAssignmentsBox" class="export-box hidden" style="margin-top:12px"></div>
+  </div>
+
+</section>
+
+</main>
+
+<footer>WESH · Lic. Wascar Enrique Sequeira Hurtado</footer>
+
+<div id="sentenceOverlay" class="black-screen hidden">
+ <div class="content">
+  <div id="countdown" class="countdown">ONE</div>
+  <div id="sentenceDisplay" class="sentence-display hidden"></div>
+ </div>
+</div>
+
+<div id="readingOverlay" class="reading-display hidden">
+ <div id="readingOverlayTitle" class="reading-title-overlay"></div>
+ <div class="reading-controls">
+  <div class="timerbox" id="readingClock">00:00</div>
+  <button class="btn ghost speed-btn" id="slowerReading" title="Disminuir velocidad">−</button>
+  <button class="btn ghost speed-btn" id="fasterReading" title="Aumentar velocidad">+</button>
+  <button class="close-overlay" id="closeReading" title="Cerrar lectura" aria-label="Cerrar lectura">×</button>
+ </div>
+ <div id="readingInner" class="reading-inner"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const teacherPassword="estoico01";
+const defaults={
+ sentences:[
+ "The student reads the sentence clearly and confidently.",
+ "Learning a language requires patience, practice, and attention.",
+ "My classmates usually arrive before the lesson begins.",
+ "She has been studying English for several months.",
+ "We visited the museum after finishing our morning class.",
+ "Please remember to bring your notebook tomorrow morning.",
+ "The teacher explained the exercise in a very simple way.",
+ "They are preparing an important presentation for next week.",
+ "I would rather practice speaking than memorize isolated rules.",
+ "Good pronunciation helps listeners understand your message clearly.",
+ "The weather changed suddenly while we were walking home.",
+ "He has already completed the first part of the assignment.",
+ "Could you repeat that sentence a little more slowly?",
+ "Everyone should respect different opinions during a discussion.",
+ "The students were working quietly when the bell rang.",
+ "I might travel next month if I finish my work.",
+ "Reading aloud can improve rhythm, stress, and fluency.",
+ "She used to study at night when she was younger.",
+ "They have never visited a place like this before.",
+ "The doctor asked the patient several important questions.",
+ "We will have finished the project by Friday afternoon.",
+ "You should listen carefully before answering the question.",
+ "My family enjoys spending time together on weekends.",
+ "The meeting had already started when we arrived.",
+ "If I had more time, I would read another chapter.",
+ "He is going to explain the results to the group.",
+ "Please speak naturally and keep a steady reading pace.",
+ "The children were excited because the trip was finally happening.",
+ "I have learned many useful expressions in this course.",
+ "Effective communication depends on clarity, confidence, and practice."
+ ],
+ questions:Array.from({length:30},(_,i)=>`Question ${i+1}: Tell me something about your daily life.`),
+ readings:Array.from({length:30},(_,i)=>({
+   title:`Reading ${i+1}`,
+   text:`Reading ${i+1}. Learning a language is a gradual process that combines attention, repetition, understanding, and meaningful use. Students often begin by recognizing words visually and connecting them with sounds. Later, they learn how those words function in sentences and real situations. A strong reader does not simply pronounce every word; the reader also follows ideas, notices punctuation, controls rhythm, and anticipates meaning. Practice becomes more effective when the learner receives immediate feedback and has a clear goal. In class, short reading activities can help students develop confidence before moving to longer texts. The teacher may first model a sentence, then ask students to read it, identify difficult sounds, and repeat the sentence with better stress and intonation. Over time, learners become faster and more accurate. They also begin to notice patterns in spelling and pronunciation. This awareness makes new vocabulary easier to recognize. Another important skill is comprehension. Readers should be able to explain the main idea, identify supporting details, and connect the text with their own knowledge. Timed reading can be useful when it is used carefully. The purpose is not only speed, but controlled fluency. A student who reads quickly without understanding the text has not completed the task successfully. For that reason, teachers should consider both accuracy and comprehension. Regular practice, useful feedback, and repeated exposure create stronger reading habits. When students see their progress, motivation usually increases. They become more willing to read aloud, participate in class, and use English in unfamiliar situations. This type of practice can support pronunciation, vocabulary, grammar, and speaking at the same time.`
+ }))
+}; 
+let data=JSON.parse(localStorage.getItem("aminaVersantData")||"null")||defaults;
+if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
+if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
+if(!data.openAudio)data.openAudio="";
+while(data.sentenceAudio.length<data.sentences.length)data.sentenceAudio.push("");
+while(data.questionAudio.length<data.questions.length)data.questionAudio.push("");
+let session=null, timerInterval=null, selectedSentence=null, selectedQuestion=null, selectedRepeat=null, selectedBuild=null, dictationCurrent=null;
+let readingState={lastLine:0,total:0,score:null,time:0,durationSeconds:0,speed:1};
+const results={A1:{},B:{},C:{},D:{},E:{},F:null,G:null};
+
+function persist(){localStorage.setItem("aminaVersantData",JSON.stringify(data))}
+function fileToDataURL(file){
+ return new Promise((resolve,reject)=>{
+   if(!file)return resolve("");
+   const r=new FileReader();
+   r.onload=()=>resolve(r.result);
+   r.onerror=reject;
+   r.readAsDataURL(file);
+ });
+}
+function playAudioSource(src){
+ if(!src){alert("No hay audio guardado.");return}
+ try{new Audio(src).play()}catch(e){alert("No se pudo reproducir el audio.")}
+}
+function audioLabel(src){return src? (src.startsWith("data:")?"audio local guardado":src):"sin audio"}
+function exportA1Payload(){
+ return data.sentences.map((s,i)=>({numero:i+1,oracion:s,audio:data.sentenceAudio[i]||""}));
+}
+function showExport(boxId,payload){
+ const box=$(boxId);box.textContent=JSON.stringify(payload,null,2);box.classList.remove("hidden");
+}
+
+function requireSession(){return true}
+function setScore(id,val){$(id).textContent=val==null?"Sin calificar":`${val}%`}
+function updateScores(){
+ const a1=pct(results.A1), b=pct(results.B), c=pct(results.C), d=pct(results.D), e=pct(results.E);
+ let a2=readingState.score;
+ let a = (a1==null&&a2==null)?null:Math.round(([a1,a2].filter(v=>v!=null).reduce((x,y)=>x+y,0))/[a1,a2].filter(v=>v!=null).length);
+ setScore("#scoreA",a); setScore("#scoreB",b); setScore("#scoreC",c); setScore("#scoreD",d); setScore("#scoreE",e); setScore("#scoreF",results.F); setScore("#scoreG",results.G);
+ let scores=[a,b,c,d,e,results.F,results.G].filter(v=>v!=null);
+ $("#overallScore").textContent=scores.length?Math.round(scores.reduce((x,y)=>x+y,0)/scores.length)+"%":"—";
+ $("#completedSections").textContent=`${scores.length}/7`;
+ let a1vals=Object.values(results.A1).filter(v=>v===true||v===false);
+ $("#a1progress").textContent=a1vals.length?`${a1vals.length} evaluadas · ${pct(results.A1)}%`:"0 evaluadas";
+ renderAllStatus();
+}
+function elapsedText(ms){let s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60);s%=60;return [h,m,s].map(x=>String(x).padStart(2,"0")).join(":")}
+function startSession(){
+ const st={name:$("#studentName").value.trim(),id:$("#studentId").value.trim(),gender:$("#studentGender").value,career:$("#studentCareer").value.trim()};
+ if(!st.name||!st.id||!st.gender||!st.career){alert("Complete nombre, carnet, género y carrera.");return}
+ session={student:st,start:new Date(),end:null};
+ $("#sessionStatus").textContent="Evaluación activa"; $("#finishSession").disabled=false; $("#printFullReport").disabled=false; $("#currentUser").textContent=st.name;
+ clearInterval(timerInterval); timerInterval=setInterval(()=>{$("#elapsed").textContent=elapsedText(Date.now()-session.start.getTime())},1000);
+}
+function finishSession(){
+ if(!requireSession())return; session.end=new Date(); clearInterval(timerInterval); $("#sessionStatus").textContent="Finalizada"; createFullReport(); window.print();
+}
+$("#startSession").onclick=startSession; $("#finishSession").onclick=finishSession; $("#printFullReport").onclick=()=>{if(requireSession()){createFullReport();window.print()}};
+
+$("#teacherBtn").onclick=()=>{let p=prompt("Clave docente:");if(p===teacherPassword){document.body.classList.add("teacher");$("#modePill").textContent="Modo docente"}else if(p!==null)alert("Clave incorrecta")};
+$("#exitTeacherBtn").onclick=()=>{document.body.classList.remove("teacher");$("#modePill").textContent="Modo estudiante"};
+
+$$(".section-tabs button").forEach(b=>b.onclick=()=>{$$(".section-tabs button").forEach(x=>x.classList.remove("active"));b.classList.add("active");$$(".app-section").forEach(s=>s.classList.add("hidden"));$("#sec"+b.dataset.sec).classList.remove("hidden")});
+
+function renderSentenceGrid(){
+ let g=$("#sentenceGrid");g.innerHTML="";
+ data.sentences.forEach((s,i)=>{
+   let b=document.createElement("button");
+   b.className="num-btn";
+   if(results.A1[i]===true)b.classList.add("good");
+   if(results.A1[i]===false)b.classList.add("bad");
+   let face=results.A1[i]===true?"😊":results.A1[i]===false?"😢":"";
+   b.innerHTML=`<span>${i+1}</span>${face?`<span class="face">${face}</span>`:""}`;
+   b.title=s;
+   b.onclick=()=>selectSentence(i);
+   g.appendChild(b)
+ })
+}
+function selectSentence(i){
+ selectedSentence=i; $("#sentenceEditor").value=data.sentences[i]; $("#markYes").disabled=false;$("#markNo").disabled=false;
+ if(requireSession()&&requireTeacher())showSentence(data.sentences[i]);
+}
+async function showSentence(text){
+ let ov=$("#sentenceOverlay"), cd=$("#countdown"), sd=$("#sentenceDisplay");ov.classList.remove("hidden");sd.classList.add("hidden");cd.classList.remove("hidden");
+ for(const w of ["ONE","TWO","THREE"]){cd.textContent=w; await new Promise(r=>setTimeout(r,700))}
+ cd.classList.add("hidden");sd.classList.remove("hidden");sd.textContent=text;
+ let sec=Math.max(3,Math.min(20,parseInt($("#sentenceSeconds").value)||6));
+ setTimeout(()=>ov.classList.add("hidden"),sec*1000)
+}
+$("#saveSentence").onclick=()=>{if(selectedSentence==null)return alert("Seleccione una oración.");data.sentences[selectedSentence]=$("#sentenceEditor").value.trim();persist();renderSentenceGrid();renderRepeatGrid();renderBuildGrid();alert("Oración guardada.")};
+$("#resetSentences").onclick=()=>{if(confirm("¿Restaurar las 30 oraciones de ejemplo?")){data.sentences=[...defaults.sentences];persist();renderSentenceGrid();renderRepeatGrid();renderBuildGrid()}};
+$("#markYes").onclick=()=>{if(selectedSentence!=null){results.A1[selectedSentence]=true;renderSentenceGrid();updateScores()}};
+$("#markNo").onclick=()=>{if(selectedSentence!=null){results.A1[selectedSentence]=false;renderSentenceGrid();updateScores()}};
+
+function readingLines(text){
+ let words=text.trim().split(/\s+/), lines=[]; for(let i=0;i<words.length;i+=11) lines.push(words.slice(i,i+11).join(" ")); return lines;
+}
+function renderReadingOptions(){
+ let sels=[$("#readingSelect"),$("#storySelect")];
+ sels.forEach(sel=>{
+   sel.innerHTML="";
+   data.readings.forEach((r,i)=>{
+     let o=document.createElement("option");
+     o.value=i;
+     o.textContent=`${i+1}. ${r.title||("Reading "+(i+1))}`;
+     sel.appendChild(o)
+   })
+ });
+ $("#readingEditor").value=data.readings[0].text;
+ $("#readingTitle").value=data.readings[0].title||"Reading 1";
+ $("#storyText").textContent=data.readings[0].text;
+}
+$("#readingSelect").onchange=e=>{
+ let i=+e.target.value, r=data.readings[i];
+ $("#readingEditor").value=r.text;
+ $("#readingTitle").value=r.title||`Reading ${i+1}`;
+};
+$("#storySelect").onchange=e=>$("#storyText").textContent=data.readings[+e.target.value].text;
+$("#saveReading").onclick=()=>{
+ let i=+$("#readingSelect").value;
+ data.readings[i].title=$("#readingTitle").value.trim()||`Reading ${i+1}`;
+ data.readings[i].text=$("#readingEditor").value.trim();
+ persist();
+ renderReadingOptions();
+ $("#readingSelect").value=i;
+ $("#storySelect").value=i;
+ $("#readingTitle").value=data.readings[i].title;
+ $("#readingEditor").value=data.readings[i].text;
+ $("#storyText").textContent=data.readings[i].text;
+ alert("Lectura y título guardados.");
+};
+$("#launchReading").onclick=()=>{
+ if(!requireSession()||!requireTeacher())return;
+ let text=$("#readingEditor").value.trim();
+ let lines=readingLines(text);
+ let mins=Math.max(1,Math.min(10,parseInt($("#readingMinutes").value)||1));
+ let secs=Math.max(0,Math.min(59,parseInt($("#readingSeconds").value)||0));
+ let totalSecs=mins*60+secs;
+ if(totalSecs>600)totalSecs=600;
+
+ readingState={lastLine:0,total:lines.length,score:0,time:totalSecs/60,durationSeconds:totalSecs,speed:1};
+
+ $("#readingLinesTotal").textContent=lines.length;
+ $("#readingLastLine").textContent=0;
+ $("#readingScore").textContent="0%";
+ $("#readingTime").textContent=formatMMSS(totalSecs);
+
+ let inner=$("#readingInner");
+ inner.innerHTML="";
+ lines.forEach((l,i)=>{
+   let d=document.createElement("div");
+   d.className="read-line unread";
+   d.dataset.index=i;
+   d.innerHTML=`<span class="mark">✖</span><span>${i+1}. ${esc(l)}</span>`;
+   d.onclick=()=>{
+     readingState.lastLine=i+1;
+     readingState.score=Math.round((i+1)/lines.length*100);
+     $("#readingLastLine").textContent=i+1;
+     $("#readingScore").textContent=readingState.score+"%";
+     $$(".read-line").forEach((x,j)=>{
+       let mark=x.querySelector(".mark");
+       if(j<=i){
+         x.classList.remove("unread");
+         x.classList.add("read");
+         if(mark)mark.textContent="✔";
+       }else{
+         x.classList.remove("read");
+         x.classList.add("unread");
+         if(mark)mark.textContent="✖";
+       }
+       x.classList.toggle("selected",j===i);
+     });
+     updateScores();
+   };
+   inner.appendChild(d);
+ });
+ startReadingAnimation();
+};
+let readingAnim={baseDuration:0,distance:0,progress:0,timer:null,raf:null};
+function applyReadingTransform(){
+ let inner=$("#readingInner");
+ inner.style.transform=`translateY(-${readingAnim.distance*readingAnim.progress}px)`;
+}
+function startReadingAnimation(){
+ let ov=$("#readingOverlay"),inner=$("#readingInner"),clock=$("#readingClock");
+ $("#readingOverlayTitle").textContent=$("#readingTitle").value.trim()||data.readings[+$("#readingSelect").value].title||"Lectura";
+ ov.classList.remove("hidden");
+ inner.style.transition="none";
+ inner.style.transform="translateY(0)";
+ inner.style.top="100vh";
+
+ cancelAnimationFrame(readingAnim.raf);
+ clearInterval(readingAnim.timer);
+
+ readingAnim.baseDuration=readingState.durationSeconds||60;
+ readingAnim.progress=0;
+
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   readingAnim.distance=window.innerHeight+inner.scrollHeight+80;
+   let last=performance.now();
+
+   function frame(now){
+     let dt=(now-last)/1000;
+     last=now;
+     readingAnim.progress += (dt*readingState.speed)/readingAnim.baseDuration;
+
+     if(readingAnim.progress>=1){
+       readingAnim.progress=1;
+       applyReadingTransform();
+       ov.classList.add("hidden");
+       clearInterval(readingAnim.timer);
+       updateScores();
+       return;
+     }
+
+     applyReadingTransform();
+     readingAnim.raf=requestAnimationFrame(frame);
+   }
+
+   readingAnim.raf=requestAnimationFrame(frame);
+
+   readingAnim.timer=setInterval(()=>{
+     let remaining=(1-readingAnim.progress)*readingAnim.baseDuration/readingState.speed;
+     clock.textContent=formatMMSS(Math.max(0,Math.ceil(remaining)));
+   },250);
+ }));
+}
+function changeReadingSpeed(multiplier){
+ readingState.speed=Math.max(.5,Math.min(2.5,Math.round(readingState.speed*multiplier*100)/100));
+}
+$("#slowerReading").onclick=()=>changeReadingSpeed(0.8);
+$("#fasterReading").onclick=()=>changeReadingSpeed(1.25);
+function formatMMSS(s){return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(Math.floor(s%60)).padStart(2,"0")}`}
+$("#closeReading").onclick=()=>{
+ let ov=$("#readingOverlay");
+ cancelAnimationFrame(readingAnim.raf);
+ clearInterval(readingAnim.timer);
+ ov.classList.add("hidden");
+ updateScores();
+};
+$("#printReading").onclick=()=>{if(!requireSession())return;createFullReport();window.print()};
+
+function renderRepeatGrid(){
+ let g=$("#repeatGrid");g.innerHTML="";
+ data.sentences.forEach((s,i)=>{
+   let b=document.createElement("button");
+   b.className="num-btn";
+   if(results.B[i]===true)b.classList.add("good");
+   if(results.B[i]===false)b.classList.add("bad");
+   b.innerHTML=`${i+1}${data.sentenceAudio[i]?'<span class="face">🔊</span>':""}`;
+   b.onclick=()=>{
+     selectedRepeat=i;
+     $("#repeatPrompt").textContent=s;
+     $("#repeatAudioUrl").value=(data.sentenceAudio[i]||"").startsWith("http")?data.sentenceAudio[i]:"";
+   };
+   g.appendChild(b)
+ })
+}
+$("#repeatYes").onclick=()=>{if(selectedRepeat==null)return;results.B[selectedRepeat]=true;renderRepeatGrid();updateScores()};
+$("#repeatNo").onclick=()=>{if(selectedRepeat==null)return;results.B[selectedRepeat]=false;renderRepeatGrid();updateScores()};
+$("#saveRepeatAudio").onclick=async()=>{
+ if(selectedRepeat==null)return alert("Seleccione una oración.");
+ let file=$("#repeatAudioFile").files[0];
+ let url=$("#repeatAudioUrl").value.trim();
+ let src=file?await fileToDataURL(file):url;
+ if(!src)return alert("Seleccione un archivo de audio o escriba una URL.");
+ data.sentenceAudio[selectedRepeat]=src;
+ persist();renderRepeatGrid();alert("Audio guardado en la oración "+(selectedRepeat+1)+".");
+};
+$("#playRepeatAudio").onclick=()=>{if(selectedRepeat==null)return alert("Seleccione una oración.");playAudioSource(data.sentenceAudio[selectedRepeat])};
+$("#exportA1Audio").onclick=()=>showExport("#exportA1Box",exportA1Payload());
+
+
+function renderQuestionGrid(){
+ let g=$("#questionGrid");g.innerHTML="";
+ data.questions.forEach((q,i)=>{
+   let b=document.createElement("button");
+   b.className="num-btn";
+   if(results.C[i]===true)b.classList.add("good");
+   if(results.C[i]===false)b.classList.add("bad");
+   b.innerHTML=`${i+1}${data.questionAudio[i]?'<span class="face">🔊</span>':""}`;
+   b.onclick=()=>{
+     selectedQuestion=i;
+     $("#questionEditor").value=q;
+     $("#questionDisplay").textContent=q;
+     $("#questionAudioUrl").value=(data.questionAudio[i]||"").startsWith("http")?data.questionAudio[i]:"";
+   };
+   g.appendChild(b)
+ })
+}
+$("#saveQuestion").onclick=async()=>{
+ if(selectedQuestion==null)return alert("Seleccione una pregunta.");
+ data.questions[selectedQuestion]=$("#questionEditor").value.trim();
+ let file=$("#questionAudioFile").files[0];
+ let url=$("#questionAudioUrl").value.trim();
+ if(file)data.questionAudio[selectedQuestion]=await fileToDataURL(file);
+ else if(url)data.questionAudio[selectedQuestion]=url;
+ persist();$("#questionDisplay").textContent=data.questions[selectedQuestion];renderQuestionGrid();alert("Pregunta guardada.");
+};
+$("#playQuestionAudio").onclick=()=>{if(selectedQuestion==null)return alert("Seleccione una pregunta.");playAudioSource(data.questionAudio[selectedQuestion])};
+$("#addQuestion").onclick=()=>{
+ data.questions.push(`Question ${data.questions.length+1}:`);
+ data.questionAudio.push("");
+ persist();renderQuestionGrid();
+ selectedQuestion=data.questions.length-1;
+ $("#questionEditor").value=data.questions[selectedQuestion];
+ $("#questionDisplay").textContent=data.questions[selectedQuestion];
+};
+$("#removeQuestion").onclick=()=>{
+ if(selectedQuestion==null)return alert("Seleccione una pregunta.");
+ if(!confirm("¿Quitar esta pregunta?"))return;
+ data.questions.splice(selectedQuestion,1);
+ data.questionAudio.splice(selectedQuestion,1);
+ delete results.C[selectedQuestion];
+ selectedQuestion=null;persist();renderQuestionGrid();$("#questionEditor").value="";$("#questionDisplay").textContent="Seleccione una pregunta";updateScores();
+};
+$("#questionYes").onclick=()=>{if(selectedQuestion==null)return;results.C[selectedQuestion]=true;renderQuestionGrid();updateScores()};
+$("#questionNo").onclick=()=>{if(selectedQuestion==null)return;results.C[selectedQuestion]=false;renderQuestionGrid();updateScores()};
+
+let buildOrder=[];
+function partsOf(s){let w=s.split(/\s+/),n=Math.ceil(w.length/3);return [w.slice(0,n).join(" "),w.slice(n,n*2).join(" "),w.slice(n*2).join(" ")].filter(Boolean)}
+function renderBuildGrid(){let g=$("#buildGrid");g.innerHTML="";data.sentences.forEach((s,i)=>{let b=document.createElement("button");b.className="num-btn";if(results.D[i]===true)b.classList.add("good");if(results.D[i]===false)b.classList.add("bad");b.textContent=i+1;b.onclick=()=>selectBuild(i);g.appendChild(b)})}
+function selectBuild(i){selectedBuild=i;buildOrder=[];let p=partsOf(data.sentences[i]).sort(()=>Math.random()-.5);let c=$("#buildParts");c.innerHTML="";p.forEach(x=>{let b=document.createElement("button");b.className="btn ghost";b.textContent=x;b.onclick=()=>{buildOrder.push(x);b.disabled=true;$("#buildAnswer").textContent=buildOrder.join(" ")}});$("#buildAnswer").textContent="Seleccione las partes en el orden correcto."}
+$("#buildCorrect").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=true;renderBuildGrid();updateScores()};
+$("#buildWrong").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=false;renderBuildGrid();updateScores()};
+$("#buildReset").onclick=()=>{if(selectedBuild!=null)selectBuild(selectedBuild)};
+$("#exportDAudio").onclick=()=>showExport("#exportDBox",exportA1Payload().map(x=>({...x,partes:partsOf(x.oracion)})));
+
+$("#nextDictation").onclick=()=>{dictationCurrent=Math.floor(Math.random()*30);$("#dictationNumber").textContent=`Oración ${dictationCurrent+1}`;$("#dictationTeacherText").textContent=data.sentences[dictationCurrent];$("#dictationInput").value=""};
+$("#dictationYes").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=true;updateScores()};
+$("#dictationNo").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=false;updateScores()};
+$("#exportEAudio").onclick=()=>showExport("#exportEBox",exportA1Payload());
+
+$("#saveStoryScore").onclick=()=>{results.F=Math.max(0,Math.min(100,+$("#storyScoreInput").value||0));updateScores()};
+$("#exportReadings").onclick=()=>showExport("#exportReadingsBox",data.readings.map((r,i)=>({numero:i+1,titulo:r.title,texto:r.text})));
+$("#showOpenQuestion").onclick=async()=>{
+ $("#openDisplay").textContent=$("#openQuestion").value.trim()||"Pregunta abierta";
+ let file=$("#openAudioFile").files[0],url=$("#openAudioUrl").value.trim();
+ if(file)data.openAudio=await fileToDataURL(file);
+ else if(url)data.openAudio=url;
+ persist();
+};
+$("#playOpenAudio").onclick=()=>playAudioSource(data.openAudio);
+$("#saveOpenScore").onclick=()=>{results.G=Math.max(0,Math.min(100,+$("#openScoreInput").value||0));updateScores()};
+
+function renderAllStatus(){
+ renderSentenceGrid();renderRepeatGrid();renderQuestionGrid();renderBuildGrid();
+}
+function sectionScores(){
+ const a1=pct(results.A1),a2=readingState.score;
+ const A=(a1==null&&a2==null)?null:Math.round(([a1,a2].filter(v=>v!=null).reduce((x,y)=>x+y,0))/[a1,a2].filter(v=>v!=null).length);
+ return {A,B:pct(results.B),C:pct(results.C),D:pct(results.D),E:pct(results.E),F:results.F,G:results.G}
+}
+function createFullReport(){
+ let s=sectionScores(), end=session.end||new Date(), overall=Object.values(s).filter(v=>v!=null), avg=overall.length?Math.round(overall.reduce((a,b)=>a+b,0)/overall.length):0;
+ let a1details=data.sentences.map((x,i)=>{
+   let state=results.A1[i]===true?"😊 CORRECTA":results.A1[i]===false?"😢 INCORRECTA":"— NO EVALUADA";
+   let aud=data.sentenceAudio[i]?audioLabel(data.sentenceAudio[i]):"sin audio";
+   return `<tr><td>${i+1}</td><td>${esc(x)}</td><td><b>${state}</b></td><td>${esc(aud)}</td></tr>`;
+ }).join("");
+
+ let ri=+$("#readingSelect").value, reading=data.readings[ri], rlines=readingLines(reading.text);
+ let last=readingState.lastLine||0;
+ let readingRows=rlines.map((line,i)=>{
+   let n=i+1,reached=last===n;
+   let status=n<last?"✅ Leída":reached?"✅ ÚLTIMA LÍNEA LEÍDA":"❌ No leída";
+   let style=reached?' style="font-weight:700;background:#ececec;border:2px solid #111"':"";
+   return `<tr${style}><td>${n}</td><td>${esc(line)}</td><td>${status}</td></tr>`;
+ }).join("");
+ let lastText=last>0&&rlines[last-1]?esc(rlines[last-1]):"No se registró una línea final.";
+
+ $("#printArea").innerHTML=`<div class="report">
+ <h1>AMINA‑VERSANT · SECCIÓN A COMPLETA</h1>
+ <p><b>WESH · Lic. Wascar Enrique Sequeira Hurtado</b></p>
+ <p><b>Estudiante:</b> ${esc(session.student.name)} &nbsp; <b>Carnet:</b> ${esc(session.student.id)}<br>
+ <b>Género:</b> ${esc(session.student.gender)} &nbsp; <b>Carrera:</b> ${esc(session.student.career)}<br>
+ <b>Inicio:</b> ${session.start.toLocaleString()} &nbsp; <b>Fin/impresión:</b> ${end.toLocaleString()}</p>
+
+ <h2>A · Ejercicio 1 · READ ALOUD</h2>
+ <p><b>Puntaje:</b> ${pct(results.A1)==null?"—":pct(results.A1)+"%"} · <b>Evaluadas:</b> ${Object.values(results.A1).filter(v=>v===true||v===false).length}</p>
+ <table><tr><th>N.º</th><th>Oración</th><th>Resultado</th><th>Audio docente</th></tr>${a1details}</table>
+
+ <h2>A · Ejercicio 2 · ${esc(reading.title||"Lectura")}</h2>
+ <p><b>Límite:</b> ${readingState.durationSeconds?formatMMSS(readingState.durationSeconds):formatMMSS((parseInt($("#readingMinutes").value)||1)*60+(parseInt($("#readingSeconds").value)||0))}<br>
+ <b>Última línea alcanzada:</b> N.º ${last||"—"}<br>
+ <b>Texto exacto:</b> ${lastText}<br>
+ <b>Puntaje:</b> ${readingState.score==null?"—":readingState.score+"%"}</p>
+ <table><tr><th>N.º</th><th>Lectura completa</th><th>Estado</th></tr>${readingRows}</table>
+ </div>`;
+ $("#printArea").classList.remove("hidden");
+}
+function createReadingReport(){
+ let i=+$("#readingSelect").value,r=data.readings[i],lines=readingLines(r.text),last=readingState.lastLine||0;
+ let rows=lines.map((l,j)=>{
+   let n=j+1, reached=n===last;
+   let status=n<last?"✅ Leída":reached?"✅ ÚLTIMA LÍNEA LEÍDA":"❌ No leída";
+   let style=reached?' style="font-weight:700;background:#ececec;border:2px solid #111"':"";
+   return `<tr${style}><td>${n}</td><td>${esc(l)}</td><td>${status}</td></tr>`;
+ }).join("");
+ let exact=last>0&&lines[last-1]?esc(lines[last-1]):"No se registró una línea final.";
+ $("#printArea").innerHTML=`<div class="report"><h1>AMINA‑VERSANT · Lectura</h1>
+ <p><b>Estudiante:</b> ${esc(session.student.name)} · <b>Carnet:</b> ${esc(session.student.id)} · <b>Carrera:</b> ${esc(session.student.career)}</p>
+ <p><b>Fecha y hora:</b> ${new Date().toLocaleString()} · <b>Límite:</b> ${readingState.time||$("#readingMinutes").value} min<br>
+ <b>Última línea/oración alcanzada:</b> N.º ${last||"—"} · <b>Puntaje:</b> ${readingState.score==null?"—":readingState.score+"%"}<br>
+ <b>Texto exacto:</b> ${exact}</p>
+ <h2>${esc(r.title)}</h2>
+ <table><tr><th>N.º</th><th>Texto</th><th>Estado</th></tr>${rows}</table></div>`;
+ $("#printArea").classList.remove("hidden")
+}
+function fmt(v){return v===true?"Correcta":v===false?"Incorrecta":"—"}
+function esc(t){return String(t??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+renderReadingOptions();renderAllStatus();updateScores();
+
+const assignmentDefaults={A1:true,A2:true,B:true,C:true,D:true,E:true,F:true,G:true};
+function loadAssignments(){
+  const a=JSON.parse(localStorage.getItem("aminaVersantAssignments")||"null")||assignmentDefaults;
+  document.querySelectorAll(".assignToggle").forEach(cb=>cb.checked=!!a[cb.dataset.key]);
+  return a;
+}
+function saveAssignments(){
+  const a={};
+  document.querySelectorAll(".assignToggle").forEach(cb=>a[cb.dataset.key]=cb.checked);
+  localStorage.setItem("aminaVersantAssignments",JSON.stringify(a));
+  const st=document.querySelector("#assignmentStatus");
+  if(st)st.textContent="Guardado";
+  return a;
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  loadAssignments();
+  document.querySelector("#saveAssignments")?.addEventListener("click",()=>{saveAssignments();alert("Asignación guardada.");});
+  document.querySelector("#enableAllAssignments")?.addEventListener("click",()=>{
+    document.querySelectorAll(".assignToggle").forEach(cb=>cb.checked=true);
+    saveAssignments();
+  });
+  document.querySelector("#disableAllAssignments")?.addEventListener("click",()=>{
+    document.querySelectorAll(".assignToggle").forEach(cb=>cb.checked=false);
+    saveAssignments();
+  });
+  document.querySelector("#copyAssignmentLink")?.addEventListener("click",async()=>{
+    const a=saveAssignments();
+    const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(a))));
+    const base=location.origin+location.pathname.replace(/docente\/index\.html.*$/,"estudiante/index.html");
+    const url=base+"?assign="+encodeURIComponent(encoded);
+    try{await navigator.clipboard.writeText(url);alert("Enlace de estudiante copiado con la asignación habilitada.");}
+    catch(e){prompt("Copia este enlace:",url);}
+  });
+});
+
+
+function randomSampleUnique(arr,n){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy.slice(0,n);
+}
+function generateAssignmentsForStudents(){
+  const studentCount=Math.max(1,Math.min(40,parseInt(document.querySelector("#studentCountAssign")?.value)||40));
+  const perStudent=Math.max(1,parseInt(document.querySelector("#sentencesPerStudent")?.value)||5);
+  let start=Math.max(1,parseInt(document.querySelector("#sentenceRangeStart")?.value)||1);
+  let end=Math.min(data.sentences.length,parseInt(document.querySelector("#sentenceRangeEnd")?.value)||data.sentences.length);
+  if(end<start)[start,end]=[end,start];
+
+  const pool=[];
+  for(let i=start-1;i<end;i++)pool.push(i);
+  const actualPer=Math.min(perStudent,pool.length);
+
+  const assignments={};
+  for(let n=1;n<=studentCount;n++){
+    assignments[String(n)]=randomSampleUnique(pool,actualPer).sort((a,b)=>a-b);
+  }
+  localStorage.setItem("aminaStudentSentenceAssignments",JSON.stringify(assignments));
+  return assignments;
+}
+function renderStudentAssignments(){
+  const assignments=JSON.parse(localStorage.getItem("aminaStudentSentenceAssignments")||"{}");
+  const box=document.querySelector("#studentAssignmentsBox");
+  if(!box)return;
+  const lines=Object.entries(assignments).map(([student,idxs])=>{
+    const nums=idxs.map(i=>i+1).join(", ");
+    return `Estudiante ${student}: ${nums}`;
+  });
+  box.textContent=lines.length?lines.join("\n"):"No hay asignaciones generadas.";
+  box.classList.remove("hidden");
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  document.querySelector("#generateStudentAssignments")?.addEventListener("click",()=>{
+    const a=generateAssignmentsForStudents();
+    renderStudentAssignments();
+    alert(`Asignación generada para ${Object.keys(a).length} estudiantes.`);
+  });
+  document.querySelector("#showStudentAssignments")?.addEventListener("click",renderStudentAssignments);
+  document.querySelector("#clearStudentAssignments")?.addEventListener("click",()=>{
+    localStorage.removeItem("aminaStudentSentenceAssignments");
+    const box=document.querySelector("#studentAssignmentsBox");
+    if(box){box.textContent="Asignaciones borradas.";box.classList.remove("hidden");}
+  });
+});
+
+</script>
+</body>
+</html>
