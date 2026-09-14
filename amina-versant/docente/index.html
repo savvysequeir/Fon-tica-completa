@@ -98,9 +98,17 @@ footer{max-width:1200px;margin:22px auto 40px;padding:0 20px;color:var(--muted);
 
 #teacherStudentData{display:none!important}
 #startBtn{display:none!important}
+
+/* Página exclusivamente docente */
+#teacherStudentData,
+#studentName,#studentId,#studentGender,#studentCareer,#startBtn,
+#teacherBtn,#exitTeacherBtn{display:none!important}
+body.teacher .teacher-only{display:block}
+body.teacher .teacher-inline{display:inline-flex}
+
 </style>
 </head>
-<body>
+<body class="teacher">
 <header>
  <div class="topbar">
   <div class="brand">
@@ -108,7 +116,7 @@ footer{max-width:1200px;margin:22px auto 40px;padding:0 20px;color:var(--muted);
    <div><h1>AMINA‑VERSANT</h1><div class="sub">Evaluación oral y lingüística · WESH</div></div>
   </div>
   <div class="toolbar">
-   <span class="pill" id="modePill">Modo estudiante</span>
+   <span class="pill" id="modePill">Modo docente</span>
    <button class="btn ghost" id="teacherBtn">Docente</button>
    <button class="btn ghost teacher-only inline" id="exitTeacherBtn">Salir docente</button>
   </div>
@@ -165,6 +173,8 @@ footer{max-width:1200px;margin:22px auto 40px;padding:0 20px;color:var(--muted);
   </div>
   <div class="card">
    <h3>Ejercicio 2 · Lectura</h3>
+   <p class="sub">Toca un número para abrir esa lectura directamente en la pantalla negra.</p>
+   <div class="num-grid" id="readingGrid" style="margin-bottom:14px"></div>
    <div class="teacher-only">
     <div class="grid grid-2">
      <div><label>Lectura</label><select id="readingSelect"></select></div>
@@ -310,7 +320,7 @@ footer{max-width:1200px;margin:22px auto 40px;padding:0 20px;color:var(--muted);
   <div class="section-title">
     <div>
       <h2>Asignaciones para estudiantes</h2>
-      <p>Activa únicamente las partes que quieres que aparezcan en la página del estudiante.</p>
+      <p>Activa las secciones que quieres habilitar para estudiantes. Aquí conservas todas las herramientas completas de edición, evaluación y configuración.</p>
     </div>
     <span class="pill" id="assignmentStatus">Configuración local</span>
   </div>
@@ -472,6 +482,7 @@ function showExport(boxId,payload){
 }
 
 function requireSession(){return true}
+function requireTeacher(){return true}
 function setScore(id,val){$(id).textContent=val==null?"Sin calificar":`${val}%`}
 function updateScores(){
  const a1=pct(results.A1), b=pct(results.B), c=pct(results.C), d=pct(results.D), e=pct(results.E);
@@ -498,8 +509,8 @@ function finishSession(){
 }
 $("#startSession").onclick=startSession; $("#finishSession").onclick=finishSession; $("#printFullReport").onclick=()=>{if(requireSession()){createFullReport();window.print()}};
 
-$("#teacherBtn").onclick=()=>{let p=prompt("Clave docente:");if(p===teacherPassword){document.body.classList.add("teacher");$("#modePill").textContent="Modo docente"}else if(p!==null)alert("Clave incorrecta")};
-$("#exitTeacherBtn").onclick=()=>{document.body.classList.remove("teacher");$("#modePill").textContent="Modo estudiante"};
+$("#teacherBtn").onclick=()=>{};
+$("#exitTeacherBtn").onclick=()=>{};
 
 $$(".section-tabs button").forEach(b=>b.onclick=()=>{$$(".section-tabs button").forEach(x=>x.classList.remove("active"));b.classList.add("active");$$(".app-section").forEach(s=>s.classList.add("hidden"));$("#sec"+b.dataset.sec).classList.remove("hidden")});
 
@@ -536,6 +547,81 @@ $("#markNo").onclick=()=>{if(selectedSentence!=null){results.A1[selectedSentence
 function readingLines(text){
  let words=text.trim().split(/\s+/), lines=[]; for(let i=0;i<words.length;i+=11) lines.push(words.slice(i,i+11).join(" ")); return lines;
 }
+
+function renderReadingGrid(){
+  const g=$("#readingGrid");
+  if(!g)return;
+  g.innerHTML="";
+  data.readings.forEach((r,i)=>{
+    const b=document.createElement("button");
+    b.className="num-btn";
+    b.innerHTML=`<span>${i+1}</span>`;
+    b.title=r.title||`Reading ${i+1}`;
+    b.onclick=()=>{
+      $("#readingSelect").value=i;
+      $("#readingTitle").value=r.title||`Reading ${i+1}`;
+      $("#readingEditor").value=r.text||"";
+      launchReadingByIndex(i);
+    };
+    g.appendChild(b);
+  });
+}
+function launchReadingByIndex(i){
+  const r=data.readings[i];
+  if(!r)return;
+  $("#readingSelect").value=i;
+  $("#readingTitle").value=r.title||`Reading ${i+1}`;
+  $("#readingEditor").value=r.text||"";
+  startSelectedReading();
+}
+function startSelectedReading(){
+  let text=$("#readingEditor").value.trim();
+  if(!text)return alert("Esta lectura está vacía.");
+  let lines=readingLines(text);
+  let mins=Math.max(1,Math.min(10,parseInt($("#readingMinutes").value)||1));
+  let secs=Math.max(0,Math.min(59,parseInt($("#readingSeconds").value)||0));
+  let totalSecs=mins*60+secs;
+  if(totalSecs>600)totalSecs=600;
+
+  readingState={lastLine:0,total:lines.length,score:0,time:totalSecs/60,durationSeconds:totalSecs,speed:1};
+
+  $("#readingLinesTotal").textContent=lines.length;
+  $("#readingLastLine").textContent=0;
+  $("#readingScore").textContent="0%";
+  $("#readingTime").textContent=formatMMSS(totalSecs);
+
+  let inner=$("#readingInner");
+  inner.innerHTML="";
+  lines.forEach((l,i)=>{
+    let d=document.createElement("div");
+    d.className="read-line unread";
+    d.dataset.index=i;
+    d.innerHTML=`<span class="mark">✖</span><span>${i+1}. ${esc(l)}</span>`;
+    d.onclick=()=>{
+      readingState.lastLine=i+1;
+      readingState.score=Math.round((i+1)/lines.length*100);
+      $("#readingLastLine").textContent=i+1;
+      $("#readingScore").textContent=readingState.score+"%";
+      $$(".read-line").forEach((x,j)=>{
+        let mark=x.querySelector(".mark");
+        if(j<=i){
+          x.classList.remove("unread");
+          x.classList.add("read");
+          if(mark)mark.textContent="✔";
+        }else{
+          x.classList.remove("read");
+          x.classList.add("unread");
+          if(mark)mark.textContent="✖";
+        }
+        x.classList.toggle("selected",j===i);
+      });
+      updateScores();
+    };
+    inner.appendChild(d);
+  });
+  startReadingAnimation();
+}
+
 function renderReadingOptions(){
  let sels=[$("#readingSelect"),$("#storySelect")];
  sels.forEach(sel=>{
@@ -568,55 +654,10 @@ $("#saveReading").onclick=()=>{
  $("#readingTitle").value=data.readings[i].title;
  $("#readingEditor").value=data.readings[i].text;
  $("#storyText").textContent=data.readings[i].text;
+ renderReadingGrid();
  alert("Lectura y título guardados.");
 };
-$("#launchReading").onclick=()=>{
- if(!requireSession()||!requireTeacher())return;
- let text=$("#readingEditor").value.trim();
- let lines=readingLines(text);
- let mins=Math.max(1,Math.min(10,parseInt($("#readingMinutes").value)||1));
- let secs=Math.max(0,Math.min(59,parseInt($("#readingSeconds").value)||0));
- let totalSecs=mins*60+secs;
- if(totalSecs>600)totalSecs=600;
-
- readingState={lastLine:0,total:lines.length,score:0,time:totalSecs/60,durationSeconds:totalSecs,speed:1};
-
- $("#readingLinesTotal").textContent=lines.length;
- $("#readingLastLine").textContent=0;
- $("#readingScore").textContent="0%";
- $("#readingTime").textContent=formatMMSS(totalSecs);
-
- let inner=$("#readingInner");
- inner.innerHTML="";
- lines.forEach((l,i)=>{
-   let d=document.createElement("div");
-   d.className="read-line unread";
-   d.dataset.index=i;
-   d.innerHTML=`<span class="mark">✖</span><span>${i+1}. ${esc(l)}</span>`;
-   d.onclick=()=>{
-     readingState.lastLine=i+1;
-     readingState.score=Math.round((i+1)/lines.length*100);
-     $("#readingLastLine").textContent=i+1;
-     $("#readingScore").textContent=readingState.score+"%";
-     $$(".read-line").forEach((x,j)=>{
-       let mark=x.querySelector(".mark");
-       if(j<=i){
-         x.classList.remove("unread");
-         x.classList.add("read");
-         if(mark)mark.textContent="✔";
-       }else{
-         x.classList.remove("read");
-         x.classList.add("unread");
-         if(mark)mark.textContent="✖";
-       }
-       x.classList.toggle("selected",j===i);
-     });
-     updateScores();
-   };
-   inner.appendChild(d);
- });
- startReadingAnimation();
-};
+$("#launchReading").onclick=()=>startSelectedReading();
 let readingAnim={baseDuration:0,distance:0,progress:0,timer:null,raf:null};
 function applyReadingTransform(){
  let inner=$("#readingInner");
@@ -850,7 +891,8 @@ function createReadingReport(){
 }
 function fmt(v){return v===true?"Correcta":v===false?"Incorrecta":"—"}
 function esc(t){return String(t??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-renderReadingOptions();renderAllStatus();updateScores();
+renderReadingOptions();
+renderReadingGrid();renderAllStatus();updateScores();
 
 const assignmentDefaults={A1:true,A2:true,B:true,C:true,D:true,E:true,F:true,G:true};
 function loadAssignments(){
