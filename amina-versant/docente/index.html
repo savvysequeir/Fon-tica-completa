@@ -152,6 +152,13 @@ body{scroll-behavior:smooth}
   .btn{width:100%;justify-content:center}
 }
 
+
+.active-dictation{
+  outline:3px solid #58a6ff!important;
+  background:linear-gradient(135deg,#338cff,#615cff)!important;
+  color:white!important;
+  box-shadow:0 0 0 4px rgba(88,166,255,.16),0 10px 28px rgba(0,0,0,.28)!important;
+}
 </style>
 </head>
 <body class="teacher">
@@ -309,7 +316,7 @@ body{scroll-behavior:smooth}
 </section>
 
 <section id="secD" class="card app-section hidden">
- <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>La oración se presenta desordenada. El audio se carga específicamente para esta sección.</p></div><span class="pill" id="scoreD">Sin calificar</span></div>
+ <div class="section-title"><div><h2>D · SENTENCE BUILDS</h2><p>Cada oración de A se divide en tres partes para reconstruirla. El audio de esta sección se carga por separado.</p></div><span class="pill" id="scoreD">Sin calificar</span></div>
  <div class="grid grid-2">
   <div>
    <div class="num-grid" id="buildGrid"></div>
@@ -318,14 +325,25 @@ body{scroll-behavior:smooth}
   <div class="card">
    <div id="buildParts" class="grid grid-3"></div>
    <div id="buildAnswer" class="notice" style="margin-top:12px">Seleccione las partes en el orden correcto.</div>
-   <div class="grid grid-2 teacher-only" style="margin-top:12px">
-    <div><label>Audio local de Sentence Builds</label><input id="buildAudioFile" type="file" accept="audio/*"></div>
-    <div><label>URL directa del audio</label><input id="buildAudioUrl" placeholder="https://.../audio.mp3"></div>
+
+   <div class="grid grid-2 teacher-only" style="margin-top:14px">
+    <div>
+     <label>Subir audio</label>
+     <input id="buildAudioFile" type="file" accept="audio/*">
+    </div>
+    <div>
+     <label>URL directa del audio</label>
+     <input id="buildAudioUrl" placeholder="https://.../audio.mp3">
+    </div>
    </div>
+
    <div class="toolbar teacher-only" style="margin-top:12px">
     <button class="btn primary" id="saveBuildAudio">Guardar audio</button>
-    <button class="btn ghost" id="playBuildAudio">▶ Escuchar</button>
+    <button class="btn ghost" id="playBuildAudio">▶ Escuchar audio</button>
     <button class="btn bad" id="removeBuildAudio">Eliminar audio</button>
+   </div>
+
+   <div class="toolbar teacher-only" style="margin-top:12px">
     <button class="btn good" id="buildCorrect">Correcta</button>
     <button class="btn bad" id="buildWrong">Incorrecta</button>
     <button class="btn ghost" id="buildReset">Reiniciar</button>
@@ -334,62 +352,102 @@ body{scroll-behavior:smooth}
  </div>
 </section>
 
-<section id="secE" class="card app-section hidden">
- <div class="section-title"><div><h2>E · DICTATION</h2><p>Los audios vienen directamente de A · Ejercicio 1. Toca el número y se reproducen al instante.</p></div><span class="pill" id="scoreE">Sin calificar</span></div>
+<section id="secE"<section id="secE" class="card app-section hidden">
+ <div class="section-title"><div><h2>E · DICTATION</h2><p>Los audios provienen de A · Ejercicio 1. Toca un número para escucharlo o usa una oración aleatoria.</p></div><span class="pill" id="scoreE">Sin calificar</span></div>
  <div class="grid grid-2">
   <div class="card">
+   <div class="toolbar teacher-only" style="margin-bottom:12px">
+    <button class="btn primary" id="nextDictation">Nueva oración aleatoria</button>
+    <span class="pill" id="dictationNumber">—</span>
+   </div>
    <div class="num-grid" id="dictationGrid"></div>
-   <div class="toolbar" style="margin-top:12px"><span class="pill" id="dictationNumber">—</span></div>
-   <div class="teacher-only notice" id="dictationTeacherText" style="margin-top:12px">Toca un número para seleccionar y escuchar.</div>
+   <div class="teacher-only notice" id="dictationTeacherText" style="margin-top:12px">Toca un número o selecciona una oración aleatoria.</div>
   </div>
-  <div><label>Escriba lo que escucha</label><textarea id="dictationInput"></textarea><div class="toolbar teacher-only"><button class="btn good" id="dictationYes">Correcta</button><button class="btn bad" id="dictationNo">Incorrecta</button></div></div>
+  <div>
+   <label>Escriba lo que escucha</label>
+   <textarea id="dictationInput"></textarea>
+   <div class="toolbar teacher-only">
+    <button class="btn good" id="dictationYes">Correcta</button>
+    <button class="btn bad" id="dictationNo">Incorrecta</button>
+   </div>
+  </div>
  </div>
 </section>
 
-<section id="secF" class="card app-section hidden">
- <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Carga un audio para cada lectura. El estudiante recibirá el audio, pero no verá el texto.</p></div><span class="pill" id="scoreF">Sin calificar</span></div>
+<section id="secF"<section id="secF" class="card app-section hidden">
+ <div class="section-title"><div><h2>F · STORY RETELLING</h2><p>Selecciona una lectura y carga el audio correspondiente. El texto queda visible únicamente para el docente.</p></div><span class="pill" id="scoreF">Sin calificar</span></div>
  <div class="grid grid-2">
-  <div><label>Lectura</label><select id="storySelect"></select>
-   <div class="grid grid-2 teacher-only" style="margin-top:10px">
-    <div><label>Audio local de la lectura</label><input id="storyAudioFile" type="file" accept="audio/*"></div>
-    <div><label>URL directa del audio</label><input id="storyAudioUrl" placeholder="https://.../audio.mp3"></div>
+  <div>
+   <label>Lectura</label>
+   <select id="storySelect"></select>
+
+   <div class="grid grid-2 teacher-only" style="margin-top:12px">
+    <div>
+     <label>Subir audio de la lectura</label>
+     <input id="storyAudioFile" type="file" accept="audio/*">
+    </div>
+    <div>
+     <label>URL directa del audio</label>
+     <input id="storyAudioUrl" placeholder="https://.../audio.mp3">
+    </div>
    </div>
-   <div class="toolbar teacher-only" style="margin-top:8px">
+
+   <div class="toolbar teacher-only" style="margin-top:10px">
     <button class="btn primary" id="saveStoryAudio">Guardar audio</button>
-    <button class="btn ghost" id="playStoryAudio">▶ Escuchar</button>
-    <button class="btn bad" id="removeStoryAudio">Eliminar</button>
-    <button class="btn good" id="downloadStoryAudioPackage">Exportar audio para estudiante</button>
+    <button class="btn ghost" id="playStoryAudio">▶ Escuchar audio</button>
+    <button class="btn bad" id="removeStoryAudio">Eliminar audio</button>
    </div>
-   <div id="storyAudioStatus" class="notice" style="margin-top:8px">Sin audio.</div>
-   <div class="card" id="storyText" style="margin-top:10px;max-height:340px;overflow:auto"></div></div>
+
+   <div id="storyAudioStatus" class="notice" style="margin-top:10px">Sin audio guardado.</div>
+   <div class="card" id="storyText" style="margin-top:10px;max-height:340px;overflow:auto"></div>
+  </div>
+
   <div class="teacher-only">
-   <label>Criterio del docente · puntos clave logrados (%)</label><input id="storyScoreInput" type="number" min="0" max="100" value="100">
-   <label style="margin-top:10px">Observaciones</label><textarea id="storyNotes"></textarea>
+   <label>Criterio del docente · puntos clave logrados (%)</label>
+   <input id="storyScoreInput" type="number" min="0" max="100" value="100">
+   <label style="margin-top:10px">Observaciones</label>
+   <textarea id="storyNotes"></textarea>
    <button class="btn primary" id="saveStoryScore">Guardar calificación</button>
   </div>
  </div>
 </section>
 
-<section id="secG" class="card app-section hidden">
- <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>La pregunta escrita queda solo como referencia docente. El estudiante escuchará únicamente el audio.</p></div><span class="pill" id="scoreG">Sin calificar</span></div>
- <div class="grid grid-2">
-  <div class="teacher-only"><label>Pregunta del docente · no visible para el estudiante</label><textarea id="openQuestion" placeholder="Escribe la pregunta como referencia"></textarea>
-  <div class="grid grid-2">
-   <div><label>Audio local</label><input id="openAudioFile" type="file" accept="audio/*"></div>
-   <div><label>URL directa del audio</label><input id="openAudioUrl" placeholder="https://.../audio.mp3"></div>
+<section id="secG"<section id="secG" class="card app-section hidden">
+ <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>La pregunta escrita queda solo como referencia del docente. No se muestra en pantalla como ejercicio.</p></div><span class="pill" id="scoreG">Sin calificar</span></div>
+
+ <div class="teacher-only">
+  <label>Pregunta del docente · solo referencia</label>
+  <textarea id="openQuestion" placeholder="Escriba aquí la pregunta"></textarea>
+
+  <div class="grid grid-2" style="margin-top:12px">
+   <div>
+    <label>Subir audio</label>
+    <input id="openAudioFile" type="file" accept="audio/*">
+   </div>
+   <div>
+    <label>URL directa del audio</label>
+    <input id="openAudioUrl" placeholder="https://.../audio.mp3">
+   </div>
   </div>
-  <div class="toolbar" style="margin-top:10px"><button class="btn primary" id="saveOpenAudio">Guardar audio</button><button class="btn ghost" id="playOpenAudio">▶ Probar audio</button></div>
+
+  <div class="toolbar" style="margin-top:10px">
+   <button class="btn primary" id="saveOpenAudio">Guardar audio</button>
+   <button class="btn ghost" id="playOpenAudio">▶ Probar audio</button>
+  </div>
+
+  <div id="openAudioStatus" class="notice" style="margin-top:10px">Sin audio guardado.</div>
  </div>
-  <div class="card"><h3>🎧 Solo audio</h3><p class="sub">Al entrar en G, el estudiante oirá el audio automáticamente.</p><div id="openAudioStatus" class="notice">Sin audio guardado.</div></div>
- </div>
+
  <div class="teacher-only" style="margin-top:14px">
-  <label>Puntaje de la sección (%)</label><input id="openScoreInput" type="number" min="0" max="100" value="100">
-  <label style="margin-top:10px">Observaciones</label><textarea id="openNotes"></textarea>
+  <label>Puntaje de la sección (%)</label>
+  <input id="openScoreInput" type="number" min="0" max="100" value="100">
+  <label style="margin-top:10px">Observaciones</label>
+  <textarea id="openNotes"></textarea>
   <button class="btn primary" id="saveOpenScore">Guardar calificación</button>
  </div>
 </section>
 
-<div id="printArea" class="hidden"></div>
+<div id="printArea"<div id="printArea" class="hidden"></div>
 
 
 <section id="teacherDashboardSummary" class="card" style="margin-top:18px">
@@ -933,9 +991,9 @@ $("#questionNo").onclick=()=>{if(selectedQuestion==null)return;results.C[selecte
 let buildOrder=[];
 function partsOf(s){let w=s.split(/\s+/),n=Math.ceil(w.length/3);return [w.slice(0,n).join(" "),w.slice(n,n*2).join(" "),w.slice(n*2).join(" ")].filter(Boolean)}
 function renderBuildGrid(){
- let g=$("#buildGrid");g.innerHTML="";
+ const g=$("#buildGrid");g.innerHTML="";
  data.sentences.forEach((sentence,i)=>{
-  let b=document.createElement("button");b.className="num-btn";
+  const b=document.createElement("button");b.className="num-btn";
   if(results.D[i]===true)b.classList.add("good");
   if(results.D[i]===false)b.classList.add("bad");
   b.innerHTML=`${i+1}${data.buildAudio[i]?'<span class="face">🔊</span>':""}`;
@@ -945,23 +1003,27 @@ function renderBuildGrid(){
 }
 function updateBuildAudioUI(i){
  const src=data.buildAudio[i]||"";
- $("#buildAudioStatus").textContent=src?`Oración ${i+1} · audio guardado para Sentence Builds.`:`Oración ${i+1} · sin audio.`;
+ $("#buildAudioStatus").textContent=src?`Oración ${i+1}: audio guardado.`:`Oración ${i+1}: sin audio.`;
  $("#buildAudioUrl").value=src.startsWith("http")?src:"";
 }
 function selectBuild(i){
  selectedBuild=i;buildOrder=[];
- let p=partsOf(data.sentences[i]).sort(()=>Math.random()-.5);
- let c=$("#buildParts");c.innerHTML="";
- p.forEach(x=>{let b=document.createElement("button");b.className="btn ghost";b.textContent=x;b.onclick=()=>{buildOrder.push(x);b.disabled=true;$("#buildAnswer").textContent=buildOrder.join(" ")}}); 
+ const parts=partsOf(data.sentences[i]).sort(()=>Math.random()-.5);
+ const c=$("#buildParts");c.innerHTML="";
+ parts.forEach(x=>{
+  const b=document.createElement("button");b.className="btn ghost";b.textContent=x;
+  b.onclick=()=>{buildOrder.push(x);b.disabled=true;$("#buildAnswer").textContent=buildOrder.join(" ")};
+  c.appendChild(b);
+ });
  $("#buildAnswer").textContent="Seleccione las partes en el orden correcto.";
  updateBuildAudioUI(i);
 }
 $("#saveBuildAudio").onclick=async()=>{
  if(selectedBuild==null)return alert("Seleccione una oración.");
- let file=$("#buildAudioFile").files[0],url=$("#buildAudioUrl").value.trim();
- let src=file?await fileToDataURL(file):url;
+ const file=$("#buildAudioFile").files[0],url=$("#buildAudioUrl").value.trim();
+ const src=file?await fileToDataURL(file):url;
  if(!src)return alert("Seleccione un audio o escriba una URL.");
- data.buildAudio[selectedBuild]=src;persist();renderBuildGrid();updateBuildAudioUI(selectedBuild);alert("Audio guardado.");
+ data.buildAudio[selectedBuild]=src;persist();renderBuildGrid();updateBuildAudioUI(selectedBuild);
 };
 $("#playBuildAudio").onclick=()=>{if(selectedBuild==null)return alert("Seleccione una oración.");playAudioSource(data.buildAudio[selectedBuild])};
 $("#removeBuildAudio").onclick=()=>{if(selectedBuild==null)return;data.buildAudio[selectedBuild]="";persist();renderBuildGrid();updateBuildAudioUI(selectedBuild)};
@@ -969,61 +1031,61 @@ $("#buildCorrect").onclick=()=>{if(selectedBuild==null)return;results.D[selected
 $("#buildWrong").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=false;renderBuildGrid();updateScores()};
 $("#buildReset").onclick=()=>{if(selectedBuild!=null)selectBuild(selectedBuild)};
 
-
 function renderDictationGrid(){
  const g=$("#dictationGrid");g.innerHTML="";
  data.sentences.forEach((sentence,i)=>{
-  const b=document.createElement("button");b.className="num-btn";
+  const b=document.createElement("button");
+  b.className="num-btn";
+  b.dataset.index=i;
   if(results.E[i]===true)b.classList.add("good");
   if(results.E[i]===false)b.classList.add("bad");
+  if(dictationCurrent===i)b.classList.add("active-dictation");
   b.innerHTML=`${i+1}${data.sentenceAudio[i]?'<span class="face">🔊</span>':""}`;
-  b.title=data.sentenceAudio[i]?`Oración ${i+1} · tocar para escuchar`:`Oración ${i+1} · sin audio en A1`;
-  b.onclick=()=>{
-   dictationCurrent=i;
-   $("#dictationNumber").textContent=`Oración ${i+1}`;
-   $("#dictationTeacherText").textContent=data.sentences[i];
-   $("#dictationInput").value="";
-   playSentenceAudioByIndex(i);
-  };
+  b.onclick=()=>selectDictation(i,true);
   g.appendChild(b);
  });
 }
+function selectDictation(i,play=true){
+ dictationCurrent=i;
+ $("#dictationNumber").textContent=`Oración ${i+1}`;
+ $("#dictationTeacherText").textContent=data.sentences[i];
+ $("#dictationInput").value="";
+ renderDictationGrid();
+ if(play)playSentenceAudioByIndex(i);
+}
+$("#nextDictation").onclick=()=>{
+ const i=Math.floor(Math.random()*data.sentences.length);
+ selectDictation(i,true);
+};
 $("#dictationYes").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=true;renderDictationGrid();updateScores()};
 $("#dictationNo").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=false;renderDictationGrid();updateScores()};
 
 
 function updateStoryAudioUI(i){
  const src=data.readingAudio[i]||"";
- $("#storyAudioStatus").textContent=src?`Lectura ${i+1} · audio guardado.`:`Lectura ${i+1} · sin audio.`;
+ $("#storyAudioStatus").textContent=src?`Lectura ${i+1}: audio guardado.`:`Lectura ${i+1}: sin audio guardado.`;
  $("#storyAudioUrl").value=src.startsWith("http")?src:"";
 }
 $("#saveStoryAudio").onclick=async()=>{
  const i=+$("#storySelect").value;
- let file=$("#storyAudioFile").files[0],url=$("#storyAudioUrl").value.trim();
- let src=file?await fileToDataURL(file):url;
+ const file=$("#storyAudioFile").files[0],url=$("#storyAudioUrl").value.trim();
+ const src=file?await fileToDataURL(file):url;
  if(!src)return alert("Seleccione un audio o escriba una URL.");
- data.readingAudio[i]=src;persist();updateStoryAudioUI(i);alert("Audio de la lectura guardado.");
+ data.readingAudio[i]=src;persist();updateStoryAudioUI(i);
 };
 $("#playStoryAudio").onclick=()=>playAudioSource(data.readingAudio[+$("#storySelect").value]);
 $("#removeStoryAudio").onclick=()=>{const i=+$("#storySelect").value;data.readingAudio[i]="";persist();updateStoryAudioUI(i)};
-$("#downloadStoryAudioPackage").onclick=()=>{
- const i=+$("#storySelect").value,r=data.readings[i];
- downloadJSONFile(`AMINA_F_LECTURA_${i+1}_AUDIO.json`,{
-  app:"AMINA-VERSANT",kind:"story-audio-package",version:1,
-  readingIndex:i,title:r.title||`Reading ${i+1}`,audio:data.readingAudio[i]||""
- });
-};
 $("#saveStoryScore").onclick=()=>{results.F=Math.max(0,Math.min(100,+$("#storyScoreInput").value||0));updateScores()};
 
 function updateOpenAudioStatus(){
- $("#openAudioStatus").textContent=data.openAudio?"Audio guardado · listo para reproducción automática.":"Sin audio guardado.";
+ $("#openAudioStatus").textContent=data.openAudio?"Audio guardado.":"Sin audio guardado.";
 }
 $("#saveOpenAudio").onclick=async()=>{
- let file=$("#openAudioFile").files[0],url=$("#openAudioUrl").value.trim();
+ const file=$("#openAudioFile").files[0],url=$("#openAudioUrl").value.trim();
  if(file)data.openAudio=await fileToDataURL(file);
  else if(url)data.openAudio=url;
  data.openQuestion=$("#openQuestion").value.trim();
- persist();updateOpenAudioStatus();alert("Audio guardado.");
+ persist();updateOpenAudioStatus();
 };
 $("#playOpenAudio").onclick=()=>playAudioSource(data.openAudio);
 $("#saveOpenScore").onclick=()=>{results.G=Math.max(0,Math.min(100,+$("#openScoreInput").value||0));updateScores()};
