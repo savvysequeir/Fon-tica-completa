@@ -65,5 +65,16 @@ document.head.insertAdjacentHTML('beforeend','<style>.uni-logo{width:78px;height
   setTimeout(hydrate,350);
 })();
 </script>
+<script>
+/* AMINA v16 — Plan Didáctico lee directamente los planes completos de IndexedDB. */
+(function(){
+ const DB='AminaPlannerDB',STORE='plans',cache={};
+ function openDB(){return new Promise((res,rej)=>{const q=indexedDB.open(DB,1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains(STORE))q.result.createObjectStore(STORE,{keyPath:'id'})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+ async function getPlan(id){const db=await openDB();return new Promise((res,rej)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).get(id);q.onsuccess=()=>{db.close();res(q.result||null)};q.onerror=()=>{db.close();rej(q.error)}})}
+ const previousArchive=archive;archive=function(){return previousArchive().map(p=>cache[p.id]?{...p,...cache[p.id]}:p)};
+ async function hydrateLocal(){let ids=[];try{ids=JSON.parse(localStorage.getItem('didacticExports')||'[]')}catch(e){};await Promise.all(ids.map(async id=>{try{const p=await getPlan(id);if(p?.snapshot)cache[id]=p}catch(e){}}));try{render()}catch(e){console.error(e)}}
+ setTimeout(hydrateLocal,100);
+})();
+</script>
 </body></html>
 
