@@ -270,7 +270,20 @@ let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')|
         observations:safeValue('dailyObservations'), savedAt:new Date().toISOString()
       };
       archive.push(record);
-      setArchive(archive);
+      // Evita duplicar el plan actual en dos claves cuando localStorage está casi lleno.
+      // planArchive conserva el plan completo; planCompetencias es solo un borrador recuperable.
+      try { localStorage.removeItem('planCompetencias'); } catch(e) {}
+      try {
+        setArchive(archive);
+      } catch(storageError) {
+        if(storageError && (storageError.name==='QuotaExceededError' || String(storageError.message||'').toLowerCase().includes('quota'))){
+          // Segundo intento: libera únicamente cachés regenerables del planificador.
+          // Nunca elimina planArchive, notas, asistencias, observaciones ni datos de Firebase.
+          try { localStorage.removeItem('eneSelected'); } catch(e) {}
+          try { localStorage.removeItem('didacticCellEdits'); } catch(e) {}
+          setArchive(archive);
+        } else { throw storageError; }
+      }
       const verify=getArchive().some(p=>p && p.id===id);
       if(!verify) throw new Error('El navegador no confirmó la escritura en planArchive.');
       try { localStorage.setItem('planCompetencias',JSON.stringify(snapshot)); } catch(e) {}
@@ -287,8 +300,12 @@ let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')|
       try { if(window.AminaCloud && typeof window.AminaCloud.save==='function') window.AminaCloud.save(); } catch(e) { console.warn('Nube pendiente:',e); }
     }catch(error){
       console.error('Error al guardar plan:',error);
-      if(statusEl) statusEl.textContent=`No se pudo guardar el plan: ${error.message||error}`;
-      alert(`No se pudo guardar el plan.\n\n${error.message||error}`);
+      const isQuota=error && (error.name==='QuotaExceededError' || String(error.message||'').toLowerCase().includes('quota'));
+      const msg=isQuota
+        ? 'El almacenamiento local de este sitio está lleno. Tus planes existentes NO fueron borrados. Abre ☁️ Nube y pulsa “Guardar en la nube”; después podremos migrar el archivo local sin perder planes.'
+        : `No se pudo guardar el plan: ${error.message||error}`;
+      if(statusEl) statusEl.textContent=msg;
+      alert(msg);
     }
   };
 })();
