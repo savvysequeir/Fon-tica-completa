@@ -66,31 +66,21 @@ document.head.insertAdjacentHTML('beforeend','<style>.uni-logo{width:78px;height
 })();
 </script>
 <script>
-/* AMINA v16 — Plan Didáctico lee directamente los planes completos de IndexedDB. */
+/* AMINA v20 — conserva el plan didáctico manual existente y añade exportaciones desde IndexedDB. */
 (function(){
  const DB='AminaPlannerDB',STORE='plans',cache={};
- function openDB(){return new Promise((res,rej)=>{const q=indexedDB.open(DB,1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains(STORE))q.result.createObjectStore(STORE,{keyPath:'id'})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
- async function getPlan(id){const db=await openDB();return new Promise((res,rej)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).get(id);q.onsuccess=()=>{db.close();res(q.result||null)};q.onerror=()=>{db.close();rej(q.error)}})}
- const previousArchive=archive;archive=function(){return previousArchive().map(p=>cache[p.id]?{...p,...cache[p.id]}:p)};
- async function hydrateLocal(){let ids=[];try{ids=JSON.parse(localStorage.getItem('didacticExports')||'[]')}catch(e){};await Promise.all(ids.map(async id=>{try{const p=await getPlan(id);if(p?.snapshot)cache[id]=p}catch(e){}}));try{render()}catch(e){console.error(e)}}
- setTimeout(hydrateLocal,100);
-})();
-</script>
-<script>
-/* AMINA v18 — Plan Didáctico: mismo índice y misma base que el planificador. */
-(function(){
- const INDEX='aminaPlanIndexV18',EXPORTS='aminaDidacticExportsV18',DB='AminaPlannerDB18',STORE='plans',cache={};
- const json=(k,d=[])=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
  function openDB(){return new Promise((ok,no)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(STORE))r.result.createObjectStore(STORE,{keyPath:'id'})};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
- async function get(id){const d=await openDB();return new Promise((ok,no)=>{const r=d.transaction(STORE).objectStore(STORE).get(id);r.onsuccess=()=>{d.close();ok(r.result||null)};r.onerror=()=>{d.close();no(r.error)}})}
- archive=function(){return json(INDEX,[]).map(p=>cache[p.id]?{...p,...cache[p.id]}:p)};
- exportsList=function(){const n=json(EXPORTS,[]);return n.length?n:json('didacticExports',[])};
- async function hydrate(){const ids=exportsList();await Promise.all(ids.map(async id=>{try{const p=await get(id);if(p?.snapshot)cache[id]=p}catch(e){}}));render()}
- const oldRender=render;render=function(){oldRender()};
+ async function getPlan(id){const d=await openDB();return new Promise((ok,no)=>{const r=d.transaction(STORE,'readonly').objectStore(STORE).get(id);r.onsuccess=()=>{d.close();ok(r.result||null)};r.onerror=()=>{d.close();no(r.error)}})}
+ const baseArchive=archive;
+ archive=function(){return baseArchive().map(p=>cache[p.id]?{...p,...cache[p.id]}:p)};
+ async function hydrate(){
+   let ids=[];try{ids=JSON.parse(localStorage.getItem('didacticExports')||'[]')}catch(e){}
+   await Promise.all(ids.map(async id=>{try{let p=await getPlan(id);if(!p?.snapshot&&window.AminaCloud?.getPlanDirect){try{p=await window.AminaCloud.getPlanDirect(id)}catch(e){}}if(p?.snapshot)cache[id]=p}catch(e){}}));
+   const wanted=localStorage.getItem('aminaDidacticCareer')||'';const sel=document.getElementById('career');if(wanted&&sel&&[...sel.options].some(o=>o.value===wanted))sel.value=wanted;
+   render();
+ }
  document.getElementById('career')?.addEventListener('change',()=>setTimeout(hydrate,0));
- window.addEventListener('load',()=>setTimeout(hydrate,100));
- setTimeout(hydrate,100);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(hydrate,100));else setTimeout(hydrate,100);
 })();
 </script>
 </body></html>
-
