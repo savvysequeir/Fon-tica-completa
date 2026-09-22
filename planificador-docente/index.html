@@ -386,4 +386,64 @@ let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')|
 })();
 
 </script>
+<script>
+/* AMINA v18 — flujo único y verificado: Guardar -> Abrir -> Exportar. */
+(function(){
+ const INDEX='aminaPlanIndexV18', EXPORTS='aminaDidacticExportsV18', DB='AminaPlannerDB18', STORE='plans';
+ const readJSON=(k,d=[])=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
+ const writeJSON=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+ const db=()=>new Promise((ok,no)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(STORE))r.result.createObjectStore(STORE,{keyPath:'id'})};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+ async function put(p){const d=await db();return new Promise((ok,no)=>{const t=d.transaction(STORE,'readwrite');t.objectStore(STORE).put(p);t.oncomplete=()=>{d.close();ok(p)};t.onerror=()=>{d.close();no(t.error)}})}
+ async function get(id){const d=await db();return new Promise((ok,no)=>{const r=d.transaction(STORE).objectStore(STORE).get(id);r.onsuccess=()=>{d.close();ok(r.result||null)};r.onerror=()=>{d.close();no(r.error)}})}
+ async function del(id){const d=await db();return new Promise((ok,no)=>{const t=d.transaction(STORE,'readwrite');t.objectStore(STORE).delete(id);t.oncomplete=()=>{d.close();ok()};t.onerror=()=>{d.close();no(t.error)}})}
+ const meta=p=>{const {snapshot,...m}=p;return m};
+ function index(){return readJSON(INDEX,[])}
+ function setIndex(a){writeJSON(INDEX,a)}
+ // Importa una sola vez las fichas visibles existentes, sin borrar nada.
+ if(!localStorage.getItem(INDEX)){let old=[];try{old=JSON.parse(localStorage.getItem('planArchive')||'[]')}catch(e){};setIndex(old.map(meta));for(const p of old)if(p?.id&&p?.snapshot)put(p).catch(()=>{})}
+ // Todo el render de planes usa desde ahora un solo índice.
+ getArchive=index; setArchive=setIndex;
+ window.AminaPlansDB18={put,get,delete:del};
+ function snapshot(){try{return state()}catch(e){const o={};(window.fields||[]).forEach(k=>{const x=document.getElementById(k);if(x)o[k]=x.value});return o}}
+ function val(id,f=''){const x=document.getElementById(id);return x&&'value'in x?x.value:f}
+ function today(){return typeof todayLocal==='function'?todayLocal():new Date().toISOString().slice(0,10)}
+ async function saveOne(career){
+   const a=index(),group=val('plannerGroup','Único')||'Único',same=a.filter(p=>p.career===career&&(p.group||'Único')===group),number=same.reduce((m,p)=>Math.max(m,+p.number||0),0)+1;
+   const p={id:`${Date.now()}-${number}`,number,date:today(),career,group,title:`Plan ${number}`,session:val('sesion'),unit:val('unidad'),topic:val('tema'),snapshot:snapshot(),observationDate:val('observationDate')||today(),observations:val('dailyObservations'),savedAt:new Date().toISOString()};
+   await put(p); const check=await get(p.id); if(!check?.snapshot)throw new Error('El navegador no confirmó el contenido guardado.');
+   a.push(meta(p));setIndex(a);currentArchiveId=p.id;document.getElementById('folderModal')?.remove();renderArchive();location.hash='archivo';
+   const st=document.getElementById('status');if(st)st.textContent=`Plan ${number} guardado y verificado.`;
+   if(window.AminaCloud?.savePlanDirect)window.AminaCloud.savePlanDirect(p).catch(()=>{});
+ }
+ async function openOne(id){
+   let p=await get(id);
+   if(!p?.snapshot){try{const old=JSON.parse(localStorage.getItem('planArchive')||'[]').find(x=>x.id===id);if(old?.snapshot){p=old;await put(p)}}catch(e){}}
+   if(!p?.snapshot&&window.AminaCloud?.getPlanDirect){try{const q=await window.AminaCloud.getPlanDirect(id);if(q?.snapshot){p=q;await put(p)}}catch(e){}}
+   if(!p?.snapshot)throw new Error('Este registro no contiene una copia recuperable del plan.');
+   currentArchiveId=id;fields.forEach(k=>{const x=document.getElementById(k);if(x&&p.snapshot[k]!=null)x.value=p.snapshot[k]});
+   if(p.snapshot.checklist&&document.getElementById('checklist'))document.getElementById('checklist').innerHTML=p.snapshot.checklist;
+   if(document.getElementById('observationDate'))document.getElementById('observationDate').value=p.observationDate||p.date||'';
+   if(document.getElementById('dailyObservations'))document.getElementById('dailyObservations').value=p.observations||'';
+   try{loadV15(p.snapshot)}catch(e){};try{save()}catch(e){};updatePreview();location.hash='vista';
+   const st=document.getElementById('status');if(st)st.textContent=`Plan ${p.number} abierto correctamente.`;
+ }
+ async function removeOne(id){const p=index().find(x=>x.id===id);if(!p)return;if(!confirm(`¿Borrar definitivamente el Plan ${p.number} de “${p.career}”?`))return;await del(id);setIndex(index().filter(x=>x.id!==id));renderArchive();if(window.AminaCloud?.deletePlanDirect)window.AminaCloud.deletePlanDirect(id,p.career).catch(()=>{})}
+ async function exportOne(){
+   const id=pendingDidacticExportId,date=document.getElementById('didacticExportDate')?.value;if(!id||!date)return;
+   let p=await get(id);if(!p?.snapshot)throw new Error('El plan no tiene contenido completo para exportar.');
+   p.date=date;p.didacticDate=date;p.didacticExportedAt=new Date().toISOString();await put(p);
+   const a=index(),i=a.findIndex(x=>x.id===id);if(i>=0)a[i]=meta(p);setIndex(a);
+   let ids=readJSON(EXPORTS,[]);if(!ids.includes(id))ids.push(id);writeJSON(EXPORTS,ids);
+   // compatibilidad con la página antigua, sin guardar el snapshot en localStorage
+   writeJSON('didacticExports',ids);
+   cancelDidacticExport();renderArchive();const st=document.getElementById('status');if(st)st.textContent=`Plan ${p.number} exportado con fecha ${date}.`;
+   if(window.AminaCloud?.savePlanDirect)window.AminaCloud.savePlanDirect(p).catch(()=>{});
+ }
+ window.savePlanToFolder=savePlanToFolder=async c=>{try{await saveOne(c)}catch(e){console.error(e);alert('No se pudo guardar el plan.\\n\\n'+(e.message||e))}};
+ window.loadArchivedPlan=loadArchivedPlan=async id=>{try{await openOne(id)}catch(e){console.error(e);alert('No se pudo abrir el plan.\\n\\n'+(e.message||e))}};
+ window.deleteArchivedPlan=deleteArchivedPlan=async id=>{try{await removeOne(id)}catch(e){console.error(e);alert('No se pudo borrar.\\n\\n'+(e.message||e))}};
+ window.confirmDidacticExport=confirmDidacticExport=async()=>{try{await exportOne()}catch(e){console.error(e);alert('No se pudo exportar al Plan Didáctico.\\n\\n'+(e.message||e))}};
+ renderArchive();
+})();
+</script>
 </body></html>
