@@ -241,58 +241,6 @@ const v15Preview=updatePreview;updatePreview=function(){v15Preview();let p=$('pl
 const v15Payload=planPayload;planPayload=function(){let p=v15Payload();p.objetivosEspecificosDocente={conceptual:$('objC').value,procedimental:$('objP').value,actitudinal:$('objA').value,conservar:v15Align.dataset.own==='yes'};p.semanasExamen=examData();return p};
 let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')||'null')}catch{v15Stored=null}loadV15(v15Stored);checklistControls();updatePreview();
 
-/* AMINA FIX 2026-09-22: guardado robusto de planes por carrera */
-(function(){
-  function safeValue(id, fallback='') { const el=document.getElementById(id); return el ? el.value : fallback; }
-  function safeSnapshot(){
-    let snap={};
-    (window.fields || fields || []).forEach(id=>{ const el=document.getElementById(id); if(el) snap[id]=el.value; });
-    for(let i=1;i<=5;i++){ const el=document.getElementById('skill'+i); if(el) snap['skill'+i]=el.value; }
-    const checklist=document.getElementById('checklist');
-    snap.checklist=checklist ? checklist.innerHTML : '';
-    try { if(typeof examData==='function') snap.examWeeks=examData(); } catch(e) {}
-    try { if(typeof v15Align!=='undefined' && v15Align) snap.teacherObjectives=v15Align.dataset.own==='yes'; } catch(e) {}
-    return snap;
-  }
-  window.savePlanToFolder=function(career){
-    const statusEl=document.getElementById('status');
-    try{
-      const archive=getArchive();
-      const group=safeValue('plannerGroup','Único')||'Único';
-      const same=archive.filter(p=>p && p.career===career && (p.group||'Único')===group);
-      const number=same.reduce((m,p)=>Math.max(m,Number(p.number)||0),0)+1;
-      const id=`${Date.now()}-${number}`;
-      const snapshot=cloudSafeSnapshot();
-      const record={
-        id, number, date:todayLocal(), career, group, title:`Plan ${number}`,
-        session:safeValue('sesion'), unit:safeValue('unidad'), topic:safeValue('tema'), snapshot,
-        observationDate:safeValue('observationDate')||todayLocal(),
-        observations:safeValue('dailyObservations'), savedAt:new Date().toISOString()
-      };
-      archive.push(record);
-      setArchive(archive);
-      const verify=getArchive().some(p=>p && p.id===id);
-      if(!verify) throw new Error('El navegador no confirmó la escritura en planArchive.');
-      try { localStorage.setItem('planCompetencias',JSON.stringify(snapshot)); } catch(e) {}
-      currentArchiveId=id;
-      const obs=document.getElementById('observationCareer'); if(obs) obs.value=career;
-      const did=document.getElementById('didacticCareer'); if(did) did.value=career;
-      const modal=document.getElementById('folderModal'); if(modal) modal.remove();
-      try { renderArchive(); } catch(e) { console.error('renderArchive:',e); }
-      try { if(typeof renderDidacticPlan==='function') renderDidacticPlan(); } catch(e) { console.error('renderDidacticPlan:',e); }
-      const b=document.getElementById('saveButton');
-      if(b){ b.textContent=`${career}: Plan ${number}`; b.classList.add('save-flash'); setTimeout(()=>{b.classList.remove('save-flash');b.textContent='Guardar plan'},2200); }
-      if(statusEl) statusEl.textContent=`Plan ${number} guardado en la carpeta “${career}” con fecha ${record.date}.`;
-      location.hash='archivo';
-      try { if(window.AminaCloud && typeof window.AminaCloud.save==='function') window.AminaCloud.save(); } catch(e) { console.warn('Nube pendiente:',e); }
-    }catch(error){
-      console.error('Error al guardar plan:',error);
-      if(statusEl) statusEl.textContent=`No se pudo guardar el plan: ${error.message||error}`;
-      alert(`No se pudo guardar el plan.\n\n${error.message||error}`);
-    }
-  };
-})();
-
 /* AMINA v15.3 — planes completos en Firebase; índice local liviano */
 (function(){
   function cloudSafeValue(id, fallback=''){ const el=document.getElementById(id); return el ? el.value : fallback; }
