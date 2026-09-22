@@ -164,6 +164,12 @@ function mergeEntries(groups) {
   return [...merged].map(([key, value]) => ({ key, value }));
 }
 
+function compactPlanRecord(record) {
+  if (!record || typeof record !== "object") return record;
+  const { snapshot, ...meta } = record;
+  return { ...meta, cloud: true };
+}
+
 function restoreEntries(entries) {
   const remove = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -173,7 +179,12 @@ function restoreEntries(entries) {
   remove.forEach(key => localStorage.removeItem(key));
   (entries || []).forEach(item => {
     if (item?.key && relevantKey(item.key) && typeof item.value === "string") {
-      localStorage.setItem(item.key, item.value);
+      if (item.key === "planArchive") {
+        const compact = parse(item.value, []).map(compactPlanRecord);
+        localStorage.setItem(item.key, JSON.stringify(compact));
+      } else {
+        localStorage.setItem(item.key, item.value);
+      }
     }
   });
 }
@@ -268,13 +279,20 @@ async function saveCloud(showMessage = false) {
   clearTimeout(saveTimer);
   try {
     const now = serverTimestamp();
-    await set(ref(db, "amina/admin/workspace"), {
-      version: 2, updatedAt: now, updatedBy: currentUser.email, entries: allLocalEntries()
+    const adminRef = ref(db, "amina/admin/workspace");
+    const adminSnap = await get(adminRef);
+    const adminOld = adminSnap.exists() ? adminSnap.val() : {};
+    await set(adminRef, {
+      version: 4, updatedAt: now, updatedBy: currentUser.email, entries: allLocalEntries(),
+      fullPlans: adminOld.fullPlans || {}
     });
     for (const careerKey of Object.keys(CAREERS)) {
-      await set(ref(db, `amina/carreras/${careerKey}/workspace`), {
-        version: 2, updatedAt: serverTimestamp(), updatedBy: currentUser.email,
-        entries: filteredEntries(careerKey)
+      const careerRef = ref(db, `amina/carreras/${careerKey}/workspace`);
+      const careerSnap = await get(careerRef);
+      const careerOld = careerSnap.exists() ? careerSnap.val() : {};
+      await set(careerRef, {
+        version: 4, updatedAt: serverTimestamp(), updatedBy: currentUser.email,
+        entries: filteredEntries(careerKey), fullPlans: careerOld.fullPlans || {}
       });
     }
     lastLocalSaveAt = Date.now();
@@ -301,7 +319,8 @@ async function readAllowedCloud() {
   if (!clouds.length) return null;
   return {
     updatedAt: Math.max(...clouds.map(item => Number(item.updatedAt) || 0)),
-    entries: mergeEntries(clouds.map(item => item.entries))
+    entries: mergeEntries(clouds.map(item => item.entries)),
+    fullPlans: Object.assign({}, ...clouds.map(item => item.fullPlans || {}))
   };
 }
 
@@ -428,18 +447,16 @@ async function savePlanDirect(record) {
   if (!currentUser || !cloudReady || access?.role !== "teacher") throw new Error("La nube del docente no está lista.");
   const adminRef = ref(db, "amina/admin/workspace");
   const adminSnap = await get(adminRef);
-  const admin = adminSnap.exists() ? adminSnap.val() : { version: 3, entries: [] };
-  let plans = workspacePlanArchive(admin).filter(p => p?.id !== record.id);
-  plans.push(record);
-  await set(adminRef, { ...admin, version: 3, updatedAt: serverTimestamp(), updatedBy: currentUser.email, entries: replaceWorkspacePlanArchive(admin, plans) });
+  const admin = adminSnap.exists() ? adminSnap.val() : { version: 4, entries: [] };
+  const fullPlans = { ...(admin.fullPlans || {}), [record.id]: record };
+  await set(adminRef, { ...admin, version: 4, updatedAt: serverTimestamp(), updatedBy: currentUser.email, fullPlans });
   const careerKey = careerKeyForLabel(record.career);
   if (careerKey) {
     const cRef = ref(db, `amina/carreras/${careerKey}/workspace`);
     const cSnap = await get(cRef);
-    const cw = cSnap.exists() ? cSnap.val() : { version: 3, entries: [] };
-    let cp = workspacePlanArchive(cw).filter(p => p?.id !== record.id);
-    cp.push(record);
-    await set(cRef, { ...cw, version: 3, updatedAt: serverTimestamp(), updatedBy: currentUser.email, entries: replaceWorkspacePlanArchive(cw, cp) });
+    const cw = cSnap.exists() ? cSnap.val() : { version: 4, entries: [] };
+    const cFullPlans = { ...(cw.fullPlans || {}), [record.id]: record };
+    await set(cRef, { ...cw, version: 4, updatedAt: serverTimestamp(), updatedBy: currentUser.email, fullPlans: cFullPlans });
   }
   lastLocalSaveAt = Date.now();
   return record;
@@ -447,8 +464,9 @@ async function savePlanDirect(record) {
 async function getPlanDirect(id) {
   if (!currentUser || !cloudReady || !access) throw new Error("La nube no está lista.");
   const cloud = await readAllowedCloud();
-  const plans = workspacePlanArchive(cloud);
-  return plans.find(p => p?.id === id) || null;
+  if (cloud?.fullPlans?.[id]) return cloud.fullPlans[id];
+  const legacy = workspacePlanArchive(cloud).find(p => p?.id === id && p?.snapshot);
+  return legacy || null;
 }
 async function deletePlanDirect(id, career) {
   if (!currentUser || !cloudReady || access?.role !== "teacher") throw new Error("La nube del docente no está lista.");
@@ -458,9 +476,10 @@ async function deletePlanDirect(id, career) {
   for (const path of paths) {
     const r = ref(db, path), snap = await get(r);
     if (!snap.exists()) continue;
-    const ws = snap.val();
+    const ws = snap.val(), fullPlans = { ...(ws.fullPlans || {}) };
+    delete fullPlans[id];
     const plans = workspacePlanArchive(ws).filter(p => p?.id !== id);
-    await set(r, { ...ws, version: 3, updatedAt: serverTimestamp(), updatedBy: currentUser.email, entries: replaceWorkspacePlanArchive(ws, plans) });
+    await set(r, { ...ws, version: 4, updatedAt: serverTimestamp(), updatedBy: currentUser.email, fullPlans, entries: replaceWorkspacePlanArchive(ws, plans) });
   }
   lastLocalSaveAt = Date.now();
   return true;
