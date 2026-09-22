@@ -105,7 +105,7 @@ const planMap={vinculacion:'vinculacion',objetivoConceptual:'objC',objetivoProce
 async function generateWithAmina(){let missing=requiredPlanData().filter(v=>!v).length;if(missing){$('status').textContent=`Faltan ${missing} datos esenciales antes de trabajar con Amina.`;return}let button=$('aminaButton');button.disabled=true;button.textContent='Amina está trabajando…';$('status').textContent=aminaIterations?'Amina está revisando tus cambios y mejorando el borrador…':'Amina está elaborando y auditando el plan…';try{if(location.protocol==='file:')throw new Error('modo local');let res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(planPayload())});let data=await res.json();if(!res.ok)throw new Error(data.error||'No fue posible generar el plan');Object.entries(planMap).forEach(([k,id])=>{if(data[k])$(id).value=data[k]});buildAlignedChecklist($('tema').value);aminaIterations++;save();updatePreview();$('status').textContent=`Amina completó la mejora ${aminaIterations}. Puedes editar y pulsar “Amina” nuevamente.`;location.hash='vista'}catch(e){generateCompetencyPlan();aminaIterations++;updatePreview();$('status').textContent=`Amina generó el plan en modo local (${aminaIterations}). Para mejoras con inteligencia artificial, inicia la web con INICIAR_PLANIFICADOR.bat.`;location.hash='vista'}finally{button.disabled=false;button.textContent='Amina'}}
 function pv(id){return wordEscape($(id)?.value||'Pendiente de completar')}function cpa(title,c,p,a){return `<div class="preview-section"><h3>${title}</h3><div class="cpa-grid"><div class="cpa-card"><h4>Conceptual</h4><div class="preview-text">${pv(c)}</div></div><div class="cpa-card"><h4>Procedimental</h4><div class="preview-text">${pv(p)}</div></div><div class="cpa-card"><h4>Actitudinal</h4><div class="preview-text">${pv(a)}</div></div></div></div>`}function updatePreview(){let acts=[['Actividad de inicio','inicio'],['Pronunciación','skill1'],['Gramática','skill2'],['Reading','skill3'],['Writing','skill4'],['Listening','skill5'],['Cierre · Speaking','cierre']].map(x=>`<div class="activity-preview"><b>${x[0]}</b><div class="preview-text">${pv(x[1])}</div></div>`).join('');$('planPreview').innerHTML=`<div class="preview-title"><h2>Plan de clase por competencias</h2><p>${pv('asignatura')} · Sesión ${pv('sesion')}</p></div><div class="preview-meta"><div><b>Universidad</b>${pv('universidad')}</div><div><b>Docente</b>${pv('docente')}</div><div><b>Carrera</b>${pv('carrera')}</div><div><b>Grupo</b>${pv('plannerGroup')}</div><div><b>Nivel</b>${pv('nivel')}</div><div><b>Duración</b>${pv('duracion')}</div><div><b>Modalidad</b>${pv('modalidad')}</div><div><b>Unidad</b>${pv('unidad')}</div><div><b>Tema</b>${pv('tema')}</div><div><b>Recursos</b>${pv('recursos')}</div></div><div class="preview-section"><h3>Objetivo de la unidad</h3><div class="preview-text">${pv('objetivoUnidad')}</div></div><div class="preview-section"><h3>Vinculación ENE</h3><div class="preview-text">${pv('vinculacion')}</div></div>${cpa('Objetivos específicos','objC','objP','objA')}${cpa('Indicadores de logro','indC','indP','indA')}${cpa('Criterios de evaluación','criC','criP','criA')}<div class="preview-section"><h3>Actividades de enseñanza-aprendizaje</h3>${acts}</div><div class="preview-section"><h3>Forma de evaluación</h3><div class="preview-text">${pv('forma')}</div></div><div class="preview-section"><h3>Estrategia de evaluación</h3><div class="preview-text">${pv('estrategia')}</div></div><div class="preview-section"><h3>Instrumento · Lista de cotejo</h3><div style="overflow:auto">${$('instrumento').querySelector('table').outerHTML}</div></div>`}
 function wordEscape(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}function wordSection(title,id){return `<h2>${title}</h2><p>${wordEscape($(id).value)}</p>`}function downloadWord(){let missing=requiredPlanData().filter(v=>!v).length;if(missing){$('status').textContent='Completa los datos esenciales antes de descargar el documento.';return}let rows=[...$('checklist').rows].map(tr=>'<tr>'+[...tr.cells].map(c=>`<td>${wordEscape(c.innerText)}</td>`).join('')+'</tr>').join('');let html=`<!doctype html><html><head><meta charset="utf-8"><style>@page{size:letter;margin:2cm}body{font-family:Arial;color:#17243b;line-height:1.4}h1{text-align:center;color:#155eef}h2{color:#155eef;border-bottom:1px solid #aac1ef;padding-bottom:4px}table{width:100%;border-collapse:collapse;font-size:10pt}td{border:1px solid #888;padding:5px}.meta{background:#eef4ff;padding:12px}</style></head><body><h1>Plan de clase por competencias</h1><div class="meta"><b>Universidad:</b> ${wordEscape($('universidad').value)}<br><b>Docente:</b> ${wordEscape($('docente').value)}<br><b>Carrera:</b> ${wordEscape($('carrera').value)} · <b>Grupo:</b> ${wordEscape($('plannerGroup').value)}<br><b>Asignatura:</b> ${wordEscape($('asignatura').value)}<br><b>Sesión:</b> ${wordEscape($('sesion').value)} · <b>Nivel:</b> ${wordEscape($('nivel').value)} · <b>Duración:</b> ${wordEscape($('duracion').value)} · <b>Modalidad:</b> ${wordEscape($('modalidad').value)}<br><b>Unidad:</b> ${wordEscape($('unidad').value)}<br><b>Objetivo de unidad:</b> ${wordEscape($('objetivoUnidad').value)}<br><b>Tema:</b> ${wordEscape($('tema').value)}</div>${wordSection('Vinculación ENE','vinculacion')}${wordSection('Objetivo conceptual','objC')}${wordSection('Objetivo procedimental','objP')}${wordSection('Objetivo actitudinal','objA')}${wordSection('Indicador conceptual','indC')}${wordSection('Indicador procedimental','indP')}${wordSection('Indicador actitudinal','indA')}${wordSection('Criterio conceptual','criC')}${wordSection('Criterio procedimental','criP')}${wordSection('Criterio actitudinal','criA')}${wordSection('Actividad de inicio','inicio')}${wordSection('Pronunciación','skill1')}${wordSection('Gramática','skill2')}${wordSection('Reading','skill3')}${wordSection('Writing','skill4')}${wordSection('Listening','skill5')}${wordSection('Cierre · Speaking','cierre')}${wordSection('Forma de evaluación','forma')}${wordSection('Estrategia de evaluación','estrategia')}<h2>Instrumento · Lista de cotejo</h2><table>${rows}</table></body></html>`;let blob=new Blob(['\ufeff',html],{type:'application/msword'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Plan_de_clase_${($('sesion').value||'sesion')}.doc`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);$('status').textContent='Documento de Word descargado.'}
-function state(){let x={};fields.forEach(id=>x[id]=$(id).value);for(let i=1;i<=5;i++)x['skill'+i]=$('skill'+i).value;x.checklist=$('checklist').innerHTML;return x}function save(){localStorage.setItem('planCompetencias',JSON.stringify(state()))}function loadPlan(){let x=JSON.parse(localStorage.getItem('planCompetencias')||'null');if(!x){$('status').textContent='Completa los datos generales; el plan se generará automáticamente.';return}fields.forEach(id=>{if(x[id]!=null)$(id).value=x[id]});for(let i=1;i<=5;i++)if(x['skill'+i]!=null)$('skill'+i).value=x['skill'+i];if(x.checklist)$('checklist').innerHTML=x.checklist;$('status').textContent='Plan recuperado.'}function clearPlan(){if(!confirm('¿Crear un plan nuevo y borrar el guardado local?'))return;localStorage.removeItem('planCompetencias');localStorage.removeItem('eneSelected');location.reload()}renderSkills();renderChecklist();renderENE();renderCurricula();renderBloom();renderDocs();enhancePlanner();addSmartActions();fields.push('nivel','duracion','modalidad','recursos');$('docUpload').addEventListener('change',e=>attachDocs(e.target.files));document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{$(b.dataset.go).scrollIntoView({behavior:'smooth'});document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.go==='vista')updatePreview()});window.addEventListener('beforeunload',save);loadPlan();enableAutomaticPlanning();updatePreview();document.querySelectorAll('input,textarea,select').forEach(el=>el.addEventListener('change',updatePreview));
+function state(){let x={};fields.forEach(id=>{let el=$(id);if(el)x[id]=el.value});for(let i=1;i<=5;i++){let el=$('skill'+i);if(el)x['skill'+i]=el.value}let checklist=$('checklist');x.checklist=checklist?checklist.innerHTML:'';return x}function save(){localStorage.setItem('planCompetencias',JSON.stringify(state()))}function loadPlan(){let x=JSON.parse(localStorage.getItem('planCompetencias')||'null');if(!x){$('status').textContent='Completa los datos generales; el plan se generará automáticamente.';return}fields.forEach(id=>{if(x[id]!=null)$(id).value=x[id]});for(let i=1;i<=5;i++)if(x['skill'+i]!=null)$('skill'+i).value=x['skill'+i];if(x.checklist)$('checklist').innerHTML=x.checklist;$('status').textContent='Plan recuperado.'}function clearPlan(){if(!confirm('¿Crear un plan nuevo y borrar el guardado local?'))return;localStorage.removeItem('planCompetencias');localStorage.removeItem('eneSelected');location.reload()}renderSkills();renderChecklist();renderENE();renderCurricula();renderBloom();renderDocs();enhancePlanner();addSmartActions();fields.push('nivel','duracion','modalidad','recursos');$('docUpload').addEventListener('change',e=>attachDocs(e.target.files));document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{$(b.dataset.go).scrollIntoView({behavior:'smooth'});document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.go==='vista')updatePreview()});window.addEventListener('beforeunload',save);loadPlan();enableAutomaticPlanning();updatePreview();document.querySelectorAll('input,textarea,select').forEach(el=>el.addEventListener('change',updatePreview));
 let currentArchiveId=null;function getArchive(){try{return JSON.parse(localStorage.getItem('planArchive')||'[]')}catch{return[]}}function setArchive(a){localStorage.setItem('planArchive',JSON.stringify(a))}function cleanCareer(s){return(s||'Sin carrera').trim()||'Sin carrera'}function todayLocal(){let d=new Date(),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`}
 const fixedFolders=['Odontología','Odontología II','Farmacia','Enfermería','Medicina'];function savePlanToArchive(){let missing=requiredPlanData().filter(v=>!v).length;if(missing){$('status').textContent=`Faltan ${missing} datos esenciales antes de guardar el plan.`;return}showFolderDialog()}function showFolderDialog(){let old=$('folderModal');if(old)old.remove();let modal=document.createElement('div');modal.id='folderModal';modal.className='folder-modal';modal.innerHTML=`<div class="folder-dialog"><h2>¿En qué carpeta deseas guardar?</h2><p>Selecciona la carrera correspondiente. El plan recibirá su número y fecha automáticamente.</p><div class="folder-choices">${fixedFolders.map(f=>`<button class="folder-choice" onclick="savePlanToFolder('${f}')">📁 ${f}</button>`).join('')}</div><button class="btn secondary" onclick="$('folderModal').remove()">Cancelar</button></div>`;document.body.appendChild(modal)}
 function savePlanToFolder(career){save();let archive=getArchive(),same=archive.filter(p=>p.career===career&&(p.group||'Único')===($('plannerGroup').value||'Único')),number=same.reduce((m,p)=>Math.max(m,p.number||0),0)+1,id=`${Date.now()}-${number}`,record={id,number,date:todayLocal(),career,group:$('plannerGroup').value||'Único',title:`Plan ${number}`,session:$('sesion').value,unit:$('unidad').value,topic:$('tema').value,snapshot:state(),observationDate:$('observationDate').value||todayLocal(),observations:$('dailyObservations').value||'',savedAt:new Date().toISOString()};archive.push(record);setArchive(archive);currentArchiveId=id;if($('folderModal'))$('folderModal').remove();renderArchive();let b=$('saveButton');b.textContent=`${career}: Plan ${number}`;b.classList.add('save-flash');setTimeout(()=>{b.classList.remove('save-flash');b.textContent='Guardar plan'},2200);$('status').textContent=`Plan ${number} guardado en la carpeta “${career}” con fecha ${record.date}.`;location.hash='archivo'}
@@ -131,7 +131,45 @@ const previewCareerBase=updatePreview;function updatePreviewV4(){previewCareerBa
 fields.push('didacticCareer','shift');['didacticCareer','semester','shift','academicYear','plannerGroup'].forEach(id=>$(id).addEventListener('change',()=>{renderDidacticPlan();updatePreview()}));const saveFolderDidacticBase=savePlanToFolder;savePlanToFolder=function(career){saveFolderDidacticBase(career);$('didacticCareer').value=career;renderDidacticPlan()};const loadDidacticBase=loadArchivedPlan;loadArchivedPlan=function(id){loadDidacticBase(id);let p=getArchive().find(x=>x.id===id);if(p){$('didacticCareer').value=p.career;renderDidacticPlan()}};const deleteDidacticBase=deleteArchivedPlan;deleteArchivedPlan=function(id){deleteDidacticBase(id);renderDidacticPlan()};addDidacticSource();updatePreview=updatePreviewV4;renderDidacticPlan();updatePreview();
 let didacticNav=document.querySelector('#nav [data-go="didactico"]');didacticNav.textContent='10. Abrir plan didáctico ↗';didacticNav.onclick=()=>{window.location.href='plan-didactico.html'};
 let attendanceNav=document.querySelector('#nav [data-go="asistencia"]');attendanceNav.onclick=()=>{window.location.href='asistencia.html'};let gradesNav=document.querySelector('#nav [data-go="notas"]');gradesNav.onclick=()=>{window.location.href='control-notas.html'};let slidesNav=document.querySelector('#nav [data-go="diapositivas"]');slidesNav.onclick=()=>{window.location.href='diapositivas.html'};let slidesLibraryNav=document.querySelector('#nav [data-go="bibliotecaSlides"]');slidesLibraryNav.onclick=()=>{window.location.href='biblioteca-diapositivas.html'};
-function getDidacticExports(){try{return JSON.parse(localStorage.getItem('didacticExports')||'[]')}catch{return[]}}function exportPlanToDidactic(id){let ids=getDidacticExports();if(!ids.includes(id))ids.push(id);localStorage.setItem('didacticExports',JSON.stringify(ids));let p=getArchive().find(x=>x.id===id);$('status').textContent=p?`Plan ${p.number} exportado al plan didáctico de ${p.career}.`:'Plan exportado al plan didáctico.';renderArchive();}
+function getDidacticExports(){try{return JSON.parse(localStorage.getItem('didacticExports')||'[]')}catch{return[]}}
+let pendingDidacticExportId=null;
+function exportPlanToDidactic(id){
+  let p=getArchive().find(x=>x.id===id);
+  if(!p){$('status').textContent='No se encontró el plan que deseas exportar.';return}
+  pendingDidacticExportId=id;
+  let old=$('didacticDateModal');if(old)old.remove();
+  let modal=document.createElement('div');
+  modal.id='didacticDateModal';modal.className='folder-modal';
+  modal.innerHTML=`<div class="folder-dialog" role="dialog" aria-modal="true" aria-labelledby="didacticDateTitle">
+    <h2 id="didacticDateTitle">📅 Fecha del plan didáctico</h2>
+    <p>Antes de exportar el <b>Plan ${p.number}</b> de <b>${wordEscape(p.career)}</b>, selecciona en el calendario la fecha en que se impartirá esta sesión.</p>
+    <div style="margin:20px 0"><label for="didacticExportDate">Fecha de la sesión</label><input id="didacticExportDate" type="date" value="${p.date||todayLocal()}" style="font-size:18px;padding:14px"></div>
+    <div class="row"><button class="btn green" type="button" onclick="confirmDidacticExport()">Confirmar y exportar</button><button class="btn secondary" type="button" onclick="cancelDidacticExport()">Cancelar</button></div>
+  </div>`;
+  document.body.appendChild(modal);
+  setTimeout(()=>$('didacticExportDate')?.focus(),50);
+}
+function cancelDidacticExport(){pendingDidacticExportId=null;let m=$('didacticDateModal');if(m)m.remove()}
+function confirmDidacticExport(){
+  const id=pendingDidacticExportId,date=$('didacticExportDate')?.value;
+  if(!id||!date){$('status').textContent='Selecciona una fecha antes de exportar.';$('didacticExportDate')?.focus();return}
+  let archive=getArchive(),index=archive.findIndex(x=>x.id===id);
+  if(index<0){cancelDidacticExport();$('status').textContent='No se encontró el plan que deseas exportar.';return}
+  archive[index].date=date;
+  archive[index].didacticDate=date;
+  archive[index].didacticExportedAt=new Date().toISOString();
+  setArchive(archive);
+  let ids=getDidacticExports();if(!ids.includes(id))ids.push(id);
+  localStorage.setItem('didacticExports',JSON.stringify(ids));
+  let p=archive[index];
+  cancelDidacticExport();
+  try{renderArchive()}catch(e){console.error(e)}
+  try{if(typeof renderDidacticPlan==='function')renderDidacticPlan()}catch(e){console.error(e)}
+  $('status').textContent=`Plan ${p.number} exportado al plan didáctico de ${p.career} con fecha ${formatDidacticDate(date)}.`;
+  try{if(window.AminaCloud&&typeof window.AminaCloud.save==='function')window.AminaCloud.save()}catch(e){console.warn(e)}
+}
+function formatDidacticDate(value){if(!value)return'';let [y,m,d]=value.split('-');return `${d}/${m}/${y}`}
+
 const archiveExportBase=renderArchive;function renderArchiveV4(){archiveExportBase();let exported=getDidacticExports();[...document.querySelectorAll('.career-folder')].forEach((folder,i)=>{let plans=getArchive().filter(p=>p.career===fixedFolders[i]).sort((a,b)=>a.number-b.number);[...folder.querySelectorAll('.saved-plan')].forEach((row,j)=>{let p=plans[j],actions=row.querySelector('.row');if(p&&!actions.querySelector('.export-didactic'))actions.insertAdjacentHTML('beforeend',`<button class="btn secondary export-didactic" onclick="exportPlanToDidactic('${p.id}')">${exported.includes(p.id)?'✓ Exportado':'Exportar al plan didáctico'}</button>`)})})}renderArchive=renderArchiveV4;renderArchive();
 
 /* Selector central de carrera para Planes guardados */
@@ -202,4 +240,56 @@ const v15Archived=loadArchivedPlan;loadArchivedPlan=function(id){v15Archived(id)
 const v15Preview=updatePreview;updatePreview=function(){v15Preview();let p=$('planPreview');p.querySelector('.v15-exams')?.remove();p.insertAdjacentHTML('beforeend',examHtml())};
 const v15Payload=planPayload;planPayload=function(){let p=v15Payload();p.objetivosEspecificosDocente={conceptual:$('objC').value,procedimental:$('objP').value,actitudinal:$('objA').value,conservar:v15Align.dataset.own==='yes'};p.semanasExamen=examData();return p};
 let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')||'null')}catch{v15Stored=null}loadV15(v15Stored);checklistControls();updatePreview();
+
+/* AMINA FIX 2026-09-22: guardado robusto de planes por carrera */
+(function(){
+  function safeValue(id, fallback='') { const el=document.getElementById(id); return el ? el.value : fallback; }
+  function safeSnapshot(){
+    let snap={};
+    (window.fields || fields || []).forEach(id=>{ const el=document.getElementById(id); if(el) snap[id]=el.value; });
+    for(let i=1;i<=5;i++){ const el=document.getElementById('skill'+i); if(el) snap['skill'+i]=el.value; }
+    const checklist=document.getElementById('checklist');
+    snap.checklist=checklist ? checklist.innerHTML : '';
+    try { if(typeof examData==='function') snap.examWeeks=examData(); } catch(e) {}
+    try { if(typeof v15Align!=='undefined' && v15Align) snap.teacherObjectives=v15Align.dataset.own==='yes'; } catch(e) {}
+    return snap;
+  }
+  window.savePlanToFolder=function(career){
+    const statusEl=document.getElementById('status');
+    try{
+      const archive=getArchive();
+      const group=safeValue('plannerGroup','Único')||'Único';
+      const same=archive.filter(p=>p && p.career===career && (p.group||'Único')===group);
+      const number=same.reduce((m,p)=>Math.max(m,Number(p.number)||0),0)+1;
+      const id=`${Date.now()}-${number}`;
+      const snapshot=safeSnapshot();
+      const record={
+        id, number, date:todayLocal(), career, group, title:`Plan ${number}`,
+        session:safeValue('sesion'), unit:safeValue('unidad'), topic:safeValue('tema'), snapshot,
+        observationDate:safeValue('observationDate')||todayLocal(),
+        observations:safeValue('dailyObservations'), savedAt:new Date().toISOString()
+      };
+      archive.push(record);
+      setArchive(archive);
+      const verify=getArchive().some(p=>p && p.id===id);
+      if(!verify) throw new Error('El navegador no confirmó la escritura en planArchive.');
+      try { localStorage.setItem('planCompetencias',JSON.stringify(snapshot)); } catch(e) {}
+      currentArchiveId=id;
+      const obs=document.getElementById('observationCareer'); if(obs) obs.value=career;
+      const did=document.getElementById('didacticCareer'); if(did) did.value=career;
+      const modal=document.getElementById('folderModal'); if(modal) modal.remove();
+      try { renderArchive(); } catch(e) { console.error('renderArchive:',e); }
+      try { if(typeof renderDidacticPlan==='function') renderDidacticPlan(); } catch(e) { console.error('renderDidacticPlan:',e); }
+      const b=document.getElementById('saveButton');
+      if(b){ b.textContent=`${career}: Plan ${number}`; b.classList.add('save-flash'); setTimeout(()=>{b.classList.remove('save-flash');b.textContent='Guardar plan'},2200); }
+      if(statusEl) statusEl.textContent=`Plan ${number} guardado en la carpeta “${career}” con fecha ${record.date}.`;
+      location.hash='archivo';
+      try { if(window.AminaCloud && typeof window.AminaCloud.save==='function') window.AminaCloud.save(); } catch(e) { console.warn('Nube pendiente:',e); }
+    }catch(error){
+      console.error('Error al guardar plan:',error);
+      if(statusEl) statusEl.textContent=`No se pudo guardar el plan: ${error.message||error}`;
+      alert(`No se pudo guardar el plan.\n\n${error.message||error}`);
+    }
+  };
+})();
 </script><script type="module" src="firebase-sync.js"></script></body></html>

@@ -97,8 +97,8 @@ function matchesCareer(value, names) {
 function filteredEntries(careerKey) {
   const names = CAREERS[careerKey];
   const source = new Map(allLocalEntries().map(item => [item.key, item.value]));
-  const plans = parse(source.get("planArchive"), []).filter(item => names.includes(recordCareer(item)));
-  const manual = parse(source.get("didacticManualRows"), []).filter(item => names.includes(recordCareer(item)));
+  const plans = parse(source.get("planArchive"), []).filter(item => matchesCareer(recordCareer(item), names));
+  const manual = parse(source.get("didacticManualRows"), []).filter(item => matchesCareer(recordCareer(item), names));
   const allowedIds = new Set([...plans, ...manual].map(item => item.id));
   const result = [];
 
@@ -108,7 +108,7 @@ function filteredEntries(careerKey) {
     } else if (key === "dailyObservationArchive") {
       result.push({
         key,
-        value: JSON.stringify(parse(value, []).filter(item => names.includes(recordCareer(item))))
+        value: JSON.stringify(parse(value, []).filter(item => matchesCareer(recordCareer(item), names)))
       });
     } else if (key === "didacticManualRows") {
       result.push({ key, value: JSON.stringify(manual) });
