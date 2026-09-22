@@ -410,9 +410,68 @@ document.addEventListener("click", event => {
 }, true);
 window.addEventListener("online", scheduleCloudSave);
 
+
+const careerKeyForLabel = label => Object.entries(CAREERS).find(([, names]) => names.includes(String(label || '').trim()))?.[0] || null;
+function workspacePlanArchive(workspace) {
+  const entries = Array.isArray(workspace?.entries) ? workspace.entries : [];
+  const entry = entries.find(item => item?.key === "planArchive");
+  return parse(entry?.value, []);
+}
+function replaceWorkspacePlanArchive(workspace, plans) {
+  const entries = Array.isArray(workspace?.entries) ? [...workspace.entries] : [];
+  const pos = entries.findIndex(item => item?.key === "planArchive");
+  const item = { key: "planArchive", value: JSON.stringify(plans) };
+  if (pos >= 0) entries[pos] = item; else entries.push(item);
+  return entries;
+}
+async function savePlanDirect(record) {
+  if (!currentUser || !cloudReady || access?.role !== "teacher") throw new Error("La nube del docente no está lista.");
+  const adminRef = ref(db, "amina/admin/workspace");
+  const adminSnap = await get(adminRef);
+  const admin = adminSnap.exists() ? adminSnap.val() : { version: 3, entries: [] };
+  let plans = workspacePlanArchive(admin).filter(p => p?.id !== record.id);
+  plans.push(record);
+  await set(adminRef, { ...admin, version: 3, updatedAt: serverTimestamp(), updatedBy: currentUser.email, entries: replaceWorkspacePlanArchive(admin, plans) });
+  const careerKey = careerKeyForLabel(record.career);
+  if (careerKey) {
+    const cRef = ref(db, `amina/carreras/${careerKey}/workspace`);
+    const cSnap = await get(cRef);
+    const cw = cSnap.exists() ? cSnap.val() : { version: 3, entries: [] };
+    let cp = workspacePlanArchive(cw).filter(p => p?.id !== record.id);
+    cp.push(record);
+    await set(cRef, { ...cw, version: 3, updatedAt: serverTimestamp(), updatedBy: currentUser.email, entries: replaceWorkspacePlanArchive(cw, cp) });
+  }
+  lastLocalSaveAt = Date.now();
+  return record;
+}
+async function getPlanDirect(id) {
+  if (!currentUser || !cloudReady || !access) throw new Error("La nube no está lista.");
+  const cloud = await readAllowedCloud();
+  const plans = workspacePlanArchive(cloud);
+  return plans.find(p => p?.id === id) || null;
+}
+async function deletePlanDirect(id, career) {
+  if (!currentUser || !cloudReady || access?.role !== "teacher") throw new Error("La nube del docente no está lista.");
+  const paths = ["amina/admin/workspace"];
+  const careerKey = careerKeyForLabel(career);
+  if (careerKey) paths.push(`amina/carreras/${careerKey}/workspace`);
+  for (const path of paths) {
+    const r = ref(db, path), snap = await get(r);
+    if (!snap.exists()) continue;
+    const ws = snap.val();
+    const plans = workspacePlanArchive(ws).filter(p => p?.id !== id);
+    await set(r, { ...ws, version: 3, updatedAt: serverTimestamp(), updatedBy: currentUser.email, entries: replaceWorkspacePlanArchive(ws, plans) });
+  }
+  lastLocalSaveAt = Date.now();
+  return true;
+}
+
 window.AminaCloud = {
   save: () => saveCloud(true),
   load: loadCloud,
   user: () => currentUser,
-  access: () => access
+  access: () => access,
+  savePlanDirect,
+  getPlanDirect,
+  deletePlanDirect
 };
