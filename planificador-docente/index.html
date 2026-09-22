@@ -367,6 +367,19 @@ let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')|
     p.date=date;p.didacticDate=date;p.didacticExportedAt=new Date().toISOString();await putPlan(p);
     const a=readIndex(),i=a.findIndex(x=>x.id===id);if(i>=0)a[i]=meta(p);writeIndex(a);
     let ids=[];try{ids=JSON.parse(localStorage.getItem('didacticExports')||'[]')}catch(e){};if(!ids.includes(id))ids.push(id);localStorage.setItem('didacticExports',JSON.stringify(ids));
+    let exportedRows={};try{exportedRows=JSON.parse(localStorage.getItem('aminaDidacticExportRows')||'{}')}catch(e){}
+    exportedRows[id]={
+      id:p.id,number:p.number,session:p.snapshot.sesion||p.session||p.number,date:p.didacticDate||p.date,career:p.career,
+      snapshot:{
+        sesion:p.snapshot.sesion||p.session||p.number,
+        unidad:p.snapshot.unidad||'',tema:p.snapshot.tema||'',vinculacion:p.snapshot.vinculacion||'',
+        objC:p.snapshot.objC||'',objP:p.snapshot.objP||'',objA:p.snapshot.objA||'',
+        inicio:p.snapshot.inicio||'',skill1:p.snapshot.skill1||'',skill2:p.snapshot.skill2||'',skill3:p.snapshot.skill3||'',
+        skill4:p.snapshot.skill4||'',skill5:p.snapshot.skill5||'',cierre:p.snapshot.cierre||'',
+        forma:p.snapshot.forma||'',estrategia:p.snapshot.estrategia||''
+      }
+    };
+    localStorage.setItem('aminaDidacticExportRows',JSON.stringify(exportedRows));
     localStorage.setItem('aminaDidacticCareer',p.career||''); localStorage.setItem('aminaDidacticLatestPlan',id);
     cancelDidacticExport();renderArchive();const st=document.getElementById('status');if(st)st.textContent=`Plan ${p.number} exportado al Plan Didáctico con fecha ${date}.`;
     if(window.AminaCloud?.savePlanDirect)window.AminaCloud.savePlanDirect(p).catch(()=>{});
