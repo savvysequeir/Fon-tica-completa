@@ -262,7 +262,7 @@ let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')|
       const same=archive.filter(p=>p && p.career===career && (p.group||'Único')===group);
       const number=same.reduce((m,p)=>Math.max(m,Number(p.number)||0),0)+1;
       const id=`${Date.now()}-${number}`;
-      const snapshot=safeSnapshot();
+      const snapshot=cloudSafeSnapshot();
       const record={
         id, number, date:todayLocal(), career, group, title:`Plan ${number}`,
         session:safeValue('sesion'), unit:safeValue('unidad'), topic:safeValue('tema'), snapshot,
@@ -295,6 +295,17 @@ let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')|
 
 /* AMINA v15.3 — planes completos en Firebase; índice local liviano */
 (function(){
+  function cloudSafeValue(id, fallback=''){ const el=document.getElementById(id); return el ? el.value : fallback; }
+  function cloudSafeSnapshot(){
+    const snap={};
+    (typeof fields!=='undefined' ? fields : []).forEach(id=>{ const el=document.getElementById(id); if(el) snap[id]=el.value; });
+    for(let i=1;i<=5;i++){ const el=document.getElementById('skill'+i); if(el) snap['skill'+i]=el.value; }
+    const checklist=document.getElementById('checklist');
+    snap.checklist=checklist ? checklist.innerHTML : '';
+    try{ if(typeof examData==='function') snap.examWeeks=examData(); }catch(e){}
+    try{ if(typeof v15Align!=='undefined' && v15Align) snap.teacherObjectives=v15Align.dataset.own==='yes'; }catch(e){}
+    return snap;
+  }
   const metaPlan=p=>({id:p.id,number:p.number,date:p.date,career:p.career,group:p.group,title:p.title,session:p.session,unit:p.unit,topic:p.topic,observationDate:p.observationDate,observations:p.observations,savedAt:p.savedAt,didacticDate:p.didacticDate||'',cloud:true});
   function compactLocalArchive(extra){
     const old=getArchive().map(metaPlan);
@@ -311,10 +322,10 @@ let v15Stored;try{v15Stored=JSON.parse(localStorage.getItem('planCompetencias')|
     const statusEl=$('status');
     try{
       if(!(await waitCloud())) throw new Error('La nube todavía no está lista. Espera a que aparezca “☁️ En línea” e inténtalo otra vez.');
-      const archive=getArchive(),group=safeValue('plannerGroup','Único')||'Único';
+      const archive=getArchive(),group=cloudSafeValue('plannerGroup','Único')||'Único';
       const same=archive.filter(p=>p&&p.career===career&&(p.group||'Único')===group);
-      const number=same.reduce((m,p)=>Math.max(m,Number(p.number)||0),0)+1,id=`${Date.now()}-${number}`,snapshot=safeSnapshot();
-      const record={id,number,date:todayLocal(),career,group,title:`Plan ${number}`,session:safeValue('sesion'),unit:safeValue('unidad'),topic:safeValue('tema'),snapshot,observationDate:safeValue('observationDate')||todayLocal(),observations:safeValue('dailyObservations'),savedAt:new Date().toISOString()};
+      const number=same.reduce((m,p)=>Math.max(m,Number(p.number)||0),0)+1,id=`${Date.now()}-${number}`,snapshot=cloudSafeSnapshot();
+      const record={id,number,date:todayLocal(),career,group,title:`Plan ${number}`,session:cloudSafeValue('sesion'),unit:cloudSafeValue('unidad'),topic:cloudSafeValue('tema'),snapshot,observationDate:cloudSafeValue('observationDate')||todayLocal(),observations:cloudSafeValue('dailyObservations'),savedAt:new Date().toISOString()};
       if(statusEl)statusEl.textContent='Guardando el plan completo en la nube…';
       await window.AminaCloud.savePlanDirect(record);
       try{ compactLocalArchive(record); }catch(e){
