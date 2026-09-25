@@ -330,6 +330,7 @@ input[type="file"]::file-selector-button{
   </div>
   <div class="toolbar">
    <span class="pill" id="modePill">Modo docente</span>
+    <button class="btn ghost" id="fullscreenBtn" type="button">⛶ Pantalla completa</button>
    <button class="btn ghost" id="teacherBtn">Docente</button>
    <button class="btn ghost teacher-only inline" id="exitTeacherBtn">Salir docente</button>
   </div>
@@ -774,7 +775,61 @@ let session=null, timerInterval=null, selectedSentence=null, selectedQuestion=nu
 let readingState={lastLine:0,total:0,score:null,time:0,durationSeconds:0,speed:1};
 const results={A1:{},B:{},C:{},D:{},E:{},F:null,G:null};
 
-function persist(){localStorage.setItem("aminaVersantData",JSON.stringify(data))}
+/* Audio persistence: IndexedDB avoids localStorage's small quota for base64 audio files. */
+const AMINA_DB_NAME="AMINA_VERSANT_MEDIA";
+const AMINA_DB_STORE="state";
+function openAminaDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(AMINA_DB_NAME,1);
+  req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(AMINA_DB_STORE))req.result.createObjectStore(AMINA_DB_STORE)};
+  req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+ });
+}
+async function saveFullStateToDB(){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(AMINA_DB_STORE,"readwrite");
+  tx.objectStore(AMINA_DB_STORE).put(data,"aminaVersantData");
+  tx.oncomplete=()=>{db.close();resolve(true)}; tx.onerror=()=>{db.close();reject(tx.error)};
+ });
+}
+async function loadFullStateFromDB(){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(AMINA_DB_STORE,"readonly"); const req=tx.objectStore(AMINA_DB_STORE).get("aminaVersantData");
+  req.onsuccess=()=>{db.close();resolve(req.result||null)}; req.onerror=()=>{db.close();reject(req.error)};
+ });
+}
+function dataWithoutHeavyAudio(){
+ const copy={...data};
+ const clean=v=>typeof v==="string"&&v.startsWith("data:audio")?"":v;
+ copy.sentenceAudio=(data.sentenceAudio||[]).map(clean);
+ copy.questionAudio=(data.questionAudio||[]).map(clean);
+ copy.buildAudio=(data.buildAudio||[]).map(clean);
+ copy.readingAudio=(data.readingAudio||[]).map(clean);
+ copy.openAudio=clean(data.openAudio||"");
+ return copy;
+}
+function persist(){
+ try{localStorage.setItem("aminaVersantData",JSON.stringify(dataWithoutHeavyAudio()))}catch(e){console.warn("Local metadata could not be saved",e)}
+ saveFullStateToDB().catch(e=>{console.error(e);alert("No se pudo guardar el audio en el almacenamiento del navegador: "+e.message)});
+}
+async function hydrateMediaFromDB(){
+ try{
+  const saved=await loadFullStateFromDB(); if(!saved)return;
+  /* Keep the latest full state, including all local audio files. */
+  data=saved;
+  if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
+  if(!data.sentenceAudioMeta)data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
+  if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
+  if(!data.buildAudio)data.buildAudio=Array(data.sentences.length).fill("");
+  if(!data.readingAudio)data.readingAudio=Array(data.readings.length).fill("");
+  if(!data.openAudio)data.openAudio="";
+  renderAllStatus(); renderReadings(); updateOpenAudioStatus();
+  if(typeof refreshRepeatGridAudioBadges==="function")refreshRepeatGridAudioBadges();
+  if(typeof updateTeacherSummary==="function")updateTeacherSummary();
+ }catch(e){console.warn("Could not restore IndexedDB media",e)}
+}
 function fileToDataURL(file){
  return new Promise((resolve,reject)=>{
    if(!file)return resolve("");
@@ -1547,6 +1602,20 @@ document.addEventListener("DOMContentLoaded",()=>{
   setTimeout(()=>{decorateSentenceButtons();updateTeacherSummary()},50);
 });
 
+
+/* Full-screen mode */
+function updateFullscreenButton(){
+ const b=document.querySelector("#fullscreenBtn"); if(!b)return;
+ b.textContent=document.fullscreenElement?"⤢ Salir de pantalla completa":"⛶ Pantalla completa";
+}
+document.querySelector("#fullscreenBtn")?.addEventListener("click",async()=>{
+ try{
+  if(!document.fullscreenElement)await document.documentElement.requestFullscreen();
+  else await document.exitFullscreen();
+ }catch(e){alert("El navegador no permitió activar pantalla completa.")}
+});
+document.addEventListener("fullscreenchange",updateFullscreenButton);
+document.addEventListener("DOMContentLoaded",()=>{hydrateMediaFromDB();updateFullscreenButton();});
 </script>
 </body>
 </html>
