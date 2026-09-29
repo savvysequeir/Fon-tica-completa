@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMINA-VERSANT | WESH</title>
+<style>
+:root{
+  --bg:#08111f;--panel:#101b2f;--panel2:#16243c;--text:#eef4ff;--muted:#aab7cc;
+  --accent:#57a6ff;--good:#27c483;--bad:#ff6470;--warn:#ffc857;--line:#2c3d59;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#07101d,#0d1626);color:var(--text);min-height:100vh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:rgba(7,16,29,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar{max-width:1200px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#70b8ff,#7b61ff);display:grid;place-items:center;font-weight:900;color:#06101c}
+h1{font-size:1.12rem;margin:0}.sub{font-size:.78rem;color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:20px}
+.card{background:rgba(16,27,47,.92);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.grid{display:grid;gap:14px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+label{display:block;color:var(--muted);font-size:.84rem;margin-bottom:5px}
+input,select,textarea{width:100%;border-radius:12px;border:1px solid var(--line);background:#0b1526;color:var(--text);padding:11px 12px;outline:none}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.btn{border:0;border-radius:12px;padding:11px 14px;background:#233754;color:white;font-weight:700}
+.btn.primary{background:linear-gradient(135deg,#3193ff,#5f72ff)}
+.btn.good{background:#14895d}.btn.bad{background:#b83e49}.btn.warn{background:#9c7319}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.section-tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:18px 0}
+.section-tabs button{padding:13px 8px;border-radius:12px;border:1px solid var(--line);background:#101b2f;color:white;font-weight:800}
+.section-tabs button.active{background:linear-gradient(135deg,#2f8fff,#675dff)}
+.hidden{display:none!important}
+.section-title{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:14px}
+.section-title h2{margin:0 0 4px;font-size:1.35rem}.section-title p{margin:0;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#15233a;border:1px solid var(--line);font-size:.8rem}
+.num-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.num-btn{aspect-ratio:1;border-radius:11px;border:1px solid var(--line);background:#13223a;color:white;font-weight:800}
+.num-btn.good{background:#0f6d4a}.num-btn.bad{background:#88323a}.num-btn.current{outline:2px solid var(--accent)}
+.num-btn .face{display:block;font-size:1.15rem;line-height:1;margin-top:3px}
+.speed-btn{width:32px;height:32px;padding:0;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:16px}
+.read-line.read{background:#0c6a46;color:#fff}
+.read-line.unread{background:#53171c;color:#fff}
+.read-line .mark{display:inline-block;width:26px;font-weight:900}
+.teacher-only{display:none}
+body.teacher .teacher-only{display:block}
+body.teacher .teacher-only.inline{display:inline-flex}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.stat{background:#0c1628;border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat b{display:block;font-size:1.2rem}.stat small{color:var(--muted)}
+.black-screen{position:fixed;inset:0;background:#000;color:#fff;z-index:1000;display:flex;align-items:center;justify-content:center;padding:5vw;text-align:center}
+.black-screen .content{width:min(1100px,94vw)}
+.countdown{font-size:clamp(4rem,15vw,11rem);font-weight:1000;letter-spacing:.02em}
+.sentence-display{font-size:clamp(2rem,5vw,5.5rem);font-weight:800;line-height:1.18}
+.reading-display{position:fixed;inset:0;background:#000;color:#fff;z-index:1001;overflow:hidden;padding:5vh 7vw}
+.reading-inner{position:absolute;left:7vw;right:7vw;top:100vh;font-size:clamp(1.2rem,2.2vw,2rem);line-height:1.65;will-change:transform}
+.read-line{padding:4px 7px;border-radius:7px;cursor:pointer}
+.read-line:hover{background:#1e1e1e}.read-line.selected{background:#314c80}
+.read-word{cursor:pointer;border-radius:4px;padding:0 1px;transition:.15s}.read-word.mispronounced{color:#ff3b30!important;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:800}
+.reading-controls{position:fixed;top:18px;right:24px;z-index:1003;display:flex;align-items:center;gap:8px}
+.timerbox{background:#111;border:1px solid #444;padding:8px 12px;border-radius:10px;font-weight:800;min-width:74px;text-align:center}
+.close-overlay{width:30px;height:30px;min-width:30px;padding:0;border:0;border-radius:50%;background:#e3212d;color:#fff;font-size:18px;font-weight:900;line-height:30px;display:grid;place-items:center;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.close-overlay:hover{background:#ff3340}
+.report{font-family:Arial,sans-serif;color:#111;background:#fff;padding:28px;max-width:900px;margin:auto}
+.report h1,.report h2{color:#111}.report table{width:100%;border-collapse:collapse}.report th,.report td{border:1px solid #bbb;padding:7px;text-align:left;font-size:13px}
+.notice{padding:10px 12px;border-radius:12px;background:#0d2238;border:1px solid #224c72;color:#cfe8ff}
+footer{max-width:1200px;margin:22px auto 40px;padding:0 20px;color:var(--muted);text-align:center}
+@media(max-width:800px){
+ .grid-2,.grid-3,.grid-4,.stats{grid-template-columns:1fr}
+ .section-tabs{grid-template-columns:repeat(4,1fr)}
+ .num-grid{grid-template-columns:repeat(5,1fr)}
+ .topbar{align-items:flex-start}.brand{align-items:flex-start}
+}
+@media print{
+ body>*:not(#printArea){display:none!important}
+ #printArea{display:block!important}
+}
+
+.reading-title-overlay{
+ position:fixed;left:50%;top:10vh;transform:translateX(-50%);
+ z-index:1004;font-size:clamp(1.8rem,4.4vw,4rem);font-weight:1000;
+ white-space:nowrap;max-width:88vw;overflow:hidden;text-overflow:ellipsis;
+ text-align:center;color:#fff;letter-spacing:.01em;pointer-events:none
+}
+.audio-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.audio-row audio{max-width:100%;height:36px}
+.small-input{padding:8px 10px}
+.compact-card{background:#0c1628;border:1px solid var(--line);border-radius:12px;padding:10px}
+.export-box{white-space:pre-wrap;max-height:260px;overflow:auto;background:#07101d;border:1px solid var(--line);padding:10px;border-radius:10px;font-family:ui-monospace,monospace;font-size:.8rem}
+.question-row{display:grid;grid-template-columns:52px 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+
+
+#teacherStudentData{display:none!important}
+#startBtn{display:none!important}
+
+/* Página exclusivamente docente */
+#teacherStudentData,
+#studentName,#studentId,#studentGender,#studentCareer,#startBtn,
+#teacherBtn,#exitTeacherBtn{display:none!important}
+body.teacher .teacher-only{display:block}
+body.teacher .teacher-inline{display:inline-flex}
+
+
+/* ===== AMINA UX V5 ===== */
+:root{
+  --amina-accent:#55b8ff;
+  --amina-good:#35d39a;
+  --amina-warn:#ffca55;
+}
+body{scroll-behavior:smooth}
+.card{backdrop-filter:blur(12px)}
+.num-grid{gap:10px!important}
+.num-btn{
+  min-width:48px!important;min-height:48px!important;border-radius:14px!important;
+  font-weight:900!important;position:relative;transition:.16s ease!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.18)
+}
+.num-btn:hover{transform:translateY(-2px) scale(1.03)}
+.num-btn.has-audio{border-color:var(--amina-good)!important;box-shadow:0 0 0 2px rgba(53,211,154,.12),0 8px 24px rgba(0,0,0,.22)!important}
+.num-btn.no-audio{opacity:.72}
+.num-btn .audio-dot{
+  position:absolute;right:-5px;top:-5px;width:20px;height:20px;border-radius:50%;
+  display:grid;place-items:center;font-size:11px;background:var(--amina-good);color:#06121d;
+  border:2px solid #0a1728
+}
+.sticky-nav{
+  position:sticky;top:8px;z-index:50;background:rgba(8,18,33,.9)!important;
+  backdrop-filter:blur(16px);box-shadow:0 8px 30px rgba(0,0,0,.2)
+}
+.audio-status-card{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#0a1728
+}
+.audio-status-card strong{color:var(--amina-good)}
+.assignment-summary{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:12px
+}
+.assignment-summary .mini{
+  border:1px solid var(--line);border-radius:13px;padding:10px;background:#09182a
+}
+.assignment-summary .mini b{display:block;font-size:1.25rem}
+@media(max-width:640px){
+  .num-grid{grid-template-columns:repeat(5,1fr)!important}
+  .num-btn{min-width:0!important;width:100%!important}
+  .toolbar{gap:8px!important}
+  .btn{width:100%;justify-content:center}
+}
+
+
+.active-dictation{
+  outline:3px solid #58a6ff!important;
+  background:linear-gradient(135deg,#338cff,#615cff)!important;
+  color:white!important;
+  box-shadow:0 0 0 4px rgba(88,166,255,.16),0 10px 28px rgba(0,0,0,.28)!important;
+}
+
+/* ===== AMINA VISUAL V8 · DOCENTE ===== */
+:root{
+  --page-max:1480px;
+  --panel-soft:#0c182a;
+  --panel-raised:#13223a;
+  --line-soft:#263b59;
+}
+body{
+  background:
+    radial-gradient(circle at 15% 0%,rgba(52,126,255,.09),transparent 32rem),
+    radial-gradient(circle at 90% 15%,rgba(102,82,255,.08),transparent 28rem),
+    linear-gradient(180deg,#07101d,#0b1423 55%,#08111f);
+}
+.topbar,main,footer{max-width:var(--page-max)}
+main{padding:24px 28px 48px}
+.card{
+  border-radius:22px;
+  padding:24px;
+  border-color:var(--line-soft);
+  box-shadow:0 18px 50px rgba(0,0,0,.18);
+}
+.card .card{
+  background:linear-gradient(180deg,rgba(17,32,55,.96),rgba(13,25,43,.96));
+  box-shadow:none;
+  border-radius:18px;
+}
+.section-tabs{
+  position:sticky;
+  top:78px;
+  z-index:60;
+  padding:10px;
+  border:1px solid var(--line-soft);
+  border-radius:18px;
+  background:rgba(7,16,29,.90);
+  backdrop-filter:blur(18px);
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+  margin:18px 0 22px;
+}
+.section-tabs button{
+  min-height:52px;
+  border-radius:14px;
+  font-size:1rem;
+}
+.section-title{
+  align-items:center;
+  border-bottom:1px solid rgba(65,91,126,.28);
+  padding-bottom:16px;
+  margin-bottom:20px;
+}
+.section-title h2{font-size:clamp(1.35rem,2vw,1.8rem);letter-spacing:.01em}
+.section-title p{font-size:.96rem;line-height:1.5;max-width:900px}
+.grid{gap:18px}
+.grid-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+label{font-size:.9rem;margin-bottom:7px}
+input,select,textarea{
+  min-height:48px;
+  border-radius:14px;
+  border-color:#314764;
+  padding:12px 14px;
+}
+textarea{min-height:120px}
+input[type="file"]{
+  padding:9px 10px;
+  background:#0b1729;
+}
+input[type="file"]::file-selector-button{
+  border:0;border-radius:10px;padding:9px 12px;margin-right:10px;
+  background:#253a58;color:#fff;font-weight:800;cursor:pointer;
+}
+.toolbar{gap:10px}
+.btn{min-height:46px;border-radius:13px;padding:11px 16px}
+.notice{padding:13px 15px;border-radius:14px;line-height:1.45}
+.num-grid{
+  grid-template-columns:repeat(10,minmax(48px,1fr));
+  gap:10px!important;
+}
+.num-btn{
+  width:100%!important;
+  min-width:0!important;
+  min-height:58px!important;
+  aspect-ratio:auto!important;
+  border-radius:15px!important;
+  font-size:1rem;
+  background:linear-gradient(180deg,#162842,#122039)!important;
+}
+.num-btn:hover{border-color:#5da9ff!important}
+.num-btn.good{background:linear-gradient(180deg,#137a55,#0f6547)!important}
+.num-btn.bad{background:linear-gradient(180deg,#93414a,#74333a)!important}
+.num-btn.current,.num-btn.active-dictation{
+  outline:2px solid #7bc0ff!important;
+  outline-offset:2px;
+}
+.num-btn .face{font-size:1rem;margin-top:4px}
+
+/* A: keep both exercises balanced and prevent number overflow. */
+#secA>.grid-2{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)}
+#secA>.grid-2>.card{min-width:0}
+#secA #sentenceGrid,
+#secA #readingGrid{grid-template-columns:repeat(5,minmax(0,1fr))}
+#secA #sentenceEditor{min-height:108px}
+#secA #readingEditor{min-height:220px}
+#secA .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+/* B */
+#secB #repeatGrid{grid-template-columns:repeat(10,minmax(0,1fr))}
+#secB .teacher-only.card{margin-top:20px!important}
+
+/* C: give the editor more useful width. */
+#secC>.grid-2{grid-template-columns:minmax(420px,.9fr) minmax(520px,1.1fr)}
+#secC #questionGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+#secC #questionEditor{min-height:132px}
+#secC #questionDisplay{display:block;min-height:28px}
+
+/* D */
+#secD>.grid-2{grid-template-columns:minmax(430px,.9fr) minmax(560px,1.1fr)}
+#secD #buildGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+#secD #buildParts{gap:10px}
+#secD #buildParts .btn{min-height:54px}
+#secD #buildAudioStatus{margin-top:16px!important}
+
+/* E */
+#secE>.grid-2{grid-template-columns:minmax(520px,.95fr) minmax(500px,1.05fr)}
+#secE #dictationGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+#secE #dictationInput{min-height:220px}
+#secE .card{align-self:start}
+
+/* F */
+#secF>.grid-2{grid-template-columns:minmax(620px,1.15fr) minmax(420px,.85fr)}
+#secF #storyText{max-height:300px!important;line-height:1.58}
+#secF #storyNotes{min-height:180px}
+
+/* G */
+#secG{max-width:1120px;margin-left:auto;margin-right:auto}
+#secG #openQuestion{min-height:130px}
+#secG #openNotes{min-height:130px}
+
+/* Prevent long strings / audio URLs from forcing horizontal scrolling. */
+.card,.notice,.export-box,textarea,input,select{min-width:0;max-width:100%}
+.export-box{overflow-wrap:anywhere}
+
+@media(max-width:1180px){
+  #secA>.grid-2,#secC>.grid-2,#secD>.grid-2,#secE>.grid-2,#secF>.grid-2{grid-template-columns:1fr}
+  #secA #sentenceGrid,#secA #readingGrid,
+  #secC #questionGrid,#secD #buildGrid,#secE #dictationGrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  main{padding:16px 12px 36px}
+  .card{padding:16px;border-radius:17px}
+  .section-tabs{top:70px;grid-template-columns:repeat(4,1fr);padding:8px}
+  .section-tabs button{min-height:46px}
+  .section-title{align-items:flex-start}
+  .pill{flex-shrink:0}
+  #secA #sentenceGrid,#secA #readingGrid,
+  #secB #repeatGrid,#secC #questionGrid,#secD #buildGrid,#secE #dictationGrid,
+  .num-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .num-btn{min-height:50px!important}
+  .stats{grid-template-columns:repeat(2,1fr)!important}
+}
+
+.reading-title-overlay{position:fixed!important;top:18px!important;left:50%!important;transform:translateX(-50%);z-index:10002;font-size:clamp(24px,3vw,42px);font-weight:800;text-align:center;width:min(80vw,1000px)}
+
+/* Correcciones visuales solicitadas */
+#closeReading.stop-active{background:#dc2626!important;color:#fff!important;border-color:#fecaca!important;box-shadow:0 0 0 4px rgba(220,38,38,.25)!important;transform:scale(1.12)}
+#openGrid{grid-template-columns:repeat(10,minmax(64px,1fr))!important}
+#secG>.grid{grid-template-columns:minmax(0,1fr)!important}
+#secG .teacher-only.card{width:100%;max-width:none}
+#secG #openQuestion{min-height:120px}
+@media(max-width:1100px){#openGrid{grid-template-columns:repeat(6,minmax(64px,1fr))!important}}
+@media(max-width:700px){#openGrid{grid-template-columns:repeat(4,minmax(60px,1fr))!important}}
+
+#secD #buildGrid .num-btn.active{outline:3px solid #60a5fa;outline-offset:2px;background:#1d4ed8!important;color:white!important}
+#secD #buildGrid{grid-template-columns:repeat(6,minmax(76px,1fr))!important}
+@media(max-width:700px){#secD #buildGrid{grid-template-columns:repeat(4,minmax(64px,1fr))!important}}
+
+#secD #buildGrid{
+ display:grid!important;
+ grid-template-columns:repeat(6,minmax(82px,1fr))!important;
+ gap:12px!important;
+ margin-top:16px!important;
+ visibility:visible!important;
+ opacity:1!important;
+ min-height:250px!important;
+}
+#secD #buildGrid .num-btn{
+ display:flex!important;
+ min-height:72px!important;
+ align-items:center!important;
+ justify-content:center!important;
+ visibility:visible!important;
+ opacity:1!important;
+ font-size:24px!important;
+ font-weight:900!important;
+ cursor:pointer!important;
+ border:1px solid #36527a!important;
+ border-radius:18px!important;
+ background:#172a46!important;
+ color:#fff!important;
+}
+#secD #buildGrid .num-btn:hover{transform:translateY(-2px);border-color:#60a5fa!important}
+
+#secB #repeatGrid,#secD #buildGrid{
+ display:grid!important;grid-template-columns:repeat(6,minmax(82px,1fr))!important;
+ gap:12px!important;visibility:visible!important;opacity:1!important;
+}
+#secB #repeatGrid .num-btn .num-btn,#secD #buildGrid .num-btn .num-btn{
+ display:flex!important;min-height:68px!important;align-items:center!important;justify-content:center!important;
+ visibility:visible!important;opacity:1!important;font-size:22px!important;font-weight:900!important;
+ cursor:pointer!important;border:1px solid #36527a!important;border-radius:16px!important;
+ background:#172a46!important;color:#fff!important;
+}
+
+#secD .card-grid,#secD .grid-2{align-items:start!important}
+#secD #buildGrid{
+ display:grid!important;
+ grid-template-columns:repeat(6,minmax(64px,1fr))!important;
+ gap:10px!important;width:100%!important;max-width:760px!important;
+ overflow:visible!important;
+}
+#secD #buildGrid .num-btn{
+ min-width:0!important;width:100%!important;height:64px!important;min-height:64px!important;
+ padding:8px!important;border-radius:14px!important;font-size:20px!important;
+}
+#secD .card:has(#buildGrid){overflow:visible!important;min-width:0!important}
+@media(max-width:900px){
+ #secD #buildGrid{grid-template-columns:repeat(5,minmax(54px,1fr))!important}
+}
+.reading-stop-ready{background:#dc2626!important;color:white!important;box-shadow:0 0 0 4px rgba(220,38,38,.25)!important}
+
+/* ===== AMINA VERSANT · CAPA VISUAL PROFESIONAL RESPONSIVE ===== */
+:root{
+  --amina-bg:#07111f;
+  --amina-panel:#0d1b2f;
+  --amina-panel2:#12243d;
+  --amina-line:#294260;
+  --amina-text:#f7f9fc;
+  --amina-muted:#aebbd0;
+  --amina-accent:#4f7cff;
+  --amina-ok:#159a6b;
+  --amina-bad:#d94b59;
+  --amina-radius:18px;
+}
+html,body{max-width:100%;overflow-x:hidden!important}
+body{
+  background:linear-gradient(180deg,#06101d 0%,#09182a 100%)!important;
+  color:var(--amina-text)!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif!important;
+}
+header,.topbar,.app-header{
+  min-height:68px!important;padding:10px 22px!important;
+  background:rgba(6,16,29,.96)!important;border-bottom:1px solid var(--amina-line)!important;
+  backdrop-filter:blur(12px);
+}
+main,.app,.container,.wrap{max-width:1600px!important;margin:auto!important}
+.section-tabs,.tabs,.nav-tabs{
+  position:sticky!important;top:0!important;z-index:40!important;
+  padding:8px!important;gap:8px!important;
+  background:rgba(7,17,31,.92)!important;backdrop-filter:blur(10px);
+}
+.section-tabs button,.tabs button,.nav-tabs button,[data-section]{
+  min-height:48px!important;border-radius:14px!important;font-weight:800!important;
+}
+section[id^="sec"]{
+  min-height:calc(100vh - 145px)!important;
+  max-height:none!important;
+  padding:22px!important;margin:0 auto 18px!important;
+  border:1px solid var(--amina-line)!important;border-radius:22px!important;
+  background:linear-gradient(180deg,rgba(16,34,57,.98),rgba(9,24,42,.98))!important;
+  box-shadow:0 18px 50px rgba(0,0,0,.22)!important;
+  overflow:visible!important;
+}
+section[id^="sec"] h2{font-size:clamp(25px,2.1vw,38px)!important;margin:0 0 8px!important}
+section[id^="sec"] h3{font-size:clamp(17px,1.3vw,23px)!important}
+.card,.panel,.box,.notice{
+  border:1px solid var(--amina-line)!important;border-radius:var(--amina-radius)!important;
+  background:rgba(13,27,47,.94)!important;box-shadow:none!important;
+}
+.card{padding:18px!important}
+.grid-2,.card-grid{
+  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:18px!important;align-items:start!important;
+}
+.num-grid{
+  display:grid!important;
+  grid-template-columns:repeat(10,minmax(48px,1fr))!important;
+  gap:8px!important;width:100%!important;
+}
+.num-btn{
+  min-width:0!important;width:100%!important;height:54px!important;min-height:54px!important;
+  padding:6px!important;border-radius:12px!important;font-size:18px!important;font-weight:850!important;
+  transition:transform .15s ease,border-color .15s ease,background .15s ease!important;
+}
+.num-btn:hover{transform:translateY(-1px);border-color:#6d92ff!important}
+button,.btn,input,textarea,select{font:inherit!important}
+button,.btn{border-radius:12px!important;min-height:44px!important}
+input,textarea,select{
+  width:100%!important;box-sizing:border-box!important;border-radius:12px!important;
+  border:1px solid var(--amina-line)!important;background:#081525!important;color:var(--amina-text)!important;
+}
+textarea{resize:vertical!important;min-height:90px!important}
+label{color:#d7e1ef!important;font-weight:700!important}
+.muted,p{line-height:1.45!important}
+.teacher-only{border-color:#355173!important}
+.good,.correct,.btn.success{background:var(--amina-ok)!important;color:#fff!important}
+.bad,.incorrect,.btn.danger{background:var(--amina-bad)!important;color:#fff!important}
+
+/* A: reading/editor panels */
+#secA .reading-list,#secA .sentence-list{max-height:52vh!important;overflow:auto!important}
+#secA .reading-overlay,#readingFullscreen,#readingOverlay,.fullscreen-reading{
+  padding:18px clamp(18px,5vw,90px)!important;
+}
+#secA .reading-overlay h1,#readingFullscreen h1,#readingOverlay h1,.fullscreen-reading h1{
+  font-size:clamp(28px,3vw,52px)!important;line-height:1.05!important;
+}
+
+/* B/C/D: controls fit without giant duplicate-looking tiles */
+#secB #repeatGrid,#secC .num-grid,#secD #buildGrid{
+  grid-template-columns:repeat(10,minmax(48px,1fr))!important;
+  gap:8px!important;max-width:none!important;
+}
+#secB #repeatGrid .num-btn,#secD #buildGrid .num-btn{
+  height:54px!important;min-height:54px!important;font-size:18px!important;
+}
+#secD .grid-2,#secD .card-grid{
+  grid-template-columns:minmax(420px,.9fr) minmax(480px,1.1fr)!important;
+}
+
+/* E/F/G: use screen efficiently */
+#secE .num-grid,#secG .num-grid{grid-template-columns:repeat(10,minmax(46px,1fr))!important}
+#secF .grid-2,#secG .grid-2{gap:16px!important}
+#storyReplacePanel textarea{min-height:130px!important}
+#secG textarea{min-height:130px!important}
+
+/* Keep primary actions visible inside long sections */
+.action-row,.controls,.toolbar,.button-row{
+  display:flex!important;gap:9px!important;flex-wrap:wrap!important;align-items:center!important;
+}
+
+/* Desktop: each section is visually contained in one viewport as much as content allows */
+@media (min-width:1100px) and (min-height:700px){
+  section[id^="sec"]{padding:18px!important}
+  section[id^="sec"] > .section-head{margin-bottom:12px!important}
+  .card{padding:14px!important}
+  .num-btn{height:48px!important;min-height:48px!important}
+  #secB #repeatGrid .num-btn,#secD #buildGrid .num-btn{height:48px!important;min-height:48px!important}
+}
+
+/* Laptop */
+@media (max-width:1199px){
+  .num-grid,#secB #repeatGrid,#secC .num-grid,#secD #buildGrid,#secE .num-grid,#secG .num-grid{
+    grid-template-columns:repeat(6,minmax(52px,1fr))!important;
+  }
+  #secD .grid-2,#secD .card-grid{grid-template-columns:1fr 1fr!important}
+}
+
+/* Tablet/mobile */
+@media (max-width:820px){
+  header,.topbar,.app-header{padding:8px 12px!important}
+  section[id^="sec"]{padding:14px!important;border-radius:16px!important}
+  .grid-2,.card-grid,#secD .grid-2,#secD .card-grid{grid-template-columns:1fr!important}
+  .num-grid,#secB #repeatGrid,#secC .num-grid,#secD #buildGrid,#secE .num-grid,#secG .num-grid{
+    grid-template-columns:repeat(5,minmax(46px,1fr))!important;
+  }
+}
+@media (max-width:520px){
+  .num-grid,#secB #repeatGrid,#secC .num-grid,#secD #buildGrid,#secE .num-grid,#secG .num-grid{
+    grid-template-columns:repeat(4,minmax(44px,1fr))!important;
+  }
+  .num-btn{height:46px!important;min-height:46px!important;font-size:16px!important}
+}
+/* ===== FIN CAPA VISUAL ===== */
+
+/* ===== D · SENTENCE BUILDS — interfaz compacta profesional ===== */
+#secD{overflow:hidden!important}
+#secD .d-head{margin-bottom:14px!important}
+#secD .d-workspace{display:grid;grid-template-columns:minmax(360px,.78fr) minmax(0,1.22fr);gap:14px;align-items:start}
+#secD .d-selector,#secD .d-activity{min-width:0;padding:16px!important}
+#secD .d-panel-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}
+#secD .d-panel-title h3{margin:0;font-size:1.05rem}
+#secD .d-panel-title span{display:inline-block;margin-top:3px;color:#8fb7e8;font-weight:800;font-size:.8rem}
+#secD .d-panel-title small,#secD .d-activity-head small{color:var(--amina-muted);display:block;margin-top:3px}
+#secD #buildGrid{grid-template-columns:repeat(10,minmax(0,1fr))!important;gap:7px!important}
+#secD #buildGrid .num-btn{height:46px!important;min-height:46px!important;aspect-ratio:auto!important;border-radius:11px!important;font-size:16px!important;padding:0!important}
+#secD .d-status{margin-top:12px!important;padding:9px 11px!important;font-size:.88rem}
+#secD .d-activity-head{padding-bottom:11px;margin-bottom:12px;border-bottom:1px solid var(--amina-line)}
+#secD .d-activity-head b{font-size:1.02rem}
+#secD .d-parts{gap:9px!important;margin-bottom:10px}
+#secD .d-parts button{min-height:62px!important;padding:10px!important}
+#secD .d-answer{margin:0!important;min-height:46px;display:flex;align-items:center}
+#secD .d-teacher-box{margin-top:13px;padding-top:13px;border-top:1px solid var(--amina-line)!important}
+#secD .d-audio-fields{display:grid;grid-template-columns:1.15fr .85fr;gap:10px}
+#secD .d-audio-fields label{margin-bottom:5px!important;font-size:.8rem!important}
+#secD .d-audio-fields input{min-height:44px!important}
+#secD .d-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+#secD .d-actions .btn{min-height:42px!important;padding:9px 12px!important}
+#secD .d-separator{width:1px;height:30px;background:var(--amina-line);margin:0 2px}
+@media(max-width:1250px){#secD .d-workspace{grid-template-columns:1fr}#secD #buildGrid{grid-template-columns:repeat(10,minmax(42px,1fr))!important}}
+@media(max-width:760px){#secD #buildGrid{grid-template-columns:repeat(5,minmax(44px,1fr))!important}#secD .d-audio-fields{grid-template-columns:1fr}#secD .d-separator{display:none}}
+
+</style>
+</head>
+<body class="teacher">
+<header>
+ <div class="topbar">
+  <div class="brand">
+   <div class="logo">WESH</div>
+   <div><h1>AMINA‑VERSANT</h1><div class="sub">Evaluación oral y lingüística · WESH</div></div>
+  </div>
+  <div class="toolbar">
+   <span class="pill" id="modePill">Modo docente</span>
+    <button class="btn ghost" id="fullscreenBtn" type="button">⛶ Pantalla completa</button>
+   <button class="btn ghost" id="teacherBtn">Docente</button>
+   <button class="btn ghost teacher-only inline" id="exitTeacherBtn">Salir docente</button>
+  </div>
+ </div>
+</header>
+
+<main>
+<section class="card hidden" id="teacherStudentData" id="studentCard">
+ <div class="section-title">
+  <div><h2>Datos del estudiante</h2><p>Complete estos datos antes de iniciar una evaluación.</p></div>
+  <span class="pill" id="sessionStatus">Sin sesión</span>
+ </div>
+ <div class="grid grid-4">
+  <div><label>Nombre y apellidos</label><input id="studentName" placeholder="Nombre completo"></div>
+  <div><label>Carnet</label><input id="studentId" placeholder="Carnet"></div>
+  <div><label>Género</label><select id="studentGender"><option value="">Seleccionar</option><option>Masculino</option><option>Femenino</option><option>Otro</option></select></div>
+  <div><label>Carrera</label><input id="studentCareer" placeholder="Carrera"></div>
+ </div>
+ <div class="toolbar" style="margin-top:14px">
+  <button class="btn primary" id="startSession">Empezar evaluación</button>
+  <button class="btn bad" id="finishSession" disabled>Finalizar evaluación</button>
+  <button class="btn ghost" id="printFullReport" disabled>Reporte / PDF</button>
+ </div>
+ <div class="stats">
+  <div class="stat"><b id="elapsed">00:00:00</b><small>Tiempo de sesión</small></div>
+  <div class="stat"><b id="overallScore">—</b><small>Promedio global</small></div>
+  <div class="stat"><b id="completedSections">0/7</b><small>Secciones con resultado</small></div>
+  <div class="stat"><b id="currentUser">—</b><small>Estudiante</small></div>
+ </div>
+</section>
+
+<div class="section-tabs sticky-nav" id="tabs">
+ <button data-sec="A" class="active">A</button><button data-sec="B">B</button><button data-sec="C">C</button>
+ <button data-sec="D">D</button><button data-sec="E">E</button><button data-sec="F">F</button><button data-sec="G">G</button>
+</div>
+
+<section id="secA" class="card app-section">
+ <div class="section-title"><div><h2>A · READ ALOUD</h2><p>Ejercicio 1: lectura de oraciones · Ejercicio 2: lectura cronometrada.</p></div><span class="pill" id="scoreA">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div class="card">
+   <h3>Ejercicio 1 · 30 oraciones</h3>
+   <p class="sub">El docente selecciona un número. Aparece ONE · TWO · THREE y luego la oración.</p>
+   <div class="grid grid-3 teacher-only" style="margin-bottom:12px">
+    <div><label>Segundos en pantalla</label><input id="sentenceSeconds" type="number" min="3" max="20" value="6"></div>
+    <div style="grid-column:span 2"><label>Editar oración seleccionada</label><textarea id="sentenceEditor" placeholder="Seleccione un número"></textarea></div>
+   </div>
+   <div class="toolbar teacher-only" style="margin-bottom:12px"><button class="btn primary" id="saveSentence">Guardar oración</button><button class="btn ghost" id="resetSentences">Restaurar ejemplo</button></div>
+   <div class="num-grid" id="sentenceGrid"></div>
+   <div class="toolbar teacher-only" style="margin-top:14px">
+    <button class="btn good" id="markYes" disabled>YES · correcta</button>
+    <button class="btn bad" id="markNo" disabled>NO · incorrecta</button>
+    <span class="pill" id="a1progress">0/30 evaluadas</span><button class="btn ghost" id="resetActivityA">Reiniciar actividad A</button>
+   </div>
+  </div>
+  <div class="card">
+   <h3>Ejercicio 2 · Lectura</h3>
+   <p class="sub">Toca un número para abrir esa lectura directamente en pantalla negra. Puedes editar título, texto, tiempo y velocidad antes de iniciar.</p>
+   <div class="num-grid" id="readingGrid" style="margin-bottom:14px"></div>
+   <div class="teacher-only">
+    <div class="grid grid-2">
+     <div><label>Lectura</label><select id="readingSelect"></select></div>
+     <div><label>Título de la lectura</label><input id="readingTitle" placeholder="Título de la lectura"></div>
+    </div>
+    <div class="grid grid-2" style="margin-top:10px">
+     <div><label>Minutos (1–10)</label><input id="readingMinutes" type="number" min="1" max="10" step="1" value="5"></div>
+     <div><label>Segundos (0–59)</label><input id="readingSeconds" type="number" min="0" max="59" step="1" value="0"></div>
+    </div>
+    <label style="margin-top:10px">Texto (350–500 palabras recomendado)</label>
+    <textarea id="readingEditor" style="min-height:180px"></textarea>
+    <div class="toolbar" style="margin-top:10px">
+     <button class="btn primary" id="saveReading">Guardar lectura</button>
+     <button class="btn good" id="launchReading">Iniciar lectura</button>
+     <button class="btn ghost" id="printReading">PDF Sección A completa</button>
+    </div>
+   </div>
+   
+   <div class="stats">
+    <div class="stat"><b id="readingLinesTotal">0</b><small>Líneas</small></div>
+    <div class="stat"><b id="readingLastLine">0</b><small>Última línea</small></div>
+    <div class="stat"><b id="readingScore">—</b><small>Puntaje lectura</small></div>
+    <div class="stat"><b id="readingTime">—</b><small>Límite</small></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="secB" class="card app-section hidden">
+ <div class="section-title"><div><h2>B · REPEAT</h2><p>Repite las oraciones escuchadas. Toca un número del 1 al 30. Se abrirá esa oración y, si tiene audio guardado, se reproducirá.</p></div><span class="pill" id="scoreB">Sin calificar</span></div>
+ <div class="notice" style="margin-bottom:10px"><b>Selecciona una oración del 1 al 30:</b> toca el número para abrirla y reproducir su audio guardado.</div>
+ <div class="num-grid" id="repeatGrid"></div>
+ <div class="teacher-only card" style="margin-top:14px">
+  <label>Oración seleccionada</label>
+  <div class="notice" id="repeatPrompt">Seleccione una oración</div>
+  <div class="notice" id="sentenceAudioIdentity" style="margin-top:8px">
+    <b>Audio:</b> <span id="sentenceAudioIdentityText">Selecciona una oración para identificar su audio.</span>
+  </div>
+  <div class="grid grid-2" style="margin-top:10px">
+   <div><label>Audio local (WhatsApp u otro archivo)</label><input id="repeatAudioFile" type="file" accept="audio/*"></div>
+   <div><label>URL directa del audio</label><input id="repeatAudioUrl" class="small-input" placeholder="https://.../audio.mp3"></div>
+  </div>
+  <div class="audio-row">
+   <button class="btn primary" id="saveRepeatAudio">Guardar audio en esta oración</button>
+   <button class="btn ghost" id="playRepeatAudio">▶ Reproducir</button>
+   <button class="btn good" id="repeatYes">YES</button>
+   <button class="btn bad" id="repeatNo">NO</button>
+  </div>
+  <div class="toolbar" style="margin-top:10px">
+   <button class="btn primary" id="exportA1Audio">Exportar audios de A1</button><button class="btn ghost" id="resetActivityB">Reiniciar actividad B</button>
+
+<button class="btn good" id="downloadSentenceAudioPackage">Descargar paquete de audios A1</button>
+<input type="file" id="importSentenceAudioPackageTeacher" accept=".json,application/json" class="teacher-only">
+
+  </div>
+  <div id="exportA1Box" class="hidden" style="display:none!important"></div>
+ </div>
+</section>
+
+<section id="secC" class="card app-section hidden">
+ <div class="section-title"><div><h2>C · SHORT ANSWER</h2><p>Preguntas editables, con audio local o por URL. Toca directamente el número para escuchar su audio. Puede añadir o quitar preguntas.</p></div><span class="pill" id="scoreC">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div>
+   <div class="toolbar teacher-only" style="margin-bottom:10px">
+    <button class="btn primary" id="addQuestion">+ Añadir pregunta</button>
+    <button class="btn bad" id="removeQuestion">− Quitar seleccionada</button><button class="btn ghost" id="resetActivityC">Reiniciar actividad C</button>
+   </div>
+   <div class="num-grid" id="questionGrid"></div>
+  </div>
+  <div>
+   <div class="teacher-only">
+    <label>Pregunta seleccionada</label><textarea id="questionEditor"></textarea>
+    <div class="grid grid-2">
+     <div><label>Audio local</label><input id="questionAudioFile" type="file" accept="audio/*"></div>
+     <div><label>URL directa del audio</label><input id="questionAudioUrl" placeholder="https://.../audio.mp3"></div>
+    </div>
+    <div class="toolbar" style="margin-top:10px">
+     <button class="btn primary" id="saveQuestion">Guardar pregunta/audio</button>
+     <button class="btn ghost" id="playQuestionAudio">▶ Audio</button>
+     <button class="btn good" id="questionYes">Correcta</button>
+     <button class="btn bad" id="questionNo">Incorrecta</button>
+    </div>
+   </div>
+   <div class="card" style="margin-top:12px"><b id="questionDisplay">Seleccione una pregunta</b></div>
+  </div>
+ </div>
+</section>
+
+<section id="secD" class="card app-section hidden">
+ <div class="section-title d-head"><div><h2>D · SENTENCE BUILDS</h2><p>Selecciona una oración, escucha el audio y reconstruye sus tres partes en el orden correcto.</p></div><span class="pill" id="scoreD">Sin calificar</span></div>
+ <div class="d-workspace">
+  <div class="card d-selector">
+    <div class="d-panel-title"><div><h3>Oraciones</h3><span>1–30</span></div><small>Toca un número para abrir la actividad.</small></div>
+    <div class="num-grid" id="buildGrid"></div>
+    <div id="buildAudioStatus" class="notice d-status">Selecciona una oración.</div>
+    <div id="buildAudioList" style="display:none!important"></div>
+  </div>
+  <div class="card d-activity">
+   <div class="d-activity-head"><div><b>Construcción de la oración</b><small>Ordena las tres partes.</small></div></div>
+   <div id="buildParts" class="grid grid-3 d-parts"></div>
+   <div id="buildAnswer" class="notice d-answer">Primero toca un número del 1 al 30.</div>
+
+   <div class="teacher-only d-teacher-box">
+    <div class="d-audio-fields">
+     <div><label>Subir audio</label><input id="buildAudioFile" type="file" accept="audio/*"></div>
+     <div><label>URL directa del audio</label><input id="buildAudioUrl" placeholder="https://.../audio.mp3"></div>
+    </div>
+    <div class="d-actions">
+     <button class="btn primary" id="saveBuildAudio">Guardar audio</button>
+     <button class="btn ghost" id="playBuildAudio">▶ Escuchar</button>
+     <button class="btn bad" id="removeBuildAudio">Eliminar</button>
+     <span class="d-separator"></span>
+     <button class="btn good" id="buildCorrect">✓ Correcta</button>
+     <button class="btn bad" id="buildWrong">✕ Incorrecta</button>
+     <button class="btn ghost" id="buildReset">↻ Reiniciar</button>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="secE" class="card app-section hidden">
+ <div class="section-title"><div><h2>E · DICTATION</h2><p>Los audios provienen de A · Ejercicio 1. Toca un número para escucharlo o usa una oración aleatoria.</p></div><span class="pill" id="scoreE">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div class="card">
+   <div class="toolbar teacher-only" style="margin-bottom:12px">
+    <button class="btn primary" id="nextDictation">Nueva oración aleatoria</button>
+    <span class="pill" id="dictationNumber">—</span>
+   </div>
+   <div class="num-grid" id="dictationGrid"></div>
+   <div class="teacher-only notice" id="dictationTeacherText" style="margin-top:12px">Toca un número o selecciona una oración aleatoria.</div>
+  </div>
+  <div>
+   <label>Escriba lo que escucha</label>
+   <textarea id="dictationInput"></textarea>
+   <div class="toolbar teacher-only">
+    <button class="btn good" id="dictationYes">Correcta</button>
+    <button class="btn bad" id="dictationNo">Incorrecta</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="secF" class="card app-section hidden">
+ <div class="section-title"><div><h2>F · STORY RETELLING</h2>
+<div class="teacher-only card" id="storyReplacePanel" style="margin:16px 0">
+ <h3>Cambiar historia</h3>
+ <p class="muted">Puedes escribir/pegar otra historia o cargar un archivo de texto (.txt). Luego pulsa “Guardar historia”.</p>
+ <label>Historia</label>
+ <textarea id="storyReplacementText" rows="10" placeholder="Escribe o pega aquí la nueva historia..."></textarea>
+ <div class="grid-2" style="margin-top:12px">
+  <div>
+   <label>Subir archivo de texto</label>
+   <input id="storyReplacementFile" type="file" accept=".txt,text/plain">
+  </div>
+  <div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+   <button type="button" class="btn primary" id="saveStoryReplacement">Guardar historia</button>
+   <button type="button" class="btn" id="clearStoryReplacement">Limpiar</button>
+  </div>
+ </div>
+ <div id="storyReplacementStatus" class="notice" style="margin-top:10px">La historia actual se conserva hasta que guardes otra.</div>
+</div>
+<p>Selecciona una lectura y carga el audio correspondiente. El texto queda visible únicamente para el docente.</p></div><span class="pill" id="scoreF">Sin calificar</span></div>
+ <div class="grid grid-2">
+  <div>
+   <label>Lectura</label>
+   <select id="storySelect"></select>
+
+   <div class="grid grid-2 teacher-only" style="margin-top:12px">
+    <div>
+     <label>Subir audio de la lectura</label>
+     <input id="storyAudioFile" type="file" accept="audio/*">
+    </div>
+    <div>
+     <label>URL directa del audio</label>
+     <input id="storyAudioUrl" placeholder="https://.../audio.mp3">
+    </div>
+   </div>
+
+   <div class="toolbar teacher-only" style="margin-top:10px">
+    <button class="btn primary" id="saveStoryAudio">Guardar audio</button>
+    <button class="btn ghost" id="playStoryAudio">▶ Escuchar audio</button>
+    <button class="btn bad" id="removeStoryAudio">Eliminar audio</button>
+   </div>
+
+   <div id="storyAudioStatus" class="notice" style="margin-top:10px">Sin audio guardado.</div>
+   <div class="card" id="storyText" style="margin-top:10px;max-height:340px;overflow:auto"></div>
+  </div>
+
+  <div class="teacher-only">
+   <label>Puntaje manual según desempeño (0–100)</label>
+   <input id="storyScoreInput" type="number" min="0" max="100" value="100">
+   <label style="margin-top:10px">Observaciones</label>
+   <textarea id="storyNotes"></textarea>
+   <button class="btn primary" id="saveStoryScore" type="button">Aceptar puntaje</button>
+   <div id="storyScoreSaved" class="notice" style="margin-top:10px">Puntaje pendiente de aceptar.</div>
+  </div>
+ </div>
+</section>
+
+<section id="secG" class="card app-section hidden">
+ <div class="section-title"><div><h2>G · OPEN SPEAKING</h2><p>30 preguntas con audio independiente. El docente selecciona la pregunta y califica manualmente según el desempeño.</p></div><span class="pill" id="scoreG">Sin calificar</span></div>
+ <div class="grid">
+  <div>
+   <h3>Preguntas 1–30</h3>
+   <div class="num-grid" id="openGrid"></div>
+   <div id="openAudioStatus" class="notice" style="margin-top:10px">Seleccione una pregunta.</div>
+  </div>
+  <div class="teacher-only card" style="margin-top:14px">
+   <h3>Editor de pregunta y audio</h3>
+   <label>Pregunta seleccionada</label><textarea id="openQuestion" placeholder="Escriba aquí la pregunta"></textarea>
+   <div class="grid grid-2" style="margin-top:12px"><div><label>Subir audio</label><input id="openAudioFile" type="file" accept="audio/*"></div><div><label>URL directa del audio</label><input id="openAudioUrl" placeholder="https://.../audio.mp3"></div></div>
+   <div class="toolbar" style="margin-top:10px"><button class="btn primary" id="saveOpenAudio">Guardar pregunta/audio</button><button class="btn ghost" id="playOpenAudio">▶ Probar audio</button><button class="btn bad" id="removeOpenAudio">Eliminar audio</button></div>
+  </div>
+ </div>
+ <div class="teacher-only card" style="margin-top:14px">
+  <label>Puntaje manual según desempeño (0–100)</label><input id="openScoreInput" type="number" min="0" max="100" value="100">
+  <label style="margin-top:10px">Observaciones</label><textarea id="openNotes"></textarea>
+  <button class="btn primary" id="saveOpenScore">Aceptar puntaje</button>
+ </div>
+</section>
+
+<div id="printArea" class="hidden"></div>
+
+
+<section id="teacherDashboardSummary" class="teacher-summary-compact" aria-label="Resumen docente">
+  <div class="teacher-summary-head">
+    <div><strong>Resumen docente</strong><span> · Escala rápida de calificación</span></div>
+    <button type="button" class="summary-toggle" id="summaryToggle" aria-expanded="false">Ver criterios ▾</button>
+  </div>
+  <div class="teacher-summary-grid" id="teacherSummaryGrid" hidden>
+    <div class="summary-chip"><b>A · READ ALOUD</b><small>A1: 10 correctas = 100 · A2: puntaje proporcional a la última línea.</small></div>
+    <div class="summary-chip"><b>B · REPEAT</b><small>10 correctas = 100 · proporcional.</small></div>
+    <div class="summary-chip"><b>C · SHORT ANSWER</b><small>10 correctas = 100 · proporcional.</small></div>
+    <div class="summary-chip"><b>D · SENTENCE BUILDS</b><small>10 correctas = 100 · proporcional.</small></div>
+    <div class="summary-chip"><b>E · DICTATION</b><small>10 correctas = 100 · proporcional.</small></div>
+    <div class="summary-chip"><b>F · STORY RETELLING</b><small>Calificación manual de 0–100.</small></div>
+    <div class="summary-chip"><b>G · OPEN SPEAKING</b><small>Calificación manual de 0–100.</small></div>
+  </div>
+</section>
+
+
+
+</main>
+
+<footer>WESH · Lic. Wascar Enrique Sequeira Hurtado</footer>
+
+<div id="sentenceOverlay" class="black-screen hidden">
+ <div class="content">
+  <div id="countdown" class="countdown">ONE</div>
+  <div id="sentenceDisplay" class="sentence-display hidden"></div>
+ </div>
+</div>
+
+<div id="readingOverlay" class="reading-display hidden">
+ <div id="readingOverlayTitle" class="reading-title-overlay"></div>
+ <div class="reading-controls">
+  <div class="timerbox" id="readingClock">00:00</div>
+  <button class="btn ghost speed-btn" id="slowerReading" title="Disminuir velocidad">−</button>
+  <button class="btn ghost speed-btn" id="fasterReading" title="Aumentar velocidad">+</button>
+  <button class="close-overlay" id="closeReading" title="Cerrar lectura" aria-label="Cerrar lectura">×</button>
+ </div>
+ <div id="readingInner" class="reading-inner"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const teacherPassword="estoico01";
+const defaults={
+ sentences:[
+ "The student reads the sentence clearly and confidently.",
+ "Learning a language requires patience, practice, and attention.",
+ "My classmates usually arrive before the lesson begins.",
+ "She has been studying English for several months.",
+ "We visited the museum after finishing our morning class.",
+ "Please remember to bring your notebook tomorrow morning.",
+ "The teacher explained the exercise in a very simple way.",
+ "They are preparing an important presentation for next week.",
+ "I would rather practice speaking than memorize isolated rules.",
+ "Good pronunciation helps listeners understand your message clearly.",
+ "The weather changed suddenly while we were walking home.",
+ "He has already completed the first part of the assignment.",
+ "Could you repeat that sentence a little more slowly?",
+ "Everyone should respect different opinions during a discussion.",
+ "The students were working quietly when the bell rang.",
+ "I might travel next month if I finish my work.",
+ "Reading aloud can improve rhythm, stress, and fluency.",
+ "She used to study at night when she was younger.",
+ "They have never visited a place like this before.",
+ "The doctor asked the patient several important questions.",
+ "We will have finished the project by Friday afternoon.",
+ "You should listen carefully before answering the question.",
+ "My family enjoys spending time together on weekends.",
+ "The meeting had already started when we arrived.",
+ "If I had more time, I would read another chapter.",
+ "He is going to explain the results to the group.",
+ "Please speak naturally and keep a steady reading pace.",
+ "The children were excited because the trip was finally happening.",
+ "I have learned many useful expressions in this course.",
+ "Effective communication depends on clarity, confidence, and practice."
+ ],
+ questions:Array.from({length:30},(_,i)=>`Question ${i+1}: Tell me something about your daily life.`),
+ readings:Array.from({length:30},(_,i)=>({
+   title:`Reading ${i+1}`,
+   text:`Reading ${i+1}. Learning a language is a gradual process that combines attention, repetition, understanding, and meaningful use. Students often begin by recognizing words visually and connecting them with sounds. Later, they learn how those words function in sentences and real situations. A strong reader does not simply pronounce every word; the reader also follows ideas, notices punctuation, controls rhythm, and anticipates meaning. Practice becomes more effective when the learner receives immediate feedback and has a clear goal. In class, short reading activities can help students develop confidence before moving to longer texts. The teacher may first model a sentence, then ask students to read it, identify difficult sounds, and repeat the sentence with better stress and intonation. Over time, learners become faster and more accurate. They also begin to notice patterns in spelling and pronunciation. This awareness makes new vocabulary easier to recognize. Another important skill is comprehension. Readers should be able to explain the main idea, identify supporting details, and connect the text with their own knowledge. Timed reading can be useful when it is used carefully. The purpose is not only speed, but controlled fluency. A student who reads quickly without understanding the text has not completed the task successfully. For that reason, teachers should consider both accuracy and comprehension. Regular practice, useful feedback, and repeated exposure create stronger reading habits. When students see their progress, motivation usually increases. They become more willing to read aloud, participate in class, and use English in unfamiliar situations. This type of practice can support pronunciation, vocabulary, grammar, and speaking at the same time.`
+ }))
+}; 
+let data=JSON.parse(localStorage.getItem("aminaVersantData")||"null")||defaults;
+if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
+if(!data.sentenceAudioMeta)data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
+if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
+if(!data.openAudio)data.openAudio=Array(30).fill("");
+if(!data.buildAudio)data.buildAudio=Array(data.sentences.length).fill("");
+if(!data.readingAudio)data.readingAudio=Array(data.readings.length).fill("");
+while(data.sentenceAudio.length<data.sentences.length)data.sentenceAudio.push("");
+while(data.buildAudio.length<data.sentences.length)data.buildAudio.push("");
+while(data.readingAudio.length<data.readings.length)data.readingAudio.push("");
+while(data.questionAudio.length<data.questions.length)data.questionAudio.push("");
+let session=null, timerInterval=null, selectedSentence=null, selectedQuestion=null, selectedRepeat=null, selectedBuild=null, dictationCurrent=null;
+let readingState={lastLine:0,total:0,score:null,time:0,durationSeconds:0,speed:1};
+const results={A1:{},B:{},C:{},D:{},E:{},F:null,G:null};
+
+/* Audio persistence: IndexedDB avoids localStorage's small quota for base64 audio files. */
+const AMINA_DB_NAME="AMINA_VERSANT_MEDIA";
+const AMINA_DB_STORE="state";
+const AMINA_REPEAT_STORE="repeatAudio";
+function openAminaDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(AMINA_DB_NAME,2);
+  req.onupgradeneeded=()=>{
+    if(!req.result.objectStoreNames.contains(AMINA_DB_STORE))req.result.createObjectStore(AMINA_DB_STORE);
+    if(!req.result.objectStoreNames.contains(AMINA_REPEAT_STORE))req.result.createObjectStore(AMINA_REPEAT_STORE);
+  };
+  req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+ });
+}
+async function saveFullStateToDB(){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(AMINA_DB_STORE,"readwrite");
+  tx.objectStore(AMINA_DB_STORE).put(data,"aminaVersantData");
+  tx.oncomplete=()=>{db.close();resolve(true)}; tx.onerror=()=>{db.close();reject(tx.error)};
+ });
+}
+async function loadFullStateFromDB(){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(AMINA_DB_STORE,"readonly"); const req=tx.objectStore(AMINA_DB_STORE).get("aminaVersantData");
+  req.onsuccess=()=>{db.close();resolve(req.result||null)}; req.onerror=()=>{db.close();reject(req.error)};
+ });
+}
+
+async function saveRepeatAudioPersistent(index, value, meta){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(AMINA_REPEAT_STORE,"readwrite");
+  tx.objectStore(AMINA_REPEAT_STORE).put({value,meta:meta||null,savedAt:Date.now()},String(index));
+  tx.oncomplete=()=>{db.close();resolve(true)};
+  tx.onerror=()=>{db.close();reject(tx.error)};
+ });
+}
+async function loadRepeatAudioPersistent(){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(AMINA_REPEAT_STORE,"readonly");
+  const store=tx.objectStore(AMINA_REPEAT_STORE);
+  const req=store.getAll(); const keysReq=store.getAllKeys();
+  tx.oncomplete=()=>{
+   const out=Array(30).fill(null);
+   (req.result||[]).forEach((v,j)=>{const k=Number(keysReq.result[j]);if(k>=0&&k<30)out[k]=v});
+   db.close();resolve(out);
+  };
+  tx.onerror=()=>{db.close();reject(tx.error)};
+ });
+}
+async function blobToDataURL(blob){
+ return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)});
+}
+async function hydrateRepeatAudioPersistent(){
+ try{
+  const saved=await loadRepeatAudioPersistent();
+  ensureAudioMeta();
+  for(let i=0;i<saved.length;i++){
+   const item=saved[i]; if(!item)continue;
+   data.sentenceAudio[i]=item.value instanceof Blob ? await blobToDataURL(item.value) : (item.value||"");
+   data.sentenceAudioMeta[i]=item.meta||null;
+  }
+  renderRepeatGrid();
+  if(typeof refreshRepeatGridAudioBadges==="function")refreshRepeatGridAudioBadges();
+ }catch(e){console.warn("No se pudieron restaurar los audios persistentes de B",e)}
+}
+function dataWithoutHeavyAudio(){
+ const copy={...data};
+ const clean=v=>typeof v==="string"&&v.startsWith("data:audio")?"":v;
+ copy.sentenceAudio=(data.sentenceAudio||[]).map(clean);
+ copy.questionAudio=(data.questionAudio||[]).map(clean);
+ copy.buildAudio=(data.buildAudio||[]).map(clean);
+ copy.readingAudio=(data.readingAudio||[]).map(clean);
+ copy.openAudio=Array.isArray(data.openAudio)?data.openAudio.map(clean):clean(data.openAudio||"");
+ return copy;
+}
+async function persist(){
+ try{localStorage.setItem("aminaVersantData",JSON.stringify(dataWithoutHeavyAudio()))}catch(e){console.warn("Local metadata could not be saved",e)}
+ try{
+   await saveFullStateToDB();
+   return true;
+ }catch(e){
+   console.error(e);
+   alert("No se pudo guardar permanentemente el audio en este navegador: "+e.message);
+   return false;
+ }
+}
+async function hydrateMediaFromDB(){
+ try{
+  const saved=await loadFullStateFromDB(); if(!saved)return;
+  /* Keep the latest full state, including all local audio files. */
+  data=saved;
+  const independentOpenAudio=await loadOpenAudioSlots();
+  if(independentOpenAudio.some(Boolean)){
+    if(!Array.isArray(data.openAudio))data.openAudio=Array(30).fill("");
+    independentOpenAudio.forEach((src,i)=>{if(src)data.openAudio[i]=src});
+  }
+  if(!data.sentenceAudio)data.sentenceAudio=Array(data.sentences.length).fill("");
+  if(!data.sentenceAudioMeta)data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
+  if(!data.questionAudio)data.questionAudio=Array(data.questions.length).fill("");
+  if(!data.buildAudio)data.buildAudio=Array(data.sentences.length).fill("");
+  if(!data.readingAudio)data.readingAudio=Array(data.readings.length).fill("");
+  if(!data.openAudio)data.openAudio=Array(30).fill("");
+  renderAllStatus(); renderReadings(); renderRepeatGrid(); renderQuestionGrid(); renderBuildGrid(); renderOpenGrid(); updateOpenAudioStatus();
+  if(typeof refreshRepeatGridAudioBadges==="function")refreshRepeatGridAudioBadges();
+  if(typeof updateTeacherSummary==="function")updateTeacherSummary();
+ }catch(e){console.warn("Could not restore IndexedDB media",e)}
+}
+function fileToDataURL(file){
+ return new Promise((resolve,reject)=>{
+   if(!file)return resolve("");
+   const r=new FileReader();
+   r.onload=()=>resolve(r.result);
+   r.onerror=reject;
+   r.readAsDataURL(file);
+ });
+}
+function playAudioSource(src){
+ if(!src){alert("No hay audio guardado.");return}
+ try{new Audio(src).play()}catch(e){alert("No se pudo reproducir el audio.")}
+}
+function audioLabel(src){return src? (src.startsWith("data:")?"audio local guardado":src):"sin audio"}
+function exportA1Payload(){ ensureAudioMeta(); return data.sentences.map((sentence,i)=>({numero:i+1,oracion:sentence,audio:data.sentenceAudio[i]||"",meta:data.sentenceAudioMeta[i]||null})); }
+function showExport(boxId,payload){
+ const box=$(boxId);box.textContent=JSON.stringify(payload,null,2);box.classList.remove("hidden");
+}
+
+function requireSession(){return true}
+function requireTeacher(){return true}
+function setScore(id,val){$(id).textContent=val==null?"Sin calificar":`${val}%`}
+function performanceScore(obj){
+ const correct=Object.values(obj||{}).filter(v=>v===true).length;
+ return Object.values(obj||{}).some(v=>v===true||v===false)?Math.min(100,correct*10):null;
+}
+function pct(obj){return performanceScore(obj)}
+function updateScores(){
+ const a1=pct(results.A1), b=pct(results.B), c=pct(results.C), d=pct(results.D), e=pct(results.E);
+ let a2=readingState.score;
+ let a = (a1==null&&a2==null)?null:Math.round(([a1,a2].filter(v=>v!=null).reduce((x,y)=>x+y,0))/[a1,a2].filter(v=>v!=null).length);
+ setScore("#scoreA",a); setScore("#scoreB",b); setScore("#scoreC",c); setScore("#scoreD",d); setScore("#scoreE",e); setScore("#scoreF",results.F); setScore("#scoreG",results.G);
+ let scores=[a,b,c,d,e,results.F,results.G].filter(v=>v!=null);
+ $("#overallScore").textContent=scores.length?Math.round(scores.reduce((x,y)=>x+y,0)/scores.length)+"%":"—";
+ $("#completedSections").textContent=`${scores.length}/7`;
+ let a1vals=Object.values(results.A1).filter(v=>v===true||v===false), a1ok=Object.values(results.A1).filter(v=>v===true).length;
+ $("#a1progress").textContent=a1vals.length?`${a1ok}/10 correctas · ${pct(results.A1)} puntos`:"0/10 correctas";
+ renderAllStatus();
+}
+function elapsedText(ms){let s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60);s%=60;return [h,m,s].map(x=>String(x).padStart(2,"0")).join(":")}
+function startSession(){
+ const st={name:$("#studentName").value.trim(),id:$("#studentId").value.trim(),gender:$("#studentGender").value,career:$("#studentCareer").value.trim()};
+ if(!st.name||!st.id||!st.gender||!st.career){alert("Complete nombre, carnet, género y carrera.");return}
+ session={student:st,start:new Date(),end:null};
+ $("#sessionStatus").textContent="Evaluación activa"; $("#finishSession").disabled=false; $("#printFullReport").disabled=false; $("#currentUser").textContent=st.name;
+ clearInterval(timerInterval); timerInterval=setInterval(()=>{$("#elapsed").textContent=elapsedText(Date.now()-session.start.getTime())},1000);
+}
+function finishSession(){
+ if(!requireSession())return; session.end=new Date(); clearInterval(timerInterval); $("#sessionStatus").textContent="Finalizada"; createFullReport(); window.print();
+}
+$("#startSession").onclick=startSession; $("#finishSession").onclick=finishSession; $("#printFullReport").onclick=()=>{if(requireSession()){createFullReport();window.print()}};
+
+$("#teacherBtn").onclick=()=>{};
+$("#exitTeacherBtn").onclick=()=>{};
+
+$$(".section-tabs button").forEach(b=>b.onclick=()=>{$$(".section-tabs button").forEach(x=>x.classList.remove("active"));b.classList.add("active");$$(".app-section").forEach(s=>s.classList.add("hidden"));$("#sec"+b.dataset.sec).classList.remove("hidden")});
+
+
+function playSentenceAudioByIndex(i){
+  const src=(data.sentenceAudio||[])[i]||"";
+  if(!src){
+    alert("La oración "+(i+1)+" todavía no tiene audio guardado.");
+    return false;
+  }
+  playAudioSource(src);
+  if(typeof updateSentenceAudioIdentity==="function")updateSentenceAudioIdentity(i);
+  return true;
+}
+
+function renderSentenceGrid(){
+ let g=$("#sentenceGrid");g.innerHTML="";
+ data.sentences.forEach((s,i)=>{
+   let b=document.createElement("button");
+   b.className="num-btn";
+   if(results.A1[i]===true)b.classList.add("good");
+   if(results.A1[i]===false)b.classList.add("bad");
+   let face=results.A1[i]===true?"😊":results.A1[i]===false?"😢":"";
+   b.innerHTML=`<span>${i+1}</span>${face?`<span class="face">${face}</span>`:""}`;
+   b.title=s;
+   b.onclick=()=>selectSentence(i);
+   g.appendChild(b)
+ })
+}
+function selectSentence(i){
+ selectedSentence=i;
+ $("#sentenceEditor").value=data.sentences[i];
+ $("#markYes").disabled=false;$("#markNo").disabled=false;
+ if(requireSession()&&requireTeacher())showSentence(data.sentences[i]);
+}
+async function showSentence(text){
+ let ov=$("#sentenceOverlay"), cd=$("#countdown"), sd=$("#sentenceDisplay");ov.classList.remove("hidden");sd.classList.add("hidden");cd.classList.remove("hidden");
+ for(const w of ["ONE","TWO","THREE"]){cd.textContent=w; await new Promise(r=>setTimeout(r,700))}
+ cd.classList.add("hidden");sd.classList.remove("hidden");sd.textContent=text;
+ let sec=Math.max(3,Math.min(20,parseInt($("#sentenceSeconds").value)||6));
+ setTimeout(()=>ov.classList.add("hidden"),sec*1000)
+}
+$("#saveSentence").onclick=()=>{if(selectedSentence==null)return alert("Seleccione una oración.");data.sentences[selectedSentence]=$("#sentenceEditor").value.trim();persist();renderSentenceGrid();decorateSentenceButtons();renderRepeatGrid();decorateSentenceButtons();renderBuildGrid();decorateSentenceButtons();alert("Oración guardada.")};
+$("#resetSentences").onclick=()=>{if(confirm("¿Restaurar las 30 oraciones de ejemplo?")){data.sentences=[...defaults.sentences];persist();renderSentenceGrid();renderRepeatGrid();renderBuildGrid()}};
+$("#markYes").onclick=()=>{if(selectedSentence!=null){results.A1[selectedSentence]=true;renderSentenceGrid();updateScores()}};
+$("#markNo").onclick=()=>{if(selectedSentence!=null){results.A1[selectedSentence]=false;renderSentenceGrid();updateScores()}};
+$("#resetActivityA").onclick=()=>{results.A1={};selectedSentence=null;readingState={lastLine:0,total:0,score:null,time:null,durationSeconds:0,speed:1,stopLine:0,finished:false};$("#markYes").disabled=true;$("#markNo").disabled=true;$("#readingLastLine").textContent="0";$("#readingScore").textContent="—";renderSentenceGrid();updateScores();};
+
+function readingLines(text){
+ let words=text.trim().split(/\s+/), lines=[]; for(let i=0;i<words.length;i+=11) lines.push(words.slice(i,i+11).join(" ")); return lines;
+}
+
+function renderReadingGrid(){
+  const g=$("#readingGrid");
+  if(!g)return;
+  g.innerHTML="";
+  data.readings.forEach((r,i)=>{
+    const b=document.createElement("button");
+    b.className="num-btn";
+    b.innerHTML=`<span>${i+1}</span>`;
+    b.title=r.title||`Reading ${i+1}`;
+    b.onclick=()=>{
+      $("#readingSelect").value=i;
+      $("#readingTitle").value=r.title||`Reading ${i+1}`;
+      $("#readingEditor").value=r.text||"";
+      launchReadingByIndex(i);
+    };
+    g.appendChild(b);
+  });
+}
+function launchReadingByIndex(i){
+  const r=data.readings[i];
+  if(!r)return;
+  $("#readingSelect").value=i;
+  $("#readingTitle").value=r.title||`Reading ${i+1}`;
+  $("#readingEditor").value=r.text||"";
+  startSelectedReading();
+}
+function startSelectedReading(){
+  let text=$("#readingEditor").value.trim();
+  if(!text)return alert("Esta lectura está vacía.");
+  let lines=readingLines(text);
+  let mins=Math.max(1,Math.min(10,parseInt($("#readingMinutes").value)||1));
+  let secs=Math.max(0,Math.min(59,parseInt($("#readingSeconds").value)||0));
+  let totalSecs=mins*60+secs;
+  if(totalSecs>600)totalSecs=600;
+
+  readingState={lastLine:0,total:lines.length,score:0,time:totalSecs/60,durationSeconds:totalSecs,speed:1,stopLine:0,finished:false};
+
+  $("#readingLinesTotal").textContent=lines.length;
+  $("#readingLastLine").textContent=0;
+  $("#readingScore").textContent="0%";
+  $("#readingTime").textContent=formatMMSS(totalSecs);
+
+  let inner=$("#readingInner");
+  inner.innerHTML="";
+  lines.forEach((l,i)=>{
+    let d=document.createElement("div");
+    d.className="read-line unread";
+    d.dataset.index=i;
+    d.dataset.result="ok";
+    const words=l.split(/\s+/).map(w=>`<span class="read-word" title="Tocar si se pronunció mal">${esc(w)}</span>`).join(" ");
+    d.innerHTML=`<span class="mark">✔</span><span>${i+1}. ${words}</span>`;
+    d.querySelectorAll(".read-word").forEach(word=>{
+      word.onclick=(ev)=>{
+        ev.stopPropagation();
+        word.classList.toggle("mispronounced");
+      };
+    });
+    d.onclick=()=>{
+      const mark=d.querySelector(".mark");
+      const isX = d.dataset.result==="x";
+      if(isX){
+        /* Cambiar X -> ✔: la lectura puede pasar esta línea sin detenerse. */
+        d.dataset.result="ok";
+        if(mark) mark.textContent="✔";
+        d.classList.add("read"); d.classList.remove("unread","selected");
+        if(readingState.stopLine===i+1) readingState.stopLine=0;
+      }else{
+        /* Cambiar ✔ -> X: esta será la línea de detención. */
+        $$(".read-line").forEach((x,j)=>{
+          const m=x.querySelector(".mark");
+          if(x!==d && x.dataset.result==="x"){
+            x.dataset.result="ok";
+            if(m)m.textContent="✔";
+            x.classList.add("read");x.classList.remove("unread","selected");
+          }
+        });
+        d.dataset.result="x";
+        if(mark) mark.textContent="✖";
+        d.classList.add("selected","unread"); d.classList.remove("read");
+        readingState.lastLine=i+1;
+        readingState.score=Math.round((i+1)/lines.length*100);
+        readingState.stopLine=i+1;
+        readingState.finished=false;
+        $("#readingLastLine").textContent=i+1;
+        $("#readingScore").textContent=readingState.score+"%";
+      }
+      updateScores();
+    };
+    inner.appendChild(d);
+  });
+  startReadingAnimation();
+}
+
+function renderReadingOptions(){
+ let sels=[$("#readingSelect"),$("#storySelect")];
+ sels.forEach(sel=>{
+   sel.innerHTML="";
+   data.readings.forEach((r,i)=>{
+     let o=document.createElement("option");
+     o.value=i;
+     o.textContent=`${i+1}. ${r.title||("Reading "+(i+1))}`;
+     sel.appendChild(o)
+   })
+ });
+ $("#readingEditor").value=data.readings[0].text;
+ $("#readingTitle").value=data.readings[0].title||"Reading 1";
+ $("#storyText").textContent=data.readings[0].text;
+}
+$("#readingSelect").onchange=e=>{
+ let i=+e.target.value, r=data.readings[i];
+ $("#readingEditor").value=r.text;
+ $("#readingTitle").value=r.title||`Reading ${i+1}`;
+};
+$("#storySelect").onchange=e=>{
+ const i=+e.target.value;
+ $("#storyText").textContent=data.readings[i].text;
+ updateStoryAudioUI(i);
+};
+$("#saveReading").onclick=()=>{
+ let i=+$("#readingSelect").value;
+ data.readings[i].title=$("#readingTitle").value.trim()||`Reading ${i+1}`;
+ data.readings[i].text=$("#readingEditor").value.trim();
+ persist();
+ renderReadingOptions();
+ $("#readingSelect").value=i;
+ $("#storySelect").value=i;
+ $("#readingTitle").value=data.readings[i].title;
+ $("#readingEditor").value=data.readings[i].text;
+ $("#storyText").textContent=data.readings[i].text;
+ renderReadingGrid();
+ alert("Lectura y título guardados.");
+};
+$("#launchReading").onclick=()=>startSelectedReading();
+let readingAnim={baseDuration:0,distance:0,progress:0,timer:null,raf:null};
+function applyReadingTransform(){
+ let inner=$("#readingInner");
+ inner.style.transform=`translateY(-${readingAnim.distance*readingAnim.progress}px)`;
+}
+function startReadingAnimation(){
+ let ov=$("#readingOverlay"),inner=$("#readingInner"),clock=$("#readingClock");
+ $("#readingOverlayTitle").textContent=$("#readingTitle").value.trim()||data.readings[+$("#readingSelect").value].title||"Lectura";
+ ov.classList.remove("hidden");
+ inner.style.transition="none";
+ inner.style.transform="translateY(0)";
+ inner.style.top="100vh";
+
+ cancelAnimationFrame(readingAnim.raf);
+ clearInterval(readingAnim.timer);
+
+ readingAnim.baseDuration=readingState.durationSeconds||60;
+ readingAnim.progress=0;
+
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   readingAnim.distance=window.innerHeight+inner.scrollHeight+80;
+   let last=performance.now();
+
+   function frame(now){
+     let dt=(now-last)/1000;
+     last=now;
+     readingAnim.progress += (dt*readingState.speed)/readingAnim.baseDuration;
+
+     if(readingAnim.progress>=1){
+       readingAnim.progress=1;
+       applyReadingTransform();
+       ov.classList.add("hidden");
+       clearInterval(readingAnim.timer);
+       updateScores();
+       return;
+     }
+
+     applyReadingTransform();
+     /* A2: una línea marcada con X CIERRA la actividad en cuanto cruza por debajo del título. */
+     if(!readingState.finished){
+       const titleEl=$("#readingOverlayTitle");
+       const badLine=inner.querySelector('.read-line[data-result="x"]');
+       if(badLine && titleEl){
+         const lineRect=badLine.getBoundingClientRect();
+         const titleRect=titleEl.getBoundingClientRect();
+         /* El disparo ocurre cuando el borde superior de la línea alcanza la franja del título. */
+         if(lineRect.top <= titleRect.bottom + 12){
+           readingState.finished=true;
+           readingState.stopLine=Number(badLine.dataset.index)+1;
+           readingState.lastLine=readingState.stopLine;
+           readingState.score=Math.round(readingState.lastLine/Math.max(1,readingState.total)*100);
+           $("#readingLastLine").textContent=readingState.lastLine;
+           $("#readingScore").textContent=readingState.score+"%";
+
+           const redX=$("#closeReading");
+           if(redX){
+             redX.classList.add("stop-active");
+             redX.setAttribute("aria-pressed","true");
+           }
+
+           /* Detener de inmediato y ejecutar directamente el cierre real de A · Ejercicio 2. */
+           cancelAnimationFrame(readingAnim.raf);
+           clearInterval(readingAnim.timer);
+           readingAnim.raf=null;
+           readingAnim.timer=null;
+
+           setTimeout(()=>{
+             ov.classList.add("hidden");
+             if(redX){
+               redX.classList.remove("stop-active");
+               redX.removeAttribute("aria-pressed");
+             }
+             $$(".section-tabs button").forEach(x=>x.classList.toggle("active",x.dataset.sec==="A"));
+             $$(".app-section").forEach(sec=>sec.classList.add("hidden"));
+             $("#secA").classList.remove("hidden");
+             updateScores();
+             /* Volver específicamente al bloque de A, no a otra sección. */
+             $("#secA").scrollIntoView({behavior:"smooth",block:"start"});
+           },220);
+           return;
+         }
+       }
+     }
+     readingAnim.raf=requestAnimationFrame(frame);
+   }
+
+   readingAnim.raf=requestAnimationFrame(frame);
+
+   readingAnim.timer=setInterval(()=>{
+     let remaining=(1-readingAnim.progress)*readingAnim.baseDuration/readingState.speed;
+     clock.textContent=formatMMSS(Math.max(0,Math.ceil(remaining)));
+   },250);
+ }));
+}
+function changeReadingSpeed(multiplier){
+ readingState.speed=Math.max(.5,Math.min(2.5,Math.round(readingState.speed*multiplier*100)/100));
+}
+$("#slowerReading").onclick=()=>changeReadingSpeed(0.8);
+$("#fasterReading").onclick=()=>changeReadingSpeed(1.25);
+function formatMMSS(s){return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(Math.floor(s%60)).padStart(2,"0")}`}
+$("#closeReading").onclick=()=>{
+ let ov=$("#readingOverlay");
+ cancelAnimationFrame(readingAnim.raf);
+ clearInterval(readingAnim.timer);
+ ov.classList.add("hidden");
+ updateScores();
+};
+$("#printReading").onclick=()=>{if(!requireSession())return;createFullReport();window.print()};
+
+
+function renderRepeatAudioList(){
+ const box=$("#repeatAudioList"); if(!box)return;
+ box.innerHTML="";
+ for(let i=0;i<30;i++){
+   const b=document.createElement("button");
+   b.type="button"; b.className="num-btn";
+   const has=!!(data.sentenceAudio && data.sentenceAudio[i]);
+   b.innerHTML=`<span>${i+1}</span>${has?'<span class="face">🔊</span>':""}`;
+   b.title=has?`Oración ${i+1} · tocar para escuchar`:`Oración ${i+1} · sin audio`;
+   b.onclick=()=>{
+     selectedRepeat=i;
+     const sentence=(data.sentences&&data.sentences[i])||"";
+     $("#repeatPrompt").textContent=`Oración ${i+1}: ${sentence}`;
+     updateSentenceAudioIdentity(i);
+     if(has) playSentenceAudioByIndex(i);
+     else alert(`La oración ${i+1} todavía no tiene audio guardado.`);
+   };
+   box.appendChild(b);
+ }
+}
+function renderBuildAudioList(){
+ const box=$("#buildAudioList"); if(!box)return;
+ box.innerHTML="";
+ data.sentences.forEach((sentence,i)=>{
+   const b=document.createElement("button");
+   b.type="button"; b.className="num-btn";
+   const has=!!data.buildAudio[i];
+   b.innerHTML=`<span>${i+1}</span>${has?'<span class="face">🔊</span>':""}`;
+   b.title=has?`Oración ${i+1} · tocar para escuchar`:`Oración ${i+1} · sin audio`;
+   b.onclick=()=>{
+     selectedBuild=i;
+     updateBuildAudioUI(i);
+     if(has) playAudioSource(data.buildAudio[i]);
+     else alert(`La oración ${i+1} todavía no tiene audio guardado.`);
+   };
+   box.appendChild(b);
+ });
+}
+
+function renderRepeatGrid(){
+ const g=$("#repeatGrid"); if(!g)return; g.innerHTML="";
+ for(let i=0;i<30;i++){
+   const b=document.createElement("button");
+   b.type="button"; b.className="num-btn";
+   if(results.B && results.B[i]===true)b.classList.add("good");
+   if(results.B && results.B[i]===false)b.classList.add("bad");
+   const has=!!(data.sentenceAudio && data.sentenceAudio[i]);
+   b.innerHTML=`<span>${i+1}</span>${has?'<span class="face">🔊</span>':""}`;
+   b.onclick=()=>{
+     selectedRepeat=i;
+     const sentence=(data.sentences&&data.sentences[i])||"";
+     $("#repeatPrompt").textContent=`Oración ${i+1}: ${sentence||"Sin texto cargado"}`;
+     $("#repeatAudioUrl").value=(data.sentenceAudio&&data.sentenceAudio[i]||"").startsWith("http")?data.sentenceAudio[i]:"";
+     updateSentenceAudioIdentity(i);
+     if(has) playSentenceAudioByIndex(i);
+   };
+   g.appendChild(b);
+ }
+
+}
+$("#repeatYes").onclick=()=>{if(selectedRepeat==null)return;results.B[selectedRepeat]=true;renderRepeatGrid();updateScores()};
+$("#repeatNo").onclick=()=>{if(selectedRepeat==null)return;results.B[selectedRepeat]=false;renderRepeatGrid();updateScores()};
+$("#resetActivityB").onclick=()=>{results.B={};selectedRepeat=null;$("#repeatPrompt").textContent="Seleccione una oración";renderRepeatGrid();updateScores();};
+$("#saveRepeatAudio").onclick=async()=>{
+ if(selectedRepeat==null)return alert("Seleccione una oración.");
+ let file=$("#repeatAudioFile").files[0];
+ let url=$("#repeatAudioUrl").value.trim();
+ let src=file?await fileToDataURL(file):url;
+ if(!src)return alert("Seleccione un archivo de audio o escriba una URL.");
+ data.sentenceAudio[selectedRepeat]=src;
+ ensureAudioMeta();
+ data.sentenceAudioMeta[selectedRepeat]=file
+   ? {name:file.name,type:file.type||"audio",source:"archivo"}
+   : {name:(url.split("/").pop()||"enlace"),type:"url",source:"enlace"};
+ try{
+   // B se guarda en un almacén IndexedDB independiente. Los archivos se conservan como Blob,
+   // evitando el límite de localStorage y permaneciendo tras recargar/cerrar la página.
+   await saveRepeatAudioPersistent(selectedRepeat, file || url, data.sentenceAudioMeta[selectedRepeat]);
+ }catch(e){
+   console.error(e);
+   return alert("No se pudo guardar permanentemente este audio: "+e.message);
+ }
+ await persist();
+ renderRepeatGrid();
+ refreshRepeatGridAudioBadges();
+ updateSentenceAudioIdentity(selectedRepeat);
+ alert("Audio guardado permanentemente en la oración "+(selectedRepeat+1)+".");
+};
+$("#playRepeatAudio").onclick=()=>{
+ if(selectedRepeat==null)return alert("Seleccione una oración.");
+ if(!data.sentenceAudio[selectedRepeat])return alert("La oración "+(selectedRepeat+1)+" todavía no tiene audio.");
+ updateSentenceAudioIdentity(selectedRepeat);
+ playAudioSource(data.sentenceAudio[selectedRepeat]);
+};
+$("#exportA1Audio").onclick=()=>showExport("#exportA1Box",exportA1Payload());
+
+
+function renderQuestionGrid(){
+ let g=$("#questionGrid");g.innerHTML="";
+ data.questions.forEach((q,i)=>{
+   let b=document.createElement("button");
+   b.className="num-btn";
+   if(results.C[i]===true)b.classList.add("good");
+   if(results.C[i]===false)b.classList.add("bad");
+   b.innerHTML=`${i+1}${data.questionAudio[i]?'<span class="face">🔊</span>':""}`;
+   b.onclick=()=>{
+     selectedQuestion=i;
+     $("#questionEditor").value=q;
+     $("#questionDisplay").textContent=q;
+     $("#questionAudioUrl").value=(data.questionAudio[i]||"").startsWith("http")?data.questionAudio[i]:"";
+     if(data.questionAudio[i]) playAudioSource(data.questionAudio[i]);
+   };
+   g.appendChild(b)
+ })
+}
+$("#saveQuestion").onclick=async()=>{
+ if(selectedQuestion==null)return alert("Seleccione una pregunta.");
+ data.questions[selectedQuestion]=$("#questionEditor").value.trim();
+ let file=$("#questionAudioFile").files[0];
+ let url=$("#questionAudioUrl").value.trim();
+ if(file)data.questionAudio[selectedQuestion]=await fileToDataURL(file);
+ else if(url)data.questionAudio[selectedQuestion]=url;
+ if(!(await persist())) return;$("#questionDisplay").textContent=data.questions[selectedQuestion];renderQuestionGrid();alert("Pregunta y audio guardados permanentemente.");
+};
+$("#playQuestionAudio").onclick=()=>{if(selectedQuestion==null)return alert("Seleccione una pregunta.");playAudioSource(data.questionAudio[selectedQuestion])};
+$("#addQuestion").onclick=()=>{
+ data.questions.push(`Question ${data.questions.length+1}:`);
+ data.questionAudio.push("");
+ persist();renderQuestionGrid();
+ selectedQuestion=data.questions.length-1;
+ $("#questionEditor").value=data.questions[selectedQuestion];
+ $("#questionDisplay").textContent=data.questions[selectedQuestion];
+};
+$("#removeQuestion").onclick=()=>{
+ if(selectedQuestion==null)return alert("Seleccione una pregunta.");
+ if(!confirm("¿Quitar esta pregunta?"))return;
+ data.questions.splice(selectedQuestion,1);
+ data.questionAudio.splice(selectedQuestion,1);
+ delete results.C[selectedQuestion];
+ selectedQuestion=null;persist();renderQuestionGrid();$("#questionEditor").value="";$("#questionDisplay").textContent="Seleccione una pregunta";updateScores();
+};
+$("#questionYes").onclick=()=>{if(selectedQuestion==null)return;results.C[selectedQuestion]=true;renderQuestionGrid();updateScores()};
+$("#questionNo").onclick=()=>{if(selectedQuestion==null)return;results.C[selectedQuestion]=false;renderQuestionGrid();updateScores()};
+$("#resetActivityC").onclick=()=>{results.C={};selectedQuestion=null;$("#questionDisplay").textContent="Seleccione una pregunta";renderQuestionGrid();updateScores();};
+
+let buildOrder=[];
+function partsOf(s){let w=s.split(/\s+/),n=Math.ceil(w.length/3);return [w.slice(0,n).join(" "),w.slice(n,n*2).join(" "),w.slice(n*2).join(" ")].filter(Boolean)}
+function renderBuildGrid(){
+ const g=$("#buildGrid");
+ if(!g) return;
+ g.innerHTML="";
+ for(let i=0;i<30;i++){
+   const b=document.createElement("button");
+   b.type="button";
+   b.className="num-btn";
+   b.dataset.index=i;
+   if(results.D && results.D[i]===true)b.classList.add("good");
+   if(results.D && results.D[i]===false)b.classList.add("bad");
+   if(selectedBuild===i)b.classList.add("active");
+   const hasAudio=!!(data.buildAudio && data.buildAudio[i]);
+   b.innerHTML=`<span>${i+1}</span>${hasAudio?'<span class="face">🔊</span>':""}`;
+   b.title=`Seleccionar oración ${i+1}`;
+   b.addEventListener("click",()=>{
+      if(!data.sentences || !data.sentences[i]){
+        alert(`La oración ${i+1} todavía no tiene texto cargado.`);
+        return;
+      }
+      selectBuild(i);
+   });
+   g.appendChild(b);
+ }
+}
+function updateBuildAudioUI(i){
+ const src=data.buildAudio[i]||"";
+ $("#buildAudioStatus").textContent=src?`Oración ${i+1}: audio guardado.`:`Oración ${i+1}: sin audio.`;
+ $("#buildAudioUrl").value=src.startsWith("http")?src:"";
+}
+function selectBuild(i){
+ selectedBuild=i;buildOrder=[];
+ renderBuildGrid();
+ const parts=partsOf(data.sentences[i]).sort(()=>Math.random()-.5);
+ const c=$("#buildParts");c.innerHTML="";
+ parts.forEach(x=>{
+  const b=document.createElement("button");b.className="btn ghost";b.textContent=x;
+  b.onclick=()=>{buildOrder.push(x);b.disabled=true;$("#buildAnswer").textContent=buildOrder.join(" ")};
+  c.appendChild(b);
+ });
+ $("#buildAnswer").textContent="Primero toca un número del 1 al 30. Luego selecciona las partes en el orden correcto.";
+ updateBuildAudioUI(i);
+ if(data.buildAudio[i]) playAudioSource(data.buildAudio[i]);
+}
+$("#saveBuildAudio").onclick=async()=>{
+ if(selectedBuild==null)return alert("Seleccione una oración.");
+ const file=$("#buildAudioFile").files[0],url=$("#buildAudioUrl").value.trim();
+ const src=file?await fileToDataURL(file):url;
+ if(!src)return alert("Seleccione un audio o escriba una URL.");
+ data.buildAudio[selectedBuild]=src;if(!(await persist())) return;renderBuildGrid();updateBuildAudioUI(selectedBuild);
+};
+$("#playBuildAudio").onclick=()=>{if(selectedBuild==null)return alert("Seleccione una oración.");playAudioSource(data.buildAudio[selectedBuild])};
+$("#removeBuildAudio").onclick=()=>{if(selectedBuild==null)return;data.buildAudio[selectedBuild]="";persist();renderBuildGrid();updateBuildAudioUI(selectedBuild)};
+$("#buildCorrect").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=true;renderBuildGrid();updateScores()};
+$("#buildWrong").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=false;renderBuildGrid();updateScores()};
+$("#buildReset").onclick=()=>{if(selectedBuild!=null)selectBuild(selectedBuild)};
+
+function renderDictationGrid(){
+ const g=$("#dictationGrid");g.innerHTML="";
+ data.sentences.forEach((sentence,i)=>{
+  const b=document.createElement("button");
+  b.className="num-btn";
+  b.dataset.index=i;
+  if(results.E[i]===true)b.classList.add("good");
+  if(results.E[i]===false)b.classList.add("bad");
+  if(dictationCurrent===i)b.classList.add("active-dictation");
+  b.innerHTML=`${i+1}${data.sentenceAudio[i]?'<span class="face">🔊</span>':""}`;
+  b.onclick=()=>selectDictation(i,true);
+  g.appendChild(b);
+ });
+}
+function selectDictation(i,play=true){
+ dictationCurrent=i;
+ $("#dictationNumber").textContent=`Oración ${i+1}`;
+ $("#dictationTeacherText").textContent=data.sentences[i];
+ $("#dictationInput").value="";
+ renderDictationGrid();
+ if(play)playSentenceAudioByIndex(i);
+}
+$("#nextDictation").onclick=()=>{
+ const i=Math.floor(Math.random()*data.sentences.length);
+ selectDictation(i,true);
+};
+$("#dictationYes").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=true;renderDictationGrid();updateScores()};
+$("#dictationNo").onclick=()=>{if(dictationCurrent==null)return;results.E[dictationCurrent]=false;renderDictationGrid();updateScores()};
+
+
+function updateStoryAudioUI(i){
+ const src=data.readingAudio[i]||"";
+ $("#storyAudioStatus").textContent=src?`Lectura ${i+1}: audio guardado.`:`Lectura ${i+1}: sin audio guardado.`;
+ $("#storyAudioUrl").value=src.startsWith("http")?src:"";
+}
+$("#saveStoryAudio").onclick=async()=>{
+ const i=+$("#storySelect").value;
+ const file=$("#storyAudioFile").files[0],url=$("#storyAudioUrl").value.trim();
+ const src=file?await fileToDataURL(file):url;
+ if(!src)return alert("Seleccione un audio o escriba una URL.");
+ data.readingAudio[i]=src;if(!(await persist())) return;updateStoryAudioUI(i);
+};
+$("#playStoryAudio").onclick=()=>playAudioSource(data.readingAudio[+$("#storySelect").value]);
+$("#removeStoryAudio").onclick=()=>{const i=+$("#storySelect").value;data.readingAudio[i]="";persist();updateStoryAudioUI(i)};
+$("#saveStoryScore").onclick=()=>{
+ const raw=$("#storyScoreInput").value;
+ if(raw===""||Number.isNaN(Number(raw)))return alert("Escriba un puntaje entre 0 y 100.");
+ const score=Math.max(0,Math.min(100,Number(raw)));
+ results.F=score;
+ results.FNotes=$("#storyNotes").value.trim();
+ $("#storyScoreInput").value=score;
+ $("#storyScoreSaved").textContent=`✓ Puntaje aceptado: ${score}/100${results.FNotes?" · Observación guardada":""}`;
+ updateScores();
+ alert(`Puntaje de STORY RETELLING aceptado: ${score}/100.`);
+};
+
+let selectedOpen=0;
+async function saveOpenAudioSlot(index,src){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{const tx=db.transaction(AMINA_DB_STORE,"readwrite");tx.objectStore(AMINA_DB_STORE).put(src,`openAudio_${index}`);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}});
+}
+async function loadOpenAudioSlots(){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{const tx=db.transaction(AMINA_DB_STORE,"readonly"),store=tx.objectStore(AMINA_DB_STORE),out=Array(30).fill("");let pending=30;for(let i=0;i<30;i++){const r=store.get(`openAudio_${i}`);r.onsuccess=()=>{out[i]=r.result||"";if(--pending===0){db.close();resolve(out)}};r.onerror=()=>{if(--pending===0){db.close();resolve(out)}}}tx.onerror=()=>{db.close();reject(tx.error)}});
+}
+async function deleteOpenAudioSlot(index){return saveOpenAudioSlot(index,"");}
+function ensureOpenSpeaking(){
+ if(!Array.isArray(data.openQuestions)) data.openQuestions=Array.from({length:30},(_,i)=>i===0?(data.openQuestion||`Question ${i+1}`):`Question ${i+1}`);
+ while(data.openQuestions.length<30)data.openQuestions.push(`Question ${data.openQuestions.length+1}`);
+ if(!Array.isArray(data.openAudio)) data.openAudio=Array(30).fill("");
+ while(data.openAudio.length<30)data.openAudio.push("");
+}
+function renderOpenGrid(){
+ ensureOpenSpeaking(); const g=$("#openGrid"); if(!g)return; g.innerHTML="";
+ for(let i=0;i<30;i++){const b=document.createElement("button");b.className="num-btn";b.innerHTML=`${i+1}${data.openAudio[i]?'<span class="face">🔊</span>':""}`;b.onclick=()=>{selectedOpen=i;$("#openQuestion").value=data.openQuestions[i]||"";$("#openAudioUrl").value=(data.openAudio[i]||"").startsWith("http")?data.openAudio[i]:"";updateOpenAudioStatus();if(data.openAudio[i])playAudioSource(data.openAudio[i]);};g.appendChild(b)}
+}
+function updateOpenAudioStatus(){ensureOpenSpeaking();const src=data.openAudio[selectedOpen]||"";$("#openAudioStatus").textContent=`Pregunta ${selectedOpen+1}: ${src?"audio guardado":"sin audio guardado"}. Total: ${data.openAudio.filter(Boolean).length}/30 audios.`}
+$("#saveOpenAudio").onclick=async()=>{ensureOpenSpeaking();const slot=selectedOpen;data.openQuestions[slot]=$("#openQuestion").value.trim()||`Question ${slot+1}`;const file=$("#openAudioFile").files[0],url=$("#openAudioUrl").value.trim();const src=file?await fileToDataURL(file):url;if(src){data.openAudio[slot]=src;await saveOpenAudioSlot(slot,src);}if(!(await persist()))return;$("#openAudioFile").value="";renderOpenGrid();selectedOpen=slot;updateOpenAudioStatus();alert(`Pregunta ${slot+1} guardada de forma independiente. Audios almacenados: ${data.openAudio.filter(Boolean).length}/30.`)};
+$("#playOpenAudio").onclick=()=>{ensureOpenSpeaking();playAudioSource(data.openAudio[selectedOpen])};
+$("#removeOpenAudio").onclick=async()=>{ensureOpenSpeaking();const slot=selectedOpen;data.openAudio[slot]="";await deleteOpenAudioSlot(slot);await persist();renderOpenGrid();selectedOpen=slot;updateOpenAudioStatus()};
+$("#saveOpenScore").onclick=()=>{results.G=Math.max(0,Math.min(100,+$("#openScoreInput").value||0));updateScores();alert(`G · OPEN SPEAKING: ${results.G} puntos guardados.`)};
+$("#saveStoryScore").onclick=()=>{results.F=Math.max(0,Math.min(100,+$("#storyScoreInput").value||0));updateScores();alert(`F · STORY RETELLING: ${results.F} puntos guardados.`)};
+renderOpenGrid();updateOpenAudioStatus();
+function sectionScores(){
+ const a1=pct(results.A1),a2=readingState.score;
+ const A=(a1==null&&a2==null)?null:Math.round(([a1,a2].filter(v=>v!=null).reduce((x,y)=>x+y,0))/[a1,a2].filter(v=>v!=null).length);
+ return {A,B:pct(results.B),C:pct(results.C),D:pct(results.D),E:pct(results.E),F:results.F,G:results.G}
+}
+function createFullReport(){
+ let s=sectionScores(), end=session.end||new Date(), overall=Object.values(s).filter(v=>v!=null), avg=overall.length?Math.round(overall.reduce((a,b)=>a+b,0)/overall.length):0;
+ let a1details=data.sentences.map((x,i)=>{
+   let state=results.A1[i]===true?"😊 CORRECTA":results.A1[i]===false?"😢 INCORRECTA":"— NO EVALUADA";
+   let aud=data.sentenceAudio[i]?audioLabel(data.sentenceAudio[i]):"sin audio";
+   return `<tr><td>${i+1}</td><td>${esc(x)}</td><td><b>${state}</b></td><td>${esc(aud)}</td></tr>`;
+ }).join("");
+
+ let ri=+$("#readingSelect").value, reading=data.readings[ri], rlines=readingLines(reading.text);
+ let last=readingState.lastLine||0;
+ let readingRows=rlines.map((line,i)=>{
+   let n=i+1,reached=last===n;
+   let status=n<last?"✅ Leída":reached?"✅ ÚLTIMA LÍNEA LEÍDA":"❌ No leída";
+   let style=reached?' style="font-weight:700;background:#ececec;border:2px solid #111"':"";
+   return `<tr${style}><td>${n}</td><td>${esc(line)}</td><td>${status}</td></tr>`;
+ }).join("");
+ let lastText=last>0&&rlines[last-1]?esc(rlines[last-1]):"No se registró una línea final.";
+
+ $("#printArea").innerHTML=`<div class="report">
+ <h1>AMINA‑VERSANT · SECCIÓN A COMPLETA</h1>
+ <p><b>WESH · Lic. Wascar Enrique Sequeira Hurtado</b></p>
+ <p><b>Estudiante:</b> ${esc(session.student.name)} &nbsp; <b>Carnet:</b> ${esc(session.student.id)}<br>
+ <b>Género:</b> ${esc(session.student.gender)} &nbsp; <b>Carrera:</b> ${esc(session.student.career)}<br>
+ <b>Inicio:</b> ${session.start.toLocaleString()} &nbsp; <b>Fin/impresión:</b> ${end.toLocaleString()}</p>
+
+ <h2>A · Ejercicio 1 · READ ALOUD</h2>
+ <p><b>Puntaje:</b> ${pct(results.A1)==null?"—":pct(results.A1)+"%"} · <b>Evaluadas:</b> ${Object.values(results.A1).filter(v=>v===true||v===false).length}</p>
+ <table><tr><th>N.º</th><th>Oración</th><th>Resultado</th><th>Audio docente</th></tr>${a1details}</table>
+
+ <h2>A · Ejercicio 2 · ${esc(reading.title||"Lectura")}</h2>
+ <p><b>Límite:</b> ${readingState.durationSeconds?formatMMSS(readingState.durationSeconds):formatMMSS((parseInt($("#readingMinutes").value)||1)*60+(parseInt($("#readingSeconds").value)||0))}<br>
+ <b>Última línea alcanzada:</b> N.º ${last||"—"}<br>
+ <b>Texto exacto:</b> ${lastText}<br>
+ <b>Puntaje:</b> ${readingState.score==null?"—":readingState.score+"%"}</p>
+ <table><tr><th>N.º</th><th>Lectura completa</th><th>Estado</th></tr>${readingRows}</table>
+ </div>`;
+ $("#printArea").classList.remove("hidden");
+}
+function createReadingReport(){
+ let i=+$("#readingSelect").value,r=data.readings[i],lines=readingLines(r.text),last=readingState.lastLine||0;
+ let rows=lines.map((l,j)=>{
+   let n=j+1, reached=n===last;
+   let status=n<last?"✅ Leída":reached?"✅ ÚLTIMA LÍNEA LEÍDA":"❌ No leída";
+   let style=reached?' style="font-weight:700;background:#ececec;border:2px solid #111"':"";
+   return `<tr${style}><td>${n}</td><td>${esc(l)}</td><td>${status}</td></tr>`;
+ }).join("");
+ let exact=last>0&&lines[last-1]?esc(lines[last-1]):"No se registró una línea final.";
+ $("#printArea").innerHTML=`<div class="report"><h1>AMINA‑VERSANT · Lectura</h1>
+ <p><b>Estudiante:</b> ${esc(session.student.name)} · <b>Carnet:</b> ${esc(session.student.id)} · <b>Carrera:</b> ${esc(session.student.career)}</p>
+ <p><b>Fecha y hora:</b> ${new Date().toLocaleString()} · <b>Límite:</b> ${readingState.time||$("#readingMinutes").value} min<br>
+ <b>Última línea/oración alcanzada:</b> N.º ${last||"—"} · <b>Puntaje:</b> ${readingState.score==null?"—":readingState.score+"%"}<br>
+ <b>Texto exacto:</b> ${exact}</p>
+ <h2>${esc(r.title)}</h2>
+ <table><tr><th>N.º</th><th>Texto</th><th>Estado</th></tr>${rows}</table></div>`;
+ $("#printArea").classList.remove("hidden")
+}
+function fmt(v){return v===true?"Correcta":v===false?"Incorrecta":"—"}
+function esc(t){return String(t??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+renderReadingOptions();
+renderReadingGrid();renderAllStatus();updateStoryAudioUI(+$("#storySelect").value||0);updateOpenAudioStatus();updateScores();
+
+function ensureAudioMeta(){
+  if(!Array.isArray(data.sentenceAudioMeta)) data.sentenceAudioMeta=Array(data.sentences.length).fill(null);
+  while(data.sentenceAudioMeta.length<data.sentences.length)data.sentenceAudioMeta.push(null);
+  while(data.sentenceAudio.length<data.sentences.length)data.sentenceAudio.push("");
+}
+function sentenceAudioInfo(i){
+  ensureAudioMeta();
+  const meta=data.sentenceAudioMeta[i]||{};
+  return {
+    index:i,
+    number:i+1,
+    sentence:data.sentences[i]||"",
+    audio:data.sentenceAudio[i]||"",
+    name:meta.name||"",
+    type:meta.type||"",
+    source:meta.source||""
+  };
+}
+function updateSentenceAudioIdentity(i){
+  const el=document.querySelector("#sentenceAudioIdentityText");
+  if(!el)return;
+  const info=sentenceAudioInfo(i);
+  el.textContent=info.audio
+    ? `Oración ${info.number}: ${info.sentence} · Audio: ${info.name||"guardado"}`
+    : `Oración ${info.number}: ${info.sentence} · Sin audio guardado`;
+}
+function refreshRepeatGridAudioBadges(){
+  const grid=document.querySelector("#repeatGrid");
+  if(!grid)return;
+  [...grid.children].forEach((btn,i)=>{
+    const has=!!data.sentenceAudio[i];
+    btn.innerHTML=`${i+1}${has?' <span title="Audio guardado">🔊</span>':''}`;
+    btn.title=has?`Oración ${i+1} · Audio guardado`:`Oración ${i+1} · Sin audio`;
+  });
+}
+function downloadJSONFile(filename,obj){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function buildStudentAudioPackage(){
+  ensureAudioMeta();
+  return {
+    app:"AMINA-VERSANT",
+    kind:"student-audio-package",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    sentences:data.sentences.map((sentence,i)=>({
+      number:i+1,
+      sentence,
+      audio:data.sentenceAudio[i]||"",
+      meta:data.sentenceAudioMeta[i]||null
+    })),
+    buildAudio:(data.buildAudio||[]).map((audio,i)=>({number:i+1,audio:audio||""})),
+    readings:(data.readings||[]).map((r,i)=>({number:i+1,title:r.title||`Reading ${i+1}`,audio:(data.readingAudio||[])[i]||""})),
+    questions:(data.questions||[]).map((question,i)=>({
+      number:i+1,
+      question,
+      audio:(data.questionAudio||[])[i]||""
+    })),
+    openAudio:data.openAudio||""
+  };
+}
+function applyStudentAudioPackage(pkg){
+  if(!pkg||pkg.kind!=="student-audio-package")throw new Error("Archivo no válido.");
+  if(Array.isArray(pkg.sentences)){
+    pkg.sentences.forEach((x,i)=>{
+      if(i<data.sentences.length){
+        if(typeof x.audio==="string")data.sentenceAudio[i]=x.audio;
+        data.sentenceAudioMeta[i]=x.meta||null;
+      }
+    });
+  }
+  if(Array.isArray(pkg.buildAudio))pkg.buildAudio.forEach((x,i)=>{if(i<data.buildAudio.length&&typeof x.audio==="string")data.buildAudio[i]=x.audio;});
+  if(Array.isArray(pkg.readings))pkg.readings.forEach((x,i)=>{if(i<data.readingAudio.length&&typeof x.audio==="string")data.readingAudio[i]=x.audio;});
+  if(Array.isArray(pkg.questions)){
+    pkg.questions.forEach((x,i)=>{
+      if(i<data.questions.length && typeof x.audio==="string")data.questionAudio[i]=x.audio;
+    });
+  }
+  if(pkg.openAudio!==undefined)data.openAudio=pkg.openAudio;
+  persist();
+  renderRepeatGrid();
+  refreshRepeatGridAudioBadges();
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  ensureAudioMeta();
+  renderBuildGrid();
+  refreshRepeatGridAudioBadges();
+
+  document.querySelector("#downloadSentenceAudioPackage")?.addEventListener("click",()=>{
+    downloadJSONFile("AMINA_VERSANT_AUDIOS_ESTUDIANTES.json",buildStudentAudioPackage());
+  });
+
+  document.querySelector("#importSentenceAudioPackageTeacher")?.addEventListener("change",async e=>{
+    const f=e.target.files?.[0]; if(!f)return;
+    try{
+      applyStudentAudioPackage(JSON.parse(await f.text()));
+      alert("Audios importados correctamente.");
+    }catch(err){alert("No se pudo importar: "+err.message)}
+    e.target.value="";
+  });
+});
+
+
+function decorateSentenceButtons(){
+  ["#sentenceGrid","#repeatGrid","#buildGrid"].forEach(sel=>{
+    const grid=document.querySelector(sel);
+    if(!grid)return;
+    [...grid.querySelectorAll(".num-btn")].forEach((btn,visibleIndex)=>{
+      const raw=(btn.textContent||"").match(/\d+/);
+      const i=raw?Math.max(0,parseInt(raw[0],10)-1):visibleIndex;
+      const has=!!(data.sentenceAudio&&data.sentenceAudio[i]);
+      btn.classList.toggle("has-audio",has);
+      btn.classList.toggle("no-audio",!has);
+      let dot=btn.querySelector(".audio-dot");
+      if(has&&!dot){
+        dot=document.createElement("span");dot.className="audio-dot";dot.textContent="🔊";
+        btn.appendChild(dot);
+      }
+      if(!has&&dot)dot.remove();
+      btn.title=has?`Oración ${i+1} · tocar para escuchar`:`Oración ${i+1} · sin audio`;
+    });
+  });
+}
+function updateTeacherSummary(){}
+document.addEventListener("DOMContentLoaded",()=>{setTimeout(()=>{decorateSentenceButtons();renderOpenGrid();updateOpenAudioStatus()},50);});
+
+
+
+/* Full-screen mode */
+function updateFullscreenButton(){
+ const b=document.querySelector("#fullscreenBtn"); if(!b)return;
+ b.textContent=document.fullscreenElement?"⤢ Salir de pantalla completa":"⛶ Pantalla completa";
+}
+document.querySelector("#fullscreenBtn")?.addEventListener("click",async()=>{
+ try{
+  if(!document.fullscreenElement)await document.documentElement.requestFullscreen();
+  else await document.exitFullscreen();
+ }catch(e){alert("El navegador no permitió activar pantalla completa.")}
+});
+document.addEventListener("fullscreenchange",updateFullscreenButton);
+document.addEventListener("DOMContentLoaded",async()=>{
+ updateFullscreenButton();
+ try{
+   if(navigator.storage && navigator.storage.persist){
+     await navigator.storage.persist();
+   }
+ }catch(e){console.warn("Persistent storage request was not granted",e)}
+ await hydrateMediaFromDB();
+ await hydrateRepeatAudioPersistent();
+});
+</script>
+<script>
+window.addEventListener("load", function(){
+  try { renderBuildGrid(); } catch(e) { console.error("D grid:",e); }
+});
+</script>
+<script>
+window.addEventListener("load",function(){
+ try{renderRepeatGrid();renderBuildGrid();}catch(e){console.error(e);}
+});
+</script>
+<script>
+(function(){
+ function failedReading(){
+   try{
+     if (window.results && Array.isArray(results.A2)) return results.A2.some(v=>v===false);
+   }catch(e){}
+   return !!document.querySelector('#secA .bad, #secA .incorrect, #secA [data-result="false"]');
+ }
+ function redStop(){
+   return document.querySelector('#secA .reading-stop, #secA .stop-reading, #secA [data-action="stop-reading"], #secA button.danger, #secA .btn.danger');
+ }
+ document.addEventListener('click',function(ev){
+   const t=ev.target.closest('#secA h1,#secA h2,#secA h3,#secA .reading-title,#secA [data-reading-title]');
+   if(!t || !failedReading()) return;
+   const b=redStop();
+   if(b){
+     b.disabled=false; b.style.display='inline-flex'; b.style.visibility='visible'; b.style.opacity='1';
+     b.classList.add('reading-stop-ready');
+     b.scrollIntoView({behavior:'smooth',block:'center'});
+   }
+ });
+})();
+</script>
+
+<script>
+(function(){
+ const file=document.getElementById('storyReplacementFile');
+ const ta=document.getElementById('storyReplacementText');
+ const st=document.getElementById('storyReplacementStatus');
+ if(file) file.addEventListener('change',async function(){
+   const f=this.files&&this.files[0]; if(!f)return;
+   ta.value=await f.text();
+   st.textContent='Archivo cargado. Pulsa “Guardar historia” para aplicarlo.';
+ });
+ const save=document.getElementById('saveStoryReplacement');
+ if(save) save.addEventListener('click',function(){
+   const text=ta.value.trim();
+   if(!text){alert('Escribe o carga una historia primero.');return;}
+   try{
+     if(window.data){
+       data.story=text;
+       data.storyText=text;
+       if(Array.isArray(data.stories)) data.stories[0]=text;
+       if(typeof saveData==='function') saveData();
+     }
+     localStorage.setItem('aminaVersantStoryF',text);
+     const candidates=['storyText','storyPrompt','retellStory','storyContent'];
+     for(const id of candidates){
+       const el=document.getElementById(id);
+       if(el){
+         if('value' in el) el.value=text; else el.textContent=text;
+       }
+     }
+     document.querySelectorAll('#secF .story-text,#secF [data-story]').forEach(el=>el.textContent=text);
+     st.textContent='Historia guardada y aplicada a la parte F.';
+   }catch(e){st.textContent='No se pudo guardar: '+e.message;}
+ });
+ const clear=document.getElementById('clearStoryReplacement');
+ if(clear) clear.addEventListener('click',()=>{ta.value='';file.value='';});
+ window.addEventListener('load',function(){
+   const saved=localStorage.getItem('aminaVersantStoryF');
+   if(saved && ta) ta.value=saved;
+ });
+})();
+</script>
+
+<script>
+(function(){
+ function a2Overlay(){
+   return document.querySelector('.reading-overlay,.reading-fullscreen,#readingFullscreen,#readingOverlay,.fullscreen-reading')
+       || [...document.querySelectorAll('body > div')].find(x=>{
+            const tx=(x.innerText||'');
+            return tx.includes('Learning proces') && x.querySelector('button');
+          });
+ }
+ function hasVisibleX(root){
+   if(!root) return false;
+   const nodes=[...root.querySelectorAll('*')];
+   return nodes.some(el=>{
+     if(el.children.length) return false;
+     const t=(el.textContent||'').trim();
+     return /^✕|^❌|^×/.test(t) || el.classList.contains('bad') || el.classList.contains('incorrect');
+   });
+ }
+ function findRedClose(root){
+   if(!root)return null;
+   const buttons=[...root.querySelectorAll('button')];
+   return buttons.find(b=>{
+     const t=(b.textContent||'').trim();
+     const cs=getComputedStyle(b);
+     return t==='×'||t==='✕'||t==='❌'||t==='X'||b.classList.contains('danger')||
+            b.classList.contains('close')||b.classList.contains('reading-close');
+   });
+ }
+ function isReadingTitle(el,root){
+   if(!el||!root)return false;
+   const title=el.closest('h1,h2,h3,.reading-title,[data-reading-title]');
+   if(!title)return false;
+   const t=(title.textContent||'').toLowerCase();
+   return t.includes('learning') || t.includes('reading') || title.classList.contains('reading-title');
+ }
+ document.addEventListener('click',function(e){
+   const root=a2Overlay();
+   if(!root || !isReadingTitle(e.target,root) || !hasVisibleX(root)) return;
+   e.preventDefault(); e.stopPropagation();
+   const close=findRedClose(root);
+   if(close){
+     close.disabled=false;
+     close.style.pointerEvents='auto';
+     close.style.opacity='1';
+     close.style.display='inline-flex';
+     close.click();
+   }else{
+     root.style.display='none';
+     document.body.style.overflow='';
+   }
+ },true);
+
+ // Also make the title visibly actionable as soon as an X exists.
+ const obs=new MutationObserver(()=>{
+   const root=a2Overlay(); if(!root)return;
+   const titles=[...root.querySelectorAll('h1,h2,h3,.reading-title,[data-reading-title]')];
+   titles.forEach(t=>{
+     if(hasVisibleX(root)){
+       t.style.cursor='pointer';
+       t.title='Hay una línea incorrecta: toca el título para cerrar la lectura';
+     }
+   });
+ });
+ obs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});
+})();
+</script>
+
+<style id="teacher-summary-first-page-only">
+/* Resumen docente: únicamente en la primera página (A). */
+body:not(.amina-page-a) #teacherSummary,
+body:not(.amina-page-a) .teacher-summary,
+body:not(.amina-page-a) [data-role="teacher-summary"]{
+  display:none !important;
+}
+</style>
+<script id="teacher-summary-first-page-controller">
+(function(){
+  function isVisible(el){
+    if(!el) return false;
+    const cs=getComputedStyle(el);
+    return cs.display!=='none' && cs.visibility!=='hidden' && !el.hidden;
+  }
+  function syncTeacherSummaryPage(){
+    const secA=document.getElementById('secA');
+    const onA=isVisible(secA);
+    document.body.classList.toggle('amina-page-a', onA);
+
+    /* Fallback: identify the existing summary by its text without changing its functions. */
+    const candidates=[...document.querySelectorAll('section,div,aside')];
+    const summary=candidates
+      .filter(el=>/resumen\s+docente/i.test((el.textContent||'').trim()))
+      .sort((a,b)=>(a.textContent||'').length-(b.textContent||'').length)[0];
+    if(summary){
+      summary.dataset.role='teacher-summary';
+      summary.style.display=onA?'':'none';
+    }
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    syncTeacherSummaryPage();
+    document.addEventListener('click',()=>setTimeout(syncTeacherSummaryPage,0),true);
+    const obs=new MutationObserver(syncTeacherSummaryPage);
+    obs.observe(document.body,{attributes:true,subtree:true,attributeFilter:['style','class','hidden']});
+  });
+})();
+</script>
+
+
+<style id="compact-teacher-summary-v2">
+#teacherDashboardSummary{margin:12px 0 0!important;padding:10px 12px!important;border:1px solid #294260;border-radius:14px;background:linear-gradient(135deg,rgba(16,32,54,.96),rgba(10,24,42,.96));box-shadow:none!important}
+.teacher-summary-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:34px}.teacher-summary-head strong{font-size:.98rem}.teacher-summary-head span{font-size:.82rem;color:var(--muted)}
+.summary-toggle{min-height:32px!important;padding:5px 10px;border:1px solid #355173;border-radius:9px;background:#142640;color:#dceaff;font-size:.78rem;font-weight:800;white-space:nowrap}
+.teacher-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:9px;padding-top:9px;border-top:1px solid rgba(78,105,143,.28)}
+.summary-chip{min-width:0;padding:8px 9px;border:1px solid #294260;border-radius:10px;background:#0b192b}.summary-chip b{display:block;font-size:.76rem;color:#dcecff;margin-bottom:2px}.summary-chip small{display:block;font-size:.70rem;line-height:1.3;color:#aebbd0}
+@media(max-width:950px){.teacher-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.teacher-summary-head{align-items:flex-start;flex-direction:column}.summary-toggle{width:100%}.teacher-summary-grid{grid-template-columns:1fr}.teacher-summary-head span{display:none}}
+:fullscreen body,body:fullscreen{width:100vw;height:100vh}::backdrop{background:#06101d}
+</style>
+<script id="compact-summary-and-fullscreen-v2">
+(function(){
+ const toggle=document.getElementById('summaryToggle'), grid=document.getElementById('teacherSummaryGrid');
+ if(toggle&&grid) toggle.addEventListener('click',()=>{const open=grid.hasAttribute('hidden'); if(open)grid.removeAttribute('hidden');else grid.setAttribute('hidden','');toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'Ocultar criterios ▴':'Ver criterios ▾';});
+ const fs=document.getElementById('fullscreenBtn');
+ if(fs){
+   const enter=()=>{const el=document.documentElement; const fn=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen; return fn?fn.call(el):Promise.reject(new Error('Fullscreen API unavailable'));};
+   const leave=()=>{const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen; return fn?fn.call(document):Promise.resolve();};
+   fs.onclick=async function(e){e.preventDefault();e.stopImmediatePropagation();try{const active=document.fullscreenElement||document.webkitFullscreenElement||document.msFullscreenElement;if(active)await leave();else await enter();}catch(err){alert('No se pudo activar la pantalla completa. Revisa que el navegador permita pantalla completa para esta página.');}};
+   const sync=()=>{const active=document.fullscreenElement||document.webkitFullscreenElement||document.msFullscreenElement;fs.textContent=active?'⤢ Salir de pantalla completa':'⛶ Pantalla completa';};
+   ['fullscreenchange','webkitfullscreenchange','MSFullscreenChange'].forEach(ev=>document.addEventListener(ev,sync));sync();
+ }
+})();
+</script>
+
+</body>
+</html>
