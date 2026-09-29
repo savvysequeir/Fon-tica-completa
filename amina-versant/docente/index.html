@@ -956,13 +956,15 @@ const AMINA_DB_NAME="AMINA_VERSANT_MEDIA";
 const AMINA_DB_STORE="state";
 const AMINA_REPEAT_STORE="repeatAudio";
 const AMINA_MEDIA_STORE="uploadedMedia";
+const AMINA_SECTION_AUDIO_STORE="sectionAudioV2";
 function openAminaDB(){
  return new Promise((resolve,reject)=>{
-  const req=indexedDB.open(AMINA_DB_NAME,3);
+  const req=indexedDB.open(AMINA_DB_NAME,4);
   req.onupgradeneeded=()=>{
     if(!req.result.objectStoreNames.contains(AMINA_DB_STORE))req.result.createObjectStore(AMINA_DB_STORE);
     if(!req.result.objectStoreNames.contains(AMINA_REPEAT_STORE))req.result.createObjectStore(AMINA_REPEAT_STORE);
     if(!req.result.objectStoreNames.contains(AMINA_MEDIA_STORE))req.result.createObjectStore(AMINA_MEDIA_STORE);
+    if(!req.result.objectStoreNames.contains(AMINA_SECTION_AUDIO_STORE))req.result.createObjectStore(AMINA_SECTION_AUDIO_STORE);
   };
   req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
  });
@@ -1010,6 +1012,37 @@ async function blobToDataURL(blob){
  return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)});
 }
 
+async function saveSectionAudioV2(section,index,fileOrUrl,meta){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(AMINA_SECTION_AUDIO_STORE,"readwrite");
+  const payload={section,index,kind:(fileOrUrl instanceof Blob)?"blob":"url",value:fileOrUrl,meta:meta||null,savedAt:Date.now()};
+  tx.objectStore(AMINA_SECTION_AUDIO_STORE).put(payload,`${section}:${index}`);
+  tx.oncomplete=()=>{db.close();resolve(true)};
+  tx.onerror=()=>{db.close();reject(tx.error)};
+ });
+}
+async function deleteSectionAudioV2(section,index){
+ const db=await openAminaDB();
+ return new Promise((resolve,reject)=>{const tx=db.transaction(AMINA_SECTION_AUDIO_STORE,"readwrite");tx.objectStore(AMINA_SECTION_AUDIO_STORE).delete(`${section}:${index}`);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}});
+}
+async function hydrateSectionAudioV2(){
+ try{
+  const db=await openAminaDB();
+  const items=await new Promise((resolve,reject)=>{const tx=db.transaction(AMINA_SECTION_AUDIO_STORE,"readonly"),r=tx.objectStore(AMINA_SECTION_AUDIO_STORE).getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error);tx.oncomplete=()=>db.close()});
+  for(const item of items){
+   const i=Number(item.index); let src="";
+   if(item.kind==="blob" && item.value instanceof Blob) src=URL.createObjectURL(item.value);
+   else src=String(item.value||"");
+   if(item.section==="C"){while(data.questionAudio.length<=i)data.questionAudio.push("");data.questionAudio[i]=src;}
+   if(item.section==="D"){while(data.buildAudio.length<=i)data.buildAudio.push("");data.buildAudio[i]=src;}
+   if(item.section==="F"){while(data.readingAudio.length<=i)data.readingAudio.push("");data.readingAudio[i]=src;}
+   if(item.section==="G"){ensureOpenSpeaking();data.openAudio[i]=src;}
+  }
+  renderQuestionGrid();renderBuildGrid();renderOpenGrid();updateOpenAudioStatus();
+  if(typeof updateStoryAudioUI==="function" && document.querySelector("#storySelect"))updateStoryAudioUI(+$("#storySelect").value);
+ }catch(e){console.error("Error restaurando C/D/F/G",e)}
+}
 async function saveUploadedMedia(section,index,value,meta){
  const db=await openAminaDB();
  return new Promise((resolve,reject)=>{
@@ -1044,7 +1077,7 @@ async function hydrateAllUploadedMedia(){
 
 /* Restaura B también al volver con Atrás/Adelante (bfcache) o reabrir la pestaña. */
 window.addEventListener("pageshow",()=>{
-  setTimeout(()=>{ if(typeof hydrateRepeatAudioPersistent==="function") hydrateRepeatAudioPersistent(); },80);
+  setTimeout(()=>{ if(typeof hydrateRepeatAudioPersistent==="function") hydrateRepeatAudioPersistent(); if(typeof hydrateSectionAudioV2==="function") hydrateSectionAudioV2(); },80);
 });
 async function hydrateRepeatAudioPersistent(){
  try{
@@ -1573,7 +1606,7 @@ $("#saveQuestion").onclick=async()=>{
  let url=$("#questionAudioUrl").value.trim();
  if(file)data.questionAudio[selectedQuestion]=await fileToDataURL(file);
  else if(url)data.questionAudio[selectedQuestion]=url;
- if(file||url) await saveUploadedMedia("C",selectedQuestion,file||url,file?{name:file.name,type:file.type}:{type:"url"});
+ if(file||url){ await saveUploadedMedia("C",selectedQuestion,file||url,file?{name:file.name,type:file.type}:{type:"url"}); await saveSectionAudioV2("C",selectedQuestion,file||url,file?{name:file.name,type:file.type}:{type:"url"}); }
  if(!(await persist())) return;$("#questionDisplay").textContent=data.questions[selectedQuestion];renderQuestionGrid();alert("Pregunta y audio guardados permanentemente en este navegador.");
 };
 $("#playQuestionAudio").onclick=()=>{if(selectedQuestion==null)return alert("Seleccione una pregunta.");playAudioSource(data.questionAudio[selectedQuestion])};
@@ -1648,10 +1681,10 @@ $("#saveBuildAudio").onclick=async()=>{
  const file=$("#buildAudioFile").files[0],url=$("#buildAudioUrl").value.trim();
  const src=file?await fileToDataURL(file):url;
  if(!src)return alert("Seleccione un audio o escriba una URL.");
- data.buildAudio[selectedBuild]=src;await saveUploadedMedia("D",selectedBuild,file||url,file?{name:file.name,type:file.type}:{type:"url"});if(!(await persist())) return;renderBuildGrid();updateBuildAudioUI(selectedBuild);
+ data.buildAudio[selectedBuild]=src;await saveUploadedMedia("D",selectedBuild,file||url,file?{name:file.name,type:file.type}:{type:"url"});await saveSectionAudioV2("D",selectedBuild,file||url,file?{name:file.name,type:file.type}:{type:"url"});if(!(await persist())) return;renderBuildGrid();updateBuildAudioUI(selectedBuild);
 };
 $("#playBuildAudio").onclick=()=>{if(selectedBuild==null)return alert("Seleccione una oración.");playAudioSource(data.buildAudio[selectedBuild])};
-$("#removeBuildAudio").onclick=async()=>{if(selectedBuild==null)return;data.buildAudio[selectedBuild]="";await deleteUploadedMedia("D",selectedBuild);await persist();renderBuildGrid();updateBuildAudioUI(selectedBuild)};
+$("#removeBuildAudio").onclick=async()=>{if(selectedBuild==null)return;data.buildAudio[selectedBuild]="";await deleteUploadedMedia("D",selectedBuild);await deleteSectionAudioV2("D",selectedBuild);await persist();renderBuildGrid();updateBuildAudioUI(selectedBuild)};
 $("#buildCorrect").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=true;renderBuildGrid();updateScores()};
 $("#buildWrong").onclick=()=>{if(selectedBuild==null)return;results.D[selectedBuild]=false;renderBuildGrid();updateScores()};
 $("#buildReset").onclick=()=>{if(selectedBuild!=null)selectBuild(selectedBuild)};
@@ -1696,10 +1729,10 @@ $("#saveStoryAudio").onclick=async()=>{
  const file=$("#storyAudioFile").files[0],url=$("#storyAudioUrl").value.trim();
  const src=file?await fileToDataURL(file):url;
  if(!src)return alert("Seleccione un audio o escriba una URL.");
- data.readingAudio[i]=src;await saveUploadedMedia("F",i,file||url,file?{name:file.name,type:file.type}:{type:"url"});if(!(await persist())) return;updateStoryAudioUI(i);
+ data.readingAudio[i]=src;await saveUploadedMedia("F",i,file||url,file?{name:file.name,type:file.type}:{type:"url"});await saveSectionAudioV2("F",i,file||url,file?{name:file.name,type:file.type}:{type:"url"});if(!(await persist())) return;updateStoryAudioUI(i);
 };
 $("#playStoryAudio").onclick=()=>playAudioSource(data.readingAudio[+$("#storySelect").value]);
-$("#removeStoryAudio").onclick=async()=>{const i=+$("#storySelect").value;data.readingAudio[i]="";await deleteUploadedMedia("F",i);await persist();updateStoryAudioUI(i)};
+$("#removeStoryAudio").onclick=async()=>{const i=+$("#storySelect").value;data.readingAudio[i]="";await deleteUploadedMedia("F",i);await deleteSectionAudioV2("F",i);await persist();updateStoryAudioUI(i)};
 $("#saveStoryScore").onclick=()=>{
  const raw=$("#storyScoreInput").value;
  if(raw===""||Number.isNaN(Number(raw)))return alert("Escriba un puntaje entre 0 y 100.");
@@ -1733,9 +1766,9 @@ function renderOpenGrid(){
  for(let i=0;i<30;i++){const b=document.createElement("button");b.className="num-btn";b.innerHTML=`${i+1}${data.openAudio[i]?'<span class="face">🔊</span>':""}`;b.onclick=()=>{selectedOpen=i;$("#openQuestion").value=data.openQuestions[i]||"";$("#openAudioUrl").value=(data.openAudio[i]||"").startsWith("http")?data.openAudio[i]:"";updateOpenAudioStatus();if(data.openAudio[i])playAudioSource(data.openAudio[i]);};g.appendChild(b)}
 }
 function updateOpenAudioStatus(){ensureOpenSpeaking();const src=data.openAudio[selectedOpen]||"";$("#openAudioStatus").textContent=`Pregunta ${selectedOpen+1}: ${src?"audio guardado":"sin audio guardado"}. Total: ${data.openAudio.filter(Boolean).length}/30 audios.`}
-$("#saveOpenAudio").onclick=async()=>{ensureOpenSpeaking();const slot=selectedOpen;data.openQuestions[slot]=$("#openQuestion").value.trim()||`Question ${slot+1}`;const file=$("#openAudioFile").files[0],url=$("#openAudioUrl").value.trim();const src=file?await fileToDataURL(file):url;if(src){data.openAudio[slot]=src;await saveUploadedMedia("G",slot,file||url,file?{name:file.name,type:file.type}:{type:"url"});await saveOpenAudioSlot(slot,src);}if(!(await persist()))return;$("#openAudioFile").value="";renderOpenGrid();selectedOpen=slot;updateOpenAudioStatus();alert(`Pregunta ${slot+1} guardada de forma independiente. Audios almacenados: ${data.openAudio.filter(Boolean).length}/30.`)};
+$("#saveOpenAudio").onclick=async()=>{ensureOpenSpeaking();const slot=selectedOpen;data.openQuestions[slot]=$("#openQuestion").value.trim()||`Question ${slot+1}`;const file=$("#openAudioFile").files[0],url=$("#openAudioUrl").value.trim();const src=file?await fileToDataURL(file):url;if(src){data.openAudio[slot]=src;await saveUploadedMedia("G",slot,file||url,file?{name:file.name,type:file.type}:{type:"url"});await saveSectionAudioV2("G",slot,file||url,file?{name:file.name,type:file.type}:{type:"url"});await saveOpenAudioSlot(slot,src);}if(!(await persist()))return;$("#openAudioFile").value="";renderOpenGrid();selectedOpen=slot;updateOpenAudioStatus();alert(`Pregunta ${slot+1} guardada de forma independiente. Audios almacenados: ${data.openAudio.filter(Boolean).length}/30.`)};
 $("#playOpenAudio").onclick=()=>{ensureOpenSpeaking();playAudioSource(data.openAudio[selectedOpen])};
-$("#removeOpenAudio").onclick=async()=>{ensureOpenSpeaking();const slot=selectedOpen;data.openAudio[slot]="";await deleteUploadedMedia("G",slot);await deleteOpenAudioSlot(slot);await persist();renderOpenGrid();selectedOpen=slot;updateOpenAudioStatus()};
+$("#removeOpenAudio").onclick=async()=>{ensureOpenSpeaking();const slot=selectedOpen;data.openAudio[slot]="";await deleteUploadedMedia("G",slot);await deleteSectionAudioV2("G",slot);await deleteOpenAudioSlot(slot);await persist();renderOpenGrid();selectedOpen=slot;updateOpenAudioStatus()};
 $("#saveOpenScore").onclick=()=>{results.G=Math.max(0,Math.min(100,+$("#openScoreInput").value||0));updateScores();alert(`G · OPEN SPEAKING: ${results.G} puntos guardados.`)};
 $("#saveStoryScore").onclick=()=>{results.F=Math.max(0,Math.min(100,+$("#storyScoreInput").value||0));updateScores();alert(`F · STORY RETELLING: ${results.F} puntos guardados.`)};
 renderOpenGrid();updateOpenAudioStatus();
@@ -1959,6 +1992,7 @@ document.addEventListener("DOMContentLoaded",async()=>{
  await hydrateMediaFromDB();
  await hydrateRepeatAudioPersistent();
  await hydrateAllUploadedMedia();
+ await hydrateSectionAudioV2();
 });
 </script>
 <script>
