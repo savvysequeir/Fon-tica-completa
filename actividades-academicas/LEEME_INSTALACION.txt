@@ -1,0 +1,10 @@
+AMINA — MÓDULOS PARA GITHUB PAGES
+
+Este paquete NO sustituye la página principal de Amina.
+
+1. En el repositorio Fon-tica-completa, crea una carpeta llamada actividades-academicas.
+2. Sube a esa carpeta TODOS los archivos de este ZIP, incluido index.html.
+3. En tu sitio, abre: https://savvysequeir.github.io/Fon-tica-completa/actividades-academicas/
+4. Para añadir un botón en el index principal de Amina, usa: <a href="actividades-academicas/">Actividades académicas</a>
+
+Los archivos HTML originales se conservan. No hay base de datos central ni control de acceso de servidor.
